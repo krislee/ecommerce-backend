@@ -2,9 +2,9 @@ const {Schema, model} = require ('mongoose');
 
 const storeSchema = new Schema (
     {
-        Electronics: [{type: Schema.Types.ObjectId, refer: "electronics"}],
-        Health: [{type: Schema.Types.ObjectId, refer: "health"}],
-        Clothing: [{type: Schema.Types.ObjectId, refer: "clothing"}],
+        Electronic: [{type: Schema.Types.ObjectId, ref: "electronic"}],
+        Health: [{type: Schema.Types.ObjectId, ref: "health"}],
+        Clothing: [{type: Schema.Types.ObjectId, ref: "clothing"}],
     }
 )
 
