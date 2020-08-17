@@ -26,4 +26,15 @@ const index = async (req, res) => {
     }
 }
 
-module.exports = {create, index}
+// UPDATING ONE OF THE ELECTRONICS
+const update = async (req, res) => {
+    try {
+        const updateElectronic = await (await Electronic.findByIdAndUpdate(req.params.id, req.body, {new: true})).populate('Review');
+        res.status(200).json(updateElectronic);
+    }
+    catch (error) {
+        res.status(400).send(error);
+    }
+}
+
+module.exports = {create, index, update}
