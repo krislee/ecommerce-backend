@@ -2,7 +2,7 @@ const {Schema, model} = require ('mongoose')
 
 const reviewElectronicSchema = new Schema (
     {
-        electronicItem: [{type: Schema.Types.ObjectId, ref: "electronic"}],
+        ElectronicItem: [{type: Schema.Types.ObjectId, ref: "electronic"}],
         Name: String,
         Comment: String,
         Rating: Number

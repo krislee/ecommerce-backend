@@ -7,5 +7,11 @@ const Review = require('../model/review')
 
 // CREATE ELECTRONIC ITEM
 const create = async (req,res) => {
-    const review = Review.findOne({electronicItem: )}
+    try {
+        const electronic = await Electronic.create(req.body)
+        res.status(200).json(electronic);
+    } 
+    catch (error) {
+        res.status(400).send(error);
+    }
 }

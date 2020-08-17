@@ -2,7 +2,7 @@ const {Schema, model} = require ('mongoose')
 
 const reviewHealthSchema = new Schema (
     {
-        healthItem: [{type: Schema.Types.ObjectId, ref: "health"}],
+        HealthItem: [{type: Schema.Types.ObjectId, ref: "health"}],
         Name: String,
         Comment: String,
         Rating: Number
