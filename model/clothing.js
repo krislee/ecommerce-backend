@@ -8,7 +8,7 @@ const clothingSchema = new Schema (
         Description: String,
         Price: Number,
         Rating: Number,
-        Review: [{type: Schema.Types.ObjectId, ref: "review"}]
+        Review: [{type: Schema.Types.ObjectId, ref: "reviewClothing"}]
     }
 )
 

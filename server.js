@@ -6,7 +6,8 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const db = require('./db/connection')
 const app = express()
-// const storeRouter = require('./route/index')
+const electronicRouter = require('./routes/electronic')
+const electronicReviewRouter = require('./routes/review')
 
 //GLOBAL VARIABLES
 const PORT = process.env.PORT
@@ -34,7 +35,8 @@ app.use(morgan("dev"));
 app.use(express.static("public"));
 
 // ROUTES AND ROUTER
-// app.use('/store', storeRouter)
+app.use('/store', electronicRouter)
+app.use('/store', electronicReviewRouter)
 
 // TEST ROUTE
 app.get('/', (req,res) => {

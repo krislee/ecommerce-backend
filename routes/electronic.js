@@ -1,6 +1,8 @@
 const express = require('express');
 const electronicRouter = express.Router();
-const {create} = require('../controller/sellerElectronic');
+const {create, index} = require('../controller/sellerElectronic');
+
+electronicRouter.get('/electronic', index)
 
 electronicRouter.post('/electronic', create)
 
