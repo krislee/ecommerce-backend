@@ -6,8 +6,8 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const db = require('./db/connection')
 const app = express()
-const electronicRouter = require('./routes/electronic')
-const electronicReviewRouter = require('./routes/review')
+const electronicRouter = require('./routes/seller/electronic')
+const electronicReviewRouter = require('./routes/buyer/review')
 
 //GLOBAL VARIABLES
 const PORT = process.env.PORT
@@ -29,8 +29,9 @@ const corsOptions = {
 };
 
 // MIDDLEWARE
-NODE_ENV === "development" ? app.use(cors()) : app.use(cors(corsOptions));
-app.use(express.json());
+// Put ternary to see if sites are allowed before making the server run in app.use()
+NODE_ENV === "development" ? app.use(cors()) : app.use(cors(corsOptions)); // If in development, allow all websites; if in production, allow websites in whitelist to make API calls to server
+app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
 app.use(morgan("dev"));
 app.use(express.static("public"));
 

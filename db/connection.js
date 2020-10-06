@@ -1,9 +1,9 @@
 require("dotenv").config()
 const mongoose = require('mongoose')
 
-const mongoURI = process.env.mongoURI + "ecommerce"
+const mongoURI = process.env.mongoURI + "ecommerce" // tells which database to connect to 
 const db = mongoose.connection
-const mongoConfigObject = { useNewUrlParser: true, useUnifiedTopology: true };
+const mongoConfigObject = { useNewUrlParser: true, useUnifiedTopology: true }; //Config option main purpose is to eliminate deprecation warnings
 
 // CONNECT TO DATABASE
 mongoose.connect(mongoURI, mongoConfigObject, () => {

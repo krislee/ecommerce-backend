@@ -1,6 +1,6 @@
 const express = require('express');
 const electronicReviewRouter = express.Router();
-const {create, update} = require('../controller/review');
+const {create, update} = require('../controller/buyer/review');
 
 electronicReviewRouter.post('/electronic/review', create)
 
