@@ -8,7 +8,7 @@ const db = require('./db/connection')
 const app = express()
 const electronicRouter = require('./routes/seller/electronic')
 const electronicReviewRouter = require('./routes/buyer/review')
-const buildPaginator = require('pagination-apis');
+
 
 //GLOBAL VARIABLES
 const PORT = process.env.PORT
