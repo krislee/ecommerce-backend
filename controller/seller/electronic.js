@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Electronic = require('../../model/seller/electronic')
+const paginate = require('express-paginate')
 
 // Click on Review button, which has an attribute id equal to the item ObjectId
 // Click on Submit of Review button, which will generate an ObjectId of that review
@@ -18,16 +19,16 @@ const create = async (req,res) => {
 // GETTING ALL ELECTRONIC ITEMS
 const index = async (req, res) => {
     try {
-        const {limit = 1, page = 1} = req.query
-        console.log(limit)
-        console.log(page)
+        // const {limit = 1, page = 1} = req.query
+
         const count = await Electronic.countDocuments() // get total documents in electronic model
         console.log(count)
-        const allElectronic = await Electronic.find({}).limit(limit*1).skip((page-1) * limit).populate('Review'); // .populate(model_key_name) used in order to have the documents from referenced model, reviewElectronic to populate each Electronic document
+        // const allElectronic = await Electronic.find({}).limit(limit*1).skip((page-1) * limit).populate('Review'); // .populate(model_key_name) used in order to have the documents from referenced model, reviewElectronic to populate each Electronic document
+        const allElectronic = await Electronic.find({}).limit(req.query.limit).skip(req.skip).populate('Review');
         res.status(200).json({
             allElectronic,
-            totalPages: Math.ceil(count/limit),
-            currentPage: page
+            totalPages: Math.ceil(count/req.query.limit),
+            has_more: paginate.hasNextPages(req)(count)
         });
     }
     catch (error) {

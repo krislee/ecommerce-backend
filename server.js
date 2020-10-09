@@ -8,6 +8,7 @@ const db = require('./db/connection')
 const app = express()
 const electronicRouter = require('./routes/seller/electronic')
 const electronicReviewRouter = require('./routes/buyer/review')
+const paginate = require('express-paginate')
 
 //GLOBAL VARIABLES
 const PORT = process.env.PORT
@@ -34,6 +35,7 @@ NODE_ENV === "development" ? app.use(cors()) : app.use(cors(corsOptions)); // If
 app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
 app.use(morgan("dev"));
 app.use(express.static("public"));
+app.use(paginate.middleware(2, 2)) //limit, maxLimit
 
 // ROUTES AND ROUTER
 app.use('/store', electronicRouter)
