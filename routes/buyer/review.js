@@ -2,7 +2,7 @@ const express = require('express');
 const electronicReviewRouter = express.Router();
 const {index, create, update} = require('../../controller/buyer/electronicReview');
 
-electronicReviewRouter.get('/electronic/review/:id', index)
+electronicReviewRouter.get('/electronic/review/:electronicId', index)
 
 electronicReviewRouter.post('/electronic/review', create)
 

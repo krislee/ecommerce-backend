@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const Electronic = require('../../model/seller/electronic')
-
+const ElectronicReview = require('../../model/buyer/reviewElectronic')
 
 // Click on Review button, which has an attribute id equal to the item ObjectId
 // Click on Submit of Review button, which will generate an ObjectId of that review
@@ -39,27 +39,16 @@ const index = async (req, res) => {
     }
 }
 
-// GET ONE ELECTRONIC ITEM
+// GET ONE ELECTRONIC ITEM (INCLUDING ALL REVIEWS OF ONLY ONE ELECTRONIC ITEM)
 const show = async (req, res) => {
     try {
-        const oneElectronic = await Electronic.findById(req.params.id).populate('Review');
+        const oneElectronic = await Electronic.findById(req.params.id).populate('Review'); 
         res.status(200).json(oneElectronic);
     } catch (error) {
         res.status(400).send(error);
     }
 }
 
-// GET ALL REVIEWS OF ONE ELECTRONIC ITEM 
-// const show = async (req, res) => {
-//     try {
-//         const {limit = 1, page = 1} = req.query // set default values to limit and page
-//         const total = await Electronic.countDocuments() // get total documents in electronic model
-//         const oneElectronic = await Electronic.findById(req.params.id).populate('Review');
-//         res.status(200).json(oneElectronic);
-//     } catch (error) {
-//         res.status(400).send(error);
-//     }
-// }
 
 // UPDATING ONE OF THE ELECTRONICS
 const update = async (req, res) => {

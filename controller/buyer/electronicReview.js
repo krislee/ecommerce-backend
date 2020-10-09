@@ -9,8 +9,8 @@ const index = async (req, res) => {
 
         // find all the reviews of one electronic item by getting the id of electronic item
         // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
-        const electronicReviews = await ElectronicReview.find({ElectronicItem:req.params.id}).limit(limit*1).skip((page-1)*limit)
-        
+        const electronicReviews = await ElectronicReview.find({ElectronicItem:req.params.electronicId}).limit(limit*1).skip((page-1)*limit)
+
         const total = await electronicReviews.length
 
         res.status(200).json({
