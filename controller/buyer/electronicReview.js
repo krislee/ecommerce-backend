@@ -5,10 +5,12 @@ const ElectronicReview = require('../../model/buyer/reviewElectronic')
 // SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
 const index = async (req, res) => {
     try {
-        const {limit=1, page=1} = req.query
+        const {limit=10, page=1} = req.query // set default values to limit and page for pagination
 
-        const electronic = await Electronic.findById(req.params.id)
-        const electronicReviews = await ElectronicReview.find({ElectronicItem:electronic._id}).limit(limit*1).skip((page-1)*limit)
+        // find all the reviews of one electronic item by getting the id of electronic item
+        // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
+        const electronicReviews = await ElectronicReview.find({ElectronicItem:req.params.id}).limit(limit*1).skip((page-1)*limit)
+        
         const total = await electronicReviews.length
 
         res.status(200).json({

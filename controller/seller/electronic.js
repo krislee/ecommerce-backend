@@ -20,7 +20,7 @@ const create = async (req,res) => {
 // Credit: https://medium.com/javascript-in-plain-english/simple-pagination-with-node-js-mongoose-and-express-4942af479ab2
 const index = async (req, res) => {
     try {
-        const {limit = 1, page = 1} = req.query // set default values to limit and page
+        const {limit = 10, page = 1} = req.query // set default values to limit and page for pagination
         const total = await Electronic.countDocuments() // get total documents in electronic model
 
         // .find({}) finds all documents
