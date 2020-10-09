@@ -21,14 +21,6 @@ const app = express()
 //GLOBAL VARIABLES
 const PORT = process.env.PORT
 const NODE_ENV = process.env.NODE_ENV
-mongoose.connect(
-  process.env.DB_CONNECT, 
-  { useNewUrlParser: true },
-  { useUnifiedTopology: true },
-  () => {
-  console.log('Connected to DB')
-})
-
 
 // CORS
 const whitelist = ["http://localhost:3000/"]; 

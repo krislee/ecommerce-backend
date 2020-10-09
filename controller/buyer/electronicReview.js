@@ -32,13 +32,13 @@ const create = async (req,res) => {
     try {
         // From the frontend, the req.body will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId
         const electronicReview = await ElectronicReview.create(req.body) 
-
+        
         // Find the electronic item the review is for using the ObjectId of the electronic item stored in model reviewElectronic document's ElectronicItem key
         const matchedElectronic = await Electronic.findById(electronicReview.ElectronicItem[0]) 
-
+    
         // store id of the review for the electronic item in model electronic document's Review key
         await matchedElectronic.Review.push(electronicReview._id) 
-
+ 
         await matchedElectronic.save()
         res.status(200).json(electronicReview);
     } 
