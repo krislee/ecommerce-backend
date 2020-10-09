@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const Electronic = require('../model/seller/electronics')
-const ElectronicReview = require('../model/buyer/reviewElectronic')
+const Electronic = require('../../model/seller/electronic')
+const ElectronicReview = require('../../model/buyer/reviewElectronic')
 
 // SHOW ALL ELECTRONIC ITEMS REVIEWS
 const index = async (req, res) => {
