@@ -13,6 +13,7 @@ const healthRouter = require('./routes/seller/health')
 const electronicReviewRouter = require('./routes/buyer/electronicReview')
 const clothingReviewRouter = require('./routes/buyer/clothingReview')
 const healthReviewRouter = require('./routes/buyer/healthReview')
+const authRoute = require('./routes/auth')
 
 const app = express()
 
@@ -20,6 +21,13 @@ const app = express()
 //GLOBAL VARIABLES
 const PORT = process.env.PORT
 const NODE_ENV = process.env.NODE_ENV
+mongoose.connect(
+  process.env.DB_CONNECT, 
+  { useNewUrlParser: true },
+  { useUnifiedTopology: true },
+  () => {
+  console.log('Connected to DB')
+})
 
 
 // CORS
@@ -45,6 +53,7 @@ app.use(express.static("public"));
 
 
 // ROUTES AND ROUTER
+app.use('/api', authRoute)
 app.use('/store', [electronicRouter, clothingRouter, healthRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
 
 
