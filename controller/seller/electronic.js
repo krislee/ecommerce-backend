@@ -1,20 +1,4 @@
-const mongoose = require('mongoose')
 const Electronic = require('../../model/seller/electronic')
-const ElectronicReview = require('../../model/buyer/reviewElectronic')
-
-// Click on Review button, which has an attribute id equal to the item ObjectId
-// Click on Submit of Review button, which will generate an ObjectId of that review
-
-// CREATE ELECTRONIC ITEM
-const create = async (req,res) => {
-    try {
-        const electronic = await Electronic.create(req.body)
-        res.status(200).json(electronic);
-    } 
-    catch (error) {
-        res.status(400).send(error);
-    }
-}
 
 // GETTING ALL ELECTRONIC ITEMS
 // Credit: https://medium.com/javascript-in-plain-english/simple-pagination-with-node-js-mongoose-and-express-4942af479ab2
@@ -49,6 +33,19 @@ const show = async (req, res) => {
     }
 }
 
+// Click on Review button, which has an attribute id equal to the item ObjectId
+// Click on Submit of Review button, which will generate an ObjectId of that review
+
+// CREATE ELECTRONIC ITEM
+const create = async (req,res) => {
+    try {
+        const electronic = await Electronic.create(req.body)
+        res.status(200).json(electronic);
+    } 
+    catch (error) {
+        res.status(400).send(error);
+    }
+}
 
 // UPDATING ONE OF THE ELECTRONICS
 const update = async (req, res) => {
@@ -71,4 +68,4 @@ const destroy = async (req, res) => {
     }
 }
 
-module.exports = {create, index, show, update, destroy}
+module.exports = {index, show, create, update, destroy}

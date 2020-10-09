@@ -5,9 +5,16 @@ const morgan = require('morgan')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const db = require('./db/connection')
-const app = express()
+
 const electronicRouter = require('./routes/seller/electronic')
-const electronicReviewRouter = require('./routes/buyer/review')
+const clothingRouter = require('./routes/seller/clothing')
+const healthRouter = require('./routes/seller/health')
+
+const electronicReviewRouter = require('./routes/buyer/electronicReview')
+const clothingReviewRouter = require('./routes/buyer/clothingReview')
+const healthReviewRouter = require('./routes/buyer/healthReview')
+
+const app = express()
 
 
 //GLOBAL VARIABLES
@@ -38,8 +45,8 @@ app.use(express.static("public"));
 
 
 // ROUTES AND ROUTER
-app.use('/store', electronicRouter)
-app.use('/store', electronicReviewRouter)
+app.use('/store', [electronicRouter, clothingRouter, healthRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
+
 
 // TEST ROUTE
 app.get('/', (req,res) => {
