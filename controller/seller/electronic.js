@@ -21,7 +21,7 @@ const create = async (req,res) => {
 const index = async (req, res) => {
     try {
         const {limit = 1, page = 1} = req.query // set default values to limit and page
-        const count = await Electronic.countDocuments() // get total documents in electronic model
+        const total = await Electronic.countDocuments() // get total documents in electronic model
 
         // .find({}) finds all documents
         // .limit(limit*1).skip((page-1) * limit) paginates up to the limit
@@ -30,7 +30,7 @@ const index = async (req, res) => {
         
         res.status(200).json({
             allElectronic,
-            totalPages: Math.ceil(count/limit),
+            totalPages: Math.ceil(total/limit),
             currentPage: page //page is received from req.query
         });
     }
@@ -48,6 +48,18 @@ const show = async (req, res) => {
         res.status(400).send(error);
     }
 }
+
+// GET ALL REVIEWS OF ONE ELECTRONIC ITEM 
+// const show = async (req, res) => {
+//     try {
+//         const {limit = 1, page = 1} = req.query // set default values to limit and page
+//         const total = await Electronic.countDocuments() // get total documents in electronic model
+//         const oneElectronic = await Electronic.findById(req.params.id).populate('Review');
+//         res.status(200).json(oneElectronic);
+//     } catch (error) {
+//         res.status(400).send(error);
+//     }
+// }
 
 // UPDATING ONE OF THE ELECTRONICS
 const update = async (req, res) => {

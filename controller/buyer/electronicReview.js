@@ -2,11 +2,20 @@ const mongoose = require('mongoose')
 const Electronic = require('../../model/seller/electronic')
 const ElectronicReview = require('../../model/buyer/reviewElectronic')
 
-// SHOW ALL ELECTRONIC ITEMS REVIEWS
+// SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
 const index = async (req, res) => {
     try {
-        const electronicReviews = await ElectronicReview.find()
-        res.status(200).json(electronicReviews)
+        const {limit=1, page=1} = req.query
+
+        const electronic = await Electronic.findById(req.params.id)
+        const electronicReviews = await ElectronicReview.find({ElectronicItem:electronic._id}).limit(limit*1).skip((page-1)*limit)
+        const total = await electronicReviews.length
+
+        res.status(200).json({
+            electronicReviews,
+            totalPages: Math.ceil(total/limit),
+            currentPage: page
+        })
     }
     catch (error) {
         res.status(400).send(error);
