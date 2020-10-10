@@ -5,6 +5,9 @@ const morgan = require('morgan')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const db = require('./db/connection')
+const passport = require('passport')
+const JwtStrategy = require('passport-jwt').Strategy
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 const electronicRouter = require('./routes/seller/electronic')
 const clothingRouter = require('./routes/seller/clothing')
@@ -14,6 +17,8 @@ const electronicReviewRouter = require('./routes/buyer/electronicReview')
 const clothingReviewRouter = require('./routes/buyer/clothingReview')
 const healthReviewRouter = require('./routes/buyer/healthReview')
 const authRoute = require('./routes/auth')
+
+const User = require('./model/user')
 
 const app = express()
 
@@ -48,11 +53,28 @@ app.use(express.static("public"));
 app.use('/api', authRoute)
 app.use('/store', [electronicRouter, clothingRouter, healthRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
 
+// JWT TOKEN MIDDLEWARE
+const opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = 'secret';
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    User.findOne({id: jwt_payload.sub}, function(err, user) {
+        if (err) return done(err, false);
+        if (user) return done(null, user);
+        else return done(null, false);
+    });
+}));
 
 // TEST ROUTE
 app.get('/', (req,res) => {
     res.send("Your server is working")
 })
+
+app.post('/login', passport.authenticate('jwt', {session: false}),
+  function(req,res){
+    res.status(200).json(req.user)
+  }
+)
 
 // LISTEN TO PORT
 app.listen(PORT, () => {
