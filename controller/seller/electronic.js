@@ -37,7 +37,7 @@ const show = async (req, res) => {
 // Click on Submit of Review button, which will generate an ObjectId of that review
 
 // CREATE ELECTRONIC ITEM
-const create = async (req,res) => {
+const create = async (req, res) => {
     try {
         const electronic = await Electronic.create(req.body)
         res.status(200).json(electronic);
