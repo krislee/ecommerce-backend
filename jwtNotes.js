@@ -17,10 +17,10 @@ JWT:
 Encoded base-64 URL --> decoded into JSON objects   
 
 There is no 3rd party certificate authorities, the server will issue and verify JWT tokens:
-Client(user): You log in to application with username and password
+Client(user's browser): You log in to application with username and password
 Server: Check if credentials are valid and look up the user. If credentials are good, server creates a JWT, signs JWT with server's private key (only the server knows about the private key), then give the client the JWT 
-Client(user): Receives the JWT and keeps it local storage and attach it to all of requests
-Server: Verifies the JWT signature with PUBLIC key before giving response
+Client: Receives the JWT and keeps it local storage or a cookie and attach it to all of requests
+Server: Verifies the JWT signature with PUBLIC key. If signature is valid (meaning JWT has not been tampered and is coming from the user we expect), server decodes the JWT from base64URL to JSON format, usually gets the database ID of the user in the payload.sub, so server looks the user up in the db from payload.sub, and stores the user object in the reqest object and then use it in routes
 */
 
 // Issue JWT 
@@ -101,3 +101,215 @@ const signedJWT = jwt.sign(payloadObj, PRIV_KEY, {algorithm: 'RS256'}) // header
 jwt.verify(signedJWT, PUB_KEY, {algorithms:['RS256']}, (err, payload)=> {
 console.log(err)
 })// if there is an err it could be wrong public key or tampered JWT 
+
+
+/* Passport Strategy
+
+Any passport strategies needs a verify callback
+
+passport.authenticate() will call the verify callback defined in the passport config function (in passport.js module.exports)
+
+Passport middleware expects the same 3 responses:
+1) if the verified callback returns some error, whether it is a db error or express app error, pass in the done callback with err and false params
+2) if successfully authenticated, error is null and have a user object which will be attached to the request obj
+3) if there is no error but an invalid user then it is false for user
+ */
+
+// Using passport to verify JWT
+const JwtStrategy = require('passport-jwt').Strategy
+const ExtractJwt = require('passport-jwt').ExtractJwt; // ExtractJwt comes with diff methods to to find the JWT and parsing it
+const fs = require('fs');
+const path = require('path');
+const router = require('./routes/auth')
+const User = require('mongoose').model('User');
+
+const pathToKey = path.join(__dirname, '..', 'id_rsa_pub.pem');
+const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
+
+// At a minimum, you must pass the `jwtFromRequest` and `secretOrKey` properties
+const options = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: PUB_KEY, // either pass in a symmetric key (aka secret stored in environment variable or public key - since we're using RS256 algo we will use the Public key) 
+  algorithms: ['RS256']
+};
+
+// JwtStrategy takes in 2 params: options and verify callback function which will have payload and done callback
+const strategy = new JwtStrategy(options, (payload, done) => { // By the time we are here, the JwtStrategy has taken the options and JWT token from the header, used the jsonwebtoken library to verify the JWT token, and then once verified JwtStrategy passes the payload object 
+    //  In the verified callback for passport, you do not have a specific way that you are required to verify in authentication. So you make up the code logic. Since we are using mongoDB, we will use the findOne method.
+    User.findOne({_id: payload.sub})
+    .then(user => {
+        // Since we have already verified the JWT token we just need to find the user in the db and pass the user to passport to attach to the req object
+        if(user) return done(null, user) // returns user object to passport; passport then attaches to the req.user object in the express framework
+        else return done(null, false)
+    })
+    .catch(err => done(err, null))
+})
+
+module.exports = (passport) => { // passport param will be replaced by passport arg which is  passed from app.js
+    passport.use(strategy) // similar to a middleware, we will take the passport obj argument passed to do .use()
+}
+// app.js will pass the global passport object here, and this function will configure it
+module.exports = (passport) => {
+    // The JWT payload is passed into the verify callback
+    passport.use(new JwtStrategy(options, function(jwt_payload, done) {
+
+        console.log(jwt_payload);
+        
+        // We will assign the `sub` property on the JWT to the database ID of user
+        User.findOne({_id: jwt_payload.sub}, function(err, user) {
+            
+            // This flow look familiar?  It is the same as when we implemented
+            // the `passport-local` strategy
+            if (err) {
+                return done(err, false);
+            }
+            if (user) {
+                return done(null, user);
+            } else {
+                return done(null, false);
+            }
+            
+        });
+        
+    }));
+}
+
+// When passport JWT strategy tries to verify JWT token in the authorization header with the public key that corresponds to the private key, it will reject the JWT token if the JWT token was not issued by signing with the private key. So we need to write a code in login route to issue a new JWT token sign with private key. Then the passport JWT middleware will use the public key that reside in the server and successfully verify the newly issued JWT token.
+
+// lib/utils.js
+const crypto = require('crypto');
+const jsonwebtoken = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
+
+const pathToKey = path.join(__dirname, '..', 'id_rsa_priv.pem');
+const PRIV_KEY = fs.readFileSync(pathToKey, 'utf8');
+
+/**
+ * -------------- HELPER FUNCTIONS ----------------
+ */
+
+/**
+ * 
+ * @param {*} password - The plain text password
+ * @param {*} hash - The hash stored in the database
+ * @param {*} salt - The salt stored in the database
+ * 
+ * This function uses the crypto library to decrypt the hash using the salt and then compares
+ * the decrypted hash/salt with the password that the user provided at login
+ */
+function validPassword(password, hash, salt) {
+    var hashVerify = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+    return hash === hashVerify;
+}
+
+/**
+ * 
+ * @param {*} password - The password string that the user inputs to the password field in the register form
+ * 
+ * This function takes a plain text password and creates a salt and hash out of it.  Instead of storing the plaintext
+ * password in the database, the salt and hash are stored for security
+ * 
+ * ALTERNATIVE: It would also be acceptable to just use a hashing algorithm to make a hash of the plain text password.
+ * You would then store the hashed password in the database and then re-hash it to verify later (similar to what we do here)
+ */
+function genPassword(password) {
+    var salt = crypto.randomBytes(32).toString('hex');
+    var genHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+    
+    return {
+      salt: salt,
+      hash: genHash
+    };
+}
+
+
+/**
+ * @param {*} user - The user object.  We need this to set the JWT `sub` payload property to the MongoDB user ID
+ */
+function issueJWT(user) { // takes the user obj in the database
+  const _id = user._id;
+
+  const expiresIn = '1d'; // JWT token expires in 1 day
+
+  const payload = {
+    sub: _id,
+    iat: Date.now()
+  };
+
+//  sign token
+  const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: expiresIn, algorithm: 'RS256' });
+
+  return {
+    token: "Bearer " + signedToken,
+    expires: expiresIn
+  }
+}
+
+module.exports.validPassword = validPassword;
+module.exports.genPassword = genPassword;
+module.exports.issueJWT = issueJWT;
+
+
+// routes/users.js
+
+// Verify JWT
+router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!"});
+}); // {session: false} - not using passport session middleware to interact with the express middleware; passport jwt middleware takes the token and run through the verification callback using jsonwebtoken library
+// call the passport.authenticate() everytime so that the passport middleware can grab the JWT everytime and verify it
+
+// Validate an existing user and issue a JWT
+router.post('/login', function(req, res, next){
+    User.findOne({ username: req.body.username })
+        .then((user) => { // find the user and put into the user object
+            if (!user) { // if there is no user in the db
+                res.status(401).json({ success: false, msg: "could not find user" });
+            }
+            
+            // Function defined at bottom of app.js
+            const isValid = utils.validPassword(req.body.password, user.hash, user.salt); // check if the password is valid by taking the node crypto library in the validPassword function
+            
+            if (isValid) { // if valid user give a JWT token
+
+                const tokenObject = utils.issueJWT(user);
+
+                res.status(200).json({ success: true, user: user, token: tokenObject.token, expiresIn: tokenObject.expires });
+
+            } else {
+                res.status(401).json({ success: false, msg: "you entered the wrong password" });
+            }
+
+        })
+        .catch((err) => {
+            next(err); // catch the errors and put the error via the express middleware error handler function
+        });
+});
+
+// Register a new user
+router.post('/register', function(req, res, next){
+    
+    const saltHash = utils.genPassword(req.body.password); 
+    
+    // Creating a salt and hash for the plain-text password 
+    const salt = saltHash.salt;
+    const hash = saltHash.hash;
+
+    const newUser = new User({
+        username: req.body.username,
+        hash: hash,
+        salt: salt
+    });
+
+    try {
+        newUser.save()
+            .then((user) => { // pass the newUser object argument into user param
+                const jwt = utils.issueJWT(user)
+                res.json({ success: true, user: user, token: jwt.token, expiresIn: jwt.expiresIn }); // attach to the success message: user, token, expiresin
+            });
+
+    } catch (err) {
+        res.json({ success: false, msg: err });
+    }
+});
+
