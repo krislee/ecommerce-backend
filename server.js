@@ -22,8 +22,10 @@ const storeRouter = require('./routes/buyer/store')
 const electronicReviewRouter = require('./routes/buyer/electronicReview')
 const clothingReviewRouter = require('./routes/buyer/clothingReview')
 const healthReviewRouter = require('./routes/buyer/healthReview')
-const authRoute = require('./routes/auth')
 
+// Login Router Dependencies
+const sellerAuthRoute = require('./routes/seller/sellerAuth')
+const buyerAuthRoute = require('./routes/buyer/buyerAuth')
 
 
 //GLOBAL VARIABLES
@@ -55,10 +57,11 @@ app.use(express.static("public"));
 // ROUTES AND ROUTER
 
 // Login/Register Route
-app.use('/auth', authRoute) 
+app.use('/auth/seller', sellerAuthRoute) 
+app.use('/auth/buyer', buyerAuthRoute)
 
 // Seller Account Route
-app.use('/seller', [electronicRouter, clothingRouter, healthRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
+app.use('/seller', [electronicRouter, clothingRouter, healthRouter])
 
 // Buyer Route
 app.use('/buyer', [storeRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])

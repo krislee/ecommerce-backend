@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const User = require('../model/seller/sellerUser')
-const { authSchema } = require('../auth/validation')
+const User = require('../../model/buyer/buyerUser')
+const { authSchema } = require('../../auth/validation')
 const bcrypt = require('bcrypt');
-const {issueJWT} = require('../auth/issueJWT')
+const {issueJWT} = require('../../auth/issueJWT')
 
 
 router.post('/register', async (req, res) => {
