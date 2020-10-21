@@ -11,12 +11,14 @@ function issueJWT(user){
         sub: user._id, // user ID
         iat: Date.now(), // JWT issued at date
     }
-    console.log("payload")
+
+
     ////// EXPIRATION OF TOKEN //////
 
     // Token will expire in 60days
     const expiresIn = '60d'
-    console.log(expiresIn, "expiresIn")
+
+
     ////// CREATE TOKEN //////
 
     // Using the algo, hash the data that contains the header and payload & then sign that data with the private key (header is auto created by the jsonwebtoken library). By doing the hashing and signing of the data, the token now has the header + payload + hashed and signed data.

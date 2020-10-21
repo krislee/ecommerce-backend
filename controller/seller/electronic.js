@@ -68,4 +68,28 @@ const destroy = async (req, res) => {
     }
 }
 
-module.exports = {index, show, create, update, destroy}
+
+// SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
+// Only the seller who created the item can see the reviews
+const indexReviews = async (req, res) => {
+    try {
+        const {limit=10, page=1} = req.query // set default values to limit and page for pagination
+
+        // find all the reviews of one electronic item by getting the id of electronic item
+        // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
+        const allElectronicReviews = await ElectronicReview.find({ElectronicItem:req.params.electronicId}).limit(limit*1).skip((page-1)*limit)
+
+        const total = await allElectronicReviews.length
+
+        res.status(200).json({
+            allElectronicReviews,
+            totalPages: Math.ceil(total/limit),
+            currentPage: page
+        })
+    }
+    catch (error) {
+        res.status(400).send(error);
+    }
+}
+
+module.exports = {index, show, create, update, destroy, indexReviews}

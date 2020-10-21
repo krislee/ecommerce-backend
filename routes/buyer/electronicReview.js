@@ -1,14 +1,18 @@
 const express = require('express');
-const router = express.Router();
+const passport = require('passport');
 const {index, create, update, destroy} = require('../../controller/buyer/electronicReview');
 
+const router = express.Router();
+const passportAuthenticate = passport.authenticate('jwt', {session: false})
+
+// Buyer does not need authentication/authorization to view reviews
 router.get('/electronic/review/:electronicId', index)
 
-router.post('/electronic/review', create)
+router.post('/electronic/review', passportAuthenticate, create)
 
-router.put('/electronic/review/:id', update)
+router.put('/electronic/review/:id', passportAuthenticate, update)
 
-router.delete('/electronic/review/:id', destroy)
+router.delete('/electronic/review/:id', passportAuthenticate, destroy)
 
 
 

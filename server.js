@@ -9,13 +9,14 @@ const app = express()
 
 // Passport-related Dependencies
 const passport = require('passport')
-require('./configs/connection')
-require('./configs/passport')(passport)
+require('./db/connection')
+require('./auth/passport')(passport)
 
 // Item Routers Dependencies
 const electronicRouter = require('./routes/seller/electronic')
 const clothingRouter = require('./routes/seller/clothing')
 const healthRouter = require('./routes/seller/health')
+const storeRouter = require('./routes/buyer/store')
 
 // Item Review Routers Dependencies
 const electronicReviewRouter = require('./routes/buyer/electronicReview')
@@ -52,8 +53,15 @@ app.use(express.static("public"));
 
 
 // ROUTES AND ROUTER
-app.use('/api', authRoute)
-app.use('/store', [electronicRouter, clothingRouter, healthRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
+
+// Login/Register Route
+app.use('/auth', authRoute) 
+
+// Seller Account Route
+app.use('/seller', [electronicRouter, clothingRouter, healthRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
+
+// Buyer Route
+app.use('/store', [storeRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
 
 
 // Passport is an express middleware that will append diff properties to the req object, so you can store data within the req obj and each of the middlewares after will have access to the modified req object

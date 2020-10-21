@@ -6,7 +6,7 @@ const JWTStrategy = require('passport-jwt').Strategy
 // Since the server needs to know where and how the JWT is stored in the request (usually in the Authorization HTTP header), use the ExtractJwt class from passport-jwt module. It contains diff methods to find the JWT and parse the JWT from the request. Since we will store the JWT in the Auth HTTP header, we will use the fromAuthHeaderAsBearerToken() method from ExtractJwt class.  
 const ExtractJWT = require('passport-jwt').ExtractJwt
 
-const pathToKey = path.join(__dirname, '..', 'id_rsa_pub.pem')
+const pathToKey = path.join(__dirname, '.', 'id_rsa_pub.pem')
 const PUB_KEY = fs.readFileSync(pathToKey, 'utf8')
 
 const options = {
@@ -16,7 +16,7 @@ const options = {
 }
 
 
-// When making the passport jwt strategy (new JWTStrategy), the passport jwt strategy has already verified the JWT token by going through the options. So as indicated in the options it will grab the JWT token from the Auth HTTP header and grab the public key. The token and public key are passed into the verify function in jsonwebtoken library. After verifying, the payload obj is passed into verify callback and the verify callback is called.
+// When making the passport jwt strategy (new JWTStrategy), the passport jwt strategy has already verified the JWT token by going through the options. So as indicated in the options it will grab the JWT token from the Auth HTTP header and grab the public key. The token and public key are passed into the verify function found in jsonwebtoken library. After verifying, the payload obj is passed into verify callback and the verify callback is called.
 const strategy = new JWTStrategy(options, async (payload, done) => { 
     try {
         const user = await User.findById(payload.sub)
