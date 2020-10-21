@@ -1,16 +1,19 @@
 const Electronic = require('../../model/seller/electronic')
+const ElectronicReview = require('../../model/buyer/reviewElectronic')
+const User = require('../../model/user')
 
 // GETTING ALL ELECTRONIC ITEMS
 // Credit: https://medium.com/javascript-in-plain-english/simple-pagination-with-node-js-mongoose-and-express-4942af479ab2
 const index = async (req, res) => {
     try {
+        console.log(req.user)
         const {limit = 10, page = 1} = req.query // set default values to limit and page for pagination
         const total = await Electronic.countDocuments() // get total documents in electronic model
 
         // .find({}) finds all documents
         // .limit(limit*1).skip((page-1) * limit) paginates up to the limit
         // .populate(model_key_name) used in order to have the documents from referenced model, reviewElectronic to populate each Electronic document
-        const allElectronic = await Electronic.find({}).limit(limit*1).skip((page-1) * limit).populate('Review'); 
+        const allElectronic = await Electronic.find({seller: req.user._id}).limit(limit*1).skip((page-1) * limit).populate('Review'); 
         
         res.status(200).json({
             allElectronic,
@@ -39,7 +42,19 @@ const show = async (req, res) => {
 // CREATE ELECTRONIC ITEM
 const create = async (req, res) => {
     try {
-        const electronic = await Electronic.create(req.body)
+        const electronic = await Electronic.create({
+            Name: req.body.Name,
+            Brand: req.body.Brand,
+            Image: req.body.Image,
+            Description: req.body.Description,
+            Price: req.body.Price,
+            Seller: req.user
+        })
+
+        const user = await User.findById(req.user._id)
+        await user.electronicItems.push(electronic._id)
+        await user.save()
+
         res.status(200).json(electronic);
     } 
     catch (error) {
@@ -88,6 +103,7 @@ const indexReviews = async (req, res) => {
         })
     }
     catch (error) {
+        console.log(error)
         res.status(400).send(error);
     }
 }

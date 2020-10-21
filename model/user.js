@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
-
-const userSchema = new mongoose.Schema({
+const {Schema, model} = require('mongoose')
+const userSchema = new Schema({
     username: {
         type: String,
-        // to make it required
         required: true,
         min: 8,
         max: 255
@@ -11,7 +10,6 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        // to make it at least 8 characters
         min: 8,
         max: 255
     },
@@ -25,7 +23,10 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    seller: Boolean
+    // Create relationship between seller and seller's items
+    electronicItems: [{type: Schema.Types.ObjectId, ref: "electronics"}],
+    clothingItems: [{type: Schema.Types.ObjectId, ref: "clothing"}],
+    healthItems: [{type: Schema.Types.ObjectId, ref: "health"}]
 })
 
-module.exports = mongoose.model('User', userSchema)
+module.exports = model('User', userSchema)

@@ -7,7 +7,8 @@ const electronicsSchema = new Schema ({
     Description: {type: String, required: true},
     Price: {type: Number, required: true},
     Rating: Number,
-    Review: [{type: Schema.Types.ObjectId, ref: "reviewElectronic"}]
+    Review: [{type: Schema.Types.ObjectId, ref: "reviewElectronic"}],
+    Seller: [{type: Schema.Types.ObjectId, ref: "User"}]
 })
 
 const electronics = model('electronic', electronicsSchema)

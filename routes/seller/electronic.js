@@ -10,7 +10,7 @@ router.get('/electronic', passportAuthenticate, index)
 
 router.get('/electronic/:id', passportAuthenticate, show)
 
-router.get('/electronic/reviews/:id', passportAuthenticate, indexReviews)
+router.get('/electronic/review/:id', passportAuthenticate, indexReviews)
 
 router.post('/electronic', passportAuthenticate, create)
 
