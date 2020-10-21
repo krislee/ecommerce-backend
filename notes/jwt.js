@@ -44,12 +44,13 @@ const payloadObj = {
 const headerObjString = JSON.stringify(headerObj) // convert JS objects into JSON
 const payloadObjString = JSON.stringify((payloadObj))
 
-const base64URLHeader = base64(headerObjString) // converts JSON into base 64 URL format
-const base64URLPayload = base64(payloadObjString)
+const base64URLHeader = base64(headerObjString) // converts JSON into base 64 URL format - this is the header of JWT if you console log
+const base64URLPayload = base64(payloadObjString) // this is the payload of the JWT if you console log it
 
 // sign and issue JWT (1) take the hash of base64URLHeader and base64URLPayload and 2) sign the hash)
 
 // 1) Make a hash
+// Load the data in that we want to sign
 signatureFunction.write(base64URLHeader + '.' + base64URLPayload) // pass data in to hash - hash using SHA256 hashing function
 signatureFunction.end()
 
@@ -57,12 +58,13 @@ signatureFunction.end()
 const PRIV_KEY = fs.readFileSync(__dirname + '/priv_key.pem', 'utf8') // load the private key from another file
 const signatureBase64 = signatureFunction.sign(PRIV_KEY, 'base64') // sign the data which gives a base64 encoded signature
 
-const signatureBase64URL = base64url.fromBase64(signatureBase64) // to actually derive the JWT, we need to convert base64 to base64 URL so now the signature will be in base64 URL
+// SIGNATURE:
+const signatureBase64URL = base64url.fromBase64(signatureBase64) // to actually derive the JWT, we need to convert base64 to base64 URL so now the signature will be in base64 URL - this is the signature of JWT if you console log it
 
 // Verify JWT 
 // npm i base64url
 const verifyFunction = crypto.createVerify('RSA-SHA256')
-const jwtParts = JWT.split('.')
+const jwtParts = JWT.split('.') // assuming a JWT was given, split it down into its parts
 const headerInBase64URLFormat = jwtParts[0]
 const payloadInBase64URLFormat = jwtParts[1]
 const signatureInBase64URLFormat = jwtParts[2]

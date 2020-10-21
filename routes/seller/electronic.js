@@ -1,8 +1,9 @@
 const express = require('express');
+const passport = require('passport');
 const router = express.Router();
 const {index, show, create, update, destroy} = require('../../controller/seller/electronic');
 
-router.get('/electronic', index)
+router.get('/electronic', passport.authenticate('jwt', {session: false}), index)
 
 router.get('/electronic/:id', show)
 

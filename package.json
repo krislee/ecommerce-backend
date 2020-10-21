@@ -12,12 +12,16 @@
   "description": "",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "bcrypt": "^5.0.0",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "mongoose": "^5.10.0",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
-    "passport-jwt": "^4.0.0"
+    "passport-jwt": "^4.0.0",
+    "path": "^0.12.7"
   }
 }
