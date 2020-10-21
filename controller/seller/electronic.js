@@ -90,7 +90,7 @@ const destroy = async (req, res) => {
     try {
         const deleteElectronic = await Electronic.findOneAndDelete({_id: req.params.id, Seller: req.user._id})
         if (deleteElectronic){
-            res.json(200).send("Delete successfully")
+            res.status(200).json(deleteElectronic)
         } else {
             res.status(400).json({msg: "You are not authorized to delete the electronic item"})
         }
