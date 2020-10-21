@@ -22,6 +22,10 @@ const sellerUserSchema = new Schema({
         type: Date,
         default: Date.now()
     },
+    seller: {
+        type: Boolean, 
+        required: true
+    },
     // Create relationship between seller and seller's items
     electronicItems: [{type: Schema.Types.ObjectId, ref: "electronics"}],
     clothingItems: [{type: Schema.Types.ObjectId, ref: "clothing"}],

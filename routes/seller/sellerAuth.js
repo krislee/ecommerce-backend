@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const User = require('../../model/seller/sellerUser')
+const BuyerUser = require('../../model/buyer/buyerUser')
 const { authSchema } = require('../../auth/validation')
 const bcrypt = require('bcrypt');
 const {issueJWT} = require('../../auth/issueJWT')
@@ -10,16 +11,18 @@ router.post('/register', async (req, res) => {
         // const { username, password, email } = req.body;
         const result = await authSchema.validateAsync(req.body);
 
-        // Check if email user is trying to register acct with is already in the db
-        const doesExistEmail = await User.findOne({email: result.email})
-        if (doesExistEmail) {
+        // Check if email user is trying to register acct with is already in the db 
+        const doesExistSellerEmail = await User.findOne({email: result.email})
+        const doesExistBuyerEmail = await BuyerUser.findOne({email: result.email})
+        if (doesExistSellerEmail || doesExistBuyerEmail) {
             res.status(400).json({success: false, msg: `${result.email} is already registered.`})
             return
         }
 
         // Check if username is trying to register acct with is already in the db
-        const doesExistUser = await User.findOne({ username: result.username})
-        if (doesExistUser) {
+        const doesExistSellerUser = await User.findOne({ username: result.username})
+        const doesExistBuyerUser = await Buyer.findOne({ username: result.username})
+        if (doesExistSellerUser || doesExistBuyerUser) {
             res.status(400).json({success: false, msg:`${result.username} is already taken. Please try a different one.`})
             return
         }
@@ -30,7 +33,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
         // 2) Create and save the created user to db
-        const user = await User.create({ username: req.body.username, password: hashedPassword, email: req.body.email})
+        const user = await User.create({ username: req.body.username, password: hashedPassword, email: req.body.email, seller: true})
         const savedUser = await user.save();
 
         // 3) Create JWT token for successfully registered user

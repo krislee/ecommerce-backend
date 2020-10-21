@@ -22,6 +22,10 @@ const buyerUserSchema = new Schema({
         type: Date,
         default: Date.now()
     },
+    buyer: {
+        type: Boolean,
+        required: true
+    },
     // Create relationship between buyer and its reviews
     electronicReviews: [{type: Schema.Types.ObjectId, ref: "reviewElectronic"}],
     clothingReviews: [{type: Schema.Types.ObjectId, ref: "reviewClothing"}],

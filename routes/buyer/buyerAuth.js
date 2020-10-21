@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const User = require('../../model/buyer/buyerUser')
+const SellerUser = require('../../model/seller/sellerUser')
 const { authSchema } = require('../../auth/validation')
 const bcrypt = require('bcrypt');
 const {issueJWT} = require('../../auth/issueJWT')
@@ -12,14 +13,16 @@ router.post('/register', async (req, res) => {
 
         // Check if email user is trying to register acct with is already in the db
         const doesExistEmail = await User.findOne({email: result.email})
-        if (doesExistEmail) {
+        const doesExistSellerEmail = await SellerUser.findOne({email: result.email})
+        if (doesExistEmail || doesExistSellerEmail) {
             res.status(400).json({success: false, msg: `${result.email} is already registered.`})
             return
         }
 
         // Check if username is trying to register acct with is already in the db
         const doesExistUser = await User.findOne({ username: result.username})
-        if (doesExistUser) {
+        const doesExistSellerUser = await SellerUser.findOne({email: result.email})
+        if (doesExistUser || doesExistSellerUser) {
             res.status(400).json({success: false, msg:`${result.username} is already taken. Please try a different one.`})
             return
         }
@@ -30,7 +33,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
         // 2) Create and save the created user to db
-        const user = await User.create({ username: req.body.username, password: hashedPassword, email: req.body.email})
+        const user = await User.create({ username: req.body.username, password: hashedPassword, email: req.body.email, buyer: true})
         const savedUser = await user.save();
 
         // 3) Create JWT token for successfully registered user
