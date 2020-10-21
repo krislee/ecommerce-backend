@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const User = require('../model/user')
+const User = require('../model/seller/sellerUser')
 const { authSchema } = require('../auth/validation')
 const bcrypt = require('bcrypt');
 const {issueJWT} = require('../auth/issueJWT')
