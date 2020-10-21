@@ -29,7 +29,7 @@ const index = async (req, res) => {
 // GET ONE ELECTRONIC ITEM (INCLUDING ALL REVIEWS OF ONLY ONE ELECTRONIC ITEM)
 const show = async (req, res) => {
     try {
-        // 
+        // Find one electronic item that belongs to the logged in seller. The query, _id: req.params.id will only get one electronic item with that id and the query, Seller: req.user_id will only get the one electronic item of the logged in user
         const oneElectronic = await Electronic.findOne({_id: req.params.id, Seller: req.user._id}).populate('Review'); 
         if (oneElectronic) {
             res.status(200).json(oneElectronic)
@@ -47,6 +47,8 @@ const show = async (req, res) => {
 // CREATE ELECTRONIC ITEM
 const create = async (req, res) => {
     try {
+
+        // We cannot just do Electronic.create(req.body) because we needed to create using req.user for Seller key as well, so the create method will take in an object.
         const electronic = await Electronic.create({
             Name: req.body.Name,
             Brand: req.body.Brand,
@@ -70,8 +72,13 @@ const create = async (req, res) => {
 // UPDATING ONE OF THE ELECTRONICS
 const update = async (req, res) => {
     try {
-        const updateElectronic = await Electronic.findByIdAndUpdate(req.params.id, req.body, {new: true}).populate('Review'); // {new:true} to return the document after updating
-        res.status(200).json(updateElectronic);
+        const updateElectronic = await Electronic.findOneAndUpdate({_id: req.params.id, Seller: req.user._id}, req.body, {new: true}).populate('Review'); // {new:true} to return the document after updating
+        if (updateElectronic){
+            res.status(200).json(updateElectronic)
+        } else {
+            res.status(400).json({msg: "You are not authorized to update the electronic item"})
+        }
+        
     }
     catch (error) {
         res.status(400).send(error);
@@ -81,36 +88,15 @@ const update = async (req, res) => {
 // DELETING ONE OF THE ELECTRONICS
 const destroy = async (req, res) => {
     try {
-        const deleteElectronic = await Electronic.findByIdAndDelete(req.params.id)
-        res.json(200).send("Delete successfully")
+        const deleteElectronic = await Electronic.findOneAndDelete({_id: req.params.id, Seller: req.user._id})
+        if (deleteElectronic){
+            res.json(200).send("Delete successfully")
+        } else {
+            res.status(400).json({msg: "You are not authorized to delete the electronic item"})
+        }
     } catch (error) {
         res.status(400).send(error)
     }
 }
 
-
-// SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
-// Only the seller who created the item can see the reviews
-const indexReviews = async (req, res) => {
-    try {
-        const {limit=10, page=1} = req.query // set default values to limit and page for pagination
-
-        // find all the reviews of one electronic item by getting the id of electronic item
-        // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
-        const allElectronicReviews = await ElectronicReview.find({ElectronicItem:req.params.electronicId}).limit(limit*1).skip((page-1)*limit)
-
-        const total = await allElectronicReviews.length
-
-        res.status(200).json({
-            allElectronicReviews,
-            totalPages: Math.ceil(total/limit),
-            currentPage: page
-        })
-    }
-    catch (error) {
-        console.log(error)
-        res.status(400).send(error);
-    }
-}
-
-module.exports = {index, show, create, update, destroy, indexReviews}
+module.exports = {index, show, create, update, destroy}
