@@ -1,5 +1,5 @@
 const {Schema, model} = require('mongoose')
-const sellerUserSchema = new Schema({
+const buyerUserSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -22,10 +22,10 @@ const sellerUserSchema = new Schema({
         type: Date,
         default: Date.now()
     },
-    // Create relationship between seller and seller's items
-    electronicItems: [{type: Schema.Types.ObjectId, ref: "electronics"}],
-    clothingItems: [{type: Schema.Types.ObjectId, ref: "clothing"}],
-    healthItems: [{type: Schema.Types.ObjectId, ref: "health"}]
+    // Create relationship between buyer and its reviews
+    electronicReviews: [{type: Schema.Types.ObjectId, ref: "reviewElectronic"}],
+    clothingReviews: [{type: Schema.Types.ObjectId, ref: "reviewClothing"}],
+    healthReviews: [{type: Schema.Types.ObjectId, ref: "reviewHealth"}]
 })
 
-module.exports = model('SellerUser',sellerUserSchema)
+module.exports = model('BuyerUser', buyerUserSchema)

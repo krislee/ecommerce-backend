@@ -9,7 +9,7 @@ const reviewElectronicSchema = new Schema (
         Comment: {type: String, required: true},
         Rating: {type: Number, required: true},
         ElectronicItem: [{type: Schema.Types.ObjectId, ref: "electronic"}], 
-        
+        Buyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}]
     }
 )
 

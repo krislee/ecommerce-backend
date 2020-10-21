@@ -8,7 +8,7 @@ const index = async (req, res) => {
 
         // find all the reviews of one electronic item by getting the id of electronic item
         // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
-        const allElectronicReviews = await ElectronicReview.find({ElectronicItem:req.params.electronicId}).limit(limit*1).skip((page-1)*limit)
+        const allElectronicReviews = await ElectronicReview.find({ElectronicItem:req.params.electronicId, Buyer: req.user._id}).limit(limit*1).skip((page-1)*limit)
 
         const total = await allElectronicReviews.length
 
@@ -30,8 +30,14 @@ const index = async (req, res) => {
 
 const create = async (req,res) => {
     try {
+        console.log(req.user)
         // From the frontend, the req.body will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId
-        const electronicReview = await ElectronicReview.create(req.body) 
+        const electronicReview = await ElectronicReview.create({
+            Name: req.user.username,
+            Comment: req.body.Comment,
+            Rating: req.body.Rating,
+            Buyer: req.user._id
+        }) 
         
         // Find the electronic item the review is for using the ObjectId of the electronic item stored in model reviewElectronic document's ElectronicItem key
         const matchedElectronic = await Electronic.findById(electronicReview.ElectronicItem[0]) 
@@ -50,8 +56,12 @@ const create = async (req,res) => {
 // UPDATE ONE ELECTRONIC ITEM REVIEW 
 const update = async (req, res) => {
     try {
-        const reviewElectronicUpdate = await ElectronicReview.findByIdAndUpdate(req.params.id, req.body, {new: true});
-        res.status(200).json(reviewElectronicUpdate);
+        const reviewElectronicUpdate = await ElectronicReview.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, req.body, {new: true});
+        if (reviewElectronicUpdate) {
+            res.status(200).json(reviewElectronicUpdate)
+        } else {
+            res.status(400).json({msg: "You are not authorized to update the review"})
+        }
     }
     catch (error) {
         res.status(400).send(error)
@@ -61,8 +71,13 @@ const update = async (req, res) => {
 // DELETE ONE ELECTRONIC ITEM REVIEW 
 const destroy = async (req, res) => {
     try {
-        const deleteElectronicReview = await ElectronicReview.findByIdAndDelete(req.params.id);
-        res.status(200).send("Successfully deleted review")
+        const deleteElectronicReview = await ElectronicReview.findOneAndDelete({_id: req.params.id, Buyer: req.user._id});
+        if(deleteElectronicReview) {
+            res.status(200).json(deleteElectronicReview)
+        }
+        else {
+            res.status(400).json({msg: "You are not authorized to delete the review"})
+        }
     } 
     catch (error) {
         res.status(400).send(error)
