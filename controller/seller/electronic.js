@@ -6,14 +6,14 @@ const User = require('../../model/user')
 // Credit: https://medium.com/javascript-in-plain-english/simple-pagination-with-node-js-mongoose-and-express-4942af479ab2
 const index = async (req, res) => {
     try {
-        console.log(req.user)
+        
         const {limit = 10, page = 1} = req.query // set default values to limit and page for pagination
-        const total = await Electronic.countDocuments() // get total documents in electronic model
+        const total = await Electronic.find({Seller: req.user._id}).countDocuments() // find the electronic items that belong to the logged in seller (loggedIn seller's info resides in req.user), and then count the number of electronic items docs returned
 
-        // .find({}) finds all documents
+        // .find({Seller:req.user._id}) finds all electronic item documents that belong to the logged in seller
         // .limit(limit*1).skip((page-1) * limit) paginates up to the limit
         // .populate(model_key_name) used in order to have the documents from referenced model, reviewElectronic to populate each Electronic document
-        const allElectronic = await Electronic.find({seller: req.user._id}).limit(limit*1).skip((page-1) * limit).populate('Review'); 
+        const allElectronic = await Electronic.find({Seller: req.user._id}).limit(limit*1).skip((page-1) * limit).populate('Review'); 
         
         res.status(200).json({
             allElectronic,
@@ -29,8 +29,12 @@ const index = async (req, res) => {
 // GET ONE ELECTRONIC ITEM (INCLUDING ALL REVIEWS OF ONLY ONE ELECTRONIC ITEM)
 const show = async (req, res) => {
     try {
-        const oneElectronic = await Electronic.findById(req.params.id).populate('Review'); 
-        res.status(200).json(oneElectronic);
+        const oneElectronic = await Electronic.find({_id: req.params.id, Seller: req.user._id}).populate('Review'); 
+        if (oneElectronic.length === 0) {
+            res.status(400).json({msg: "You are not authorized to view the electronic item"})
+        } else {
+            res.status(200).json(oneElectronic)
+        }
     } catch (error) {
         res.status(400).send(error);
     }
