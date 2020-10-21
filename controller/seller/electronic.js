@@ -29,11 +29,12 @@ const index = async (req, res) => {
 // GET ONE ELECTRONIC ITEM (INCLUDING ALL REVIEWS OF ONLY ONE ELECTRONIC ITEM)
 const show = async (req, res) => {
     try {
-        const oneElectronic = await Electronic.find({_id: req.params.id, Seller: req.user._id}).populate('Review'); 
-        if (oneElectronic.length === 0) {
-            res.status(400).json({msg: "You are not authorized to view the electronic item"})
-        } else {
+        // 
+        const oneElectronic = await Electronic.findOne({_id: req.params.id, Seller: req.user._id}).populate('Review'); 
+        if (oneElectronic) {
             res.status(200).json(oneElectronic)
+        } else {
+            res.status(400).json({msg: "You are not authorized to view the electronic item"})
         }
     } catch (error) {
         res.status(400).send(error);
