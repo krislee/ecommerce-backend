@@ -24,7 +24,7 @@ const strategy = new JWTStrategy(options, async (payload, done) => {
         if(await user){
             return done(null, user)
         } else {
-            return done(null, false)
+            return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
         }
     } catch (err) {
         done(err, null)

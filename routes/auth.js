@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
         const savedUser = await user.save();
 
         // 3) Create JWT token for successfully registered user
-        const registerToken = await issueJWT(user)
+        const registerToken = await issueJWT(savedUser)
 
         res.status(200).json({
             success: true,
@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        // Check to see if the hashed password in db is the same after hashing provided password ???
+        // Unsalts the salted-hashed password in db to get the hashed database password and hashes the provided password and compares them
         if (await bcrypt.compare(req.body.password, existUser.password)){
 
             //  Create JWT token for successfully logged in user

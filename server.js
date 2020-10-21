@@ -74,11 +74,6 @@ app.get('/', (req,res) => {
     res.send("Your server is working")
 })
 
-app.post('/login', passport.authenticate('jwt', {session: false}),
-  function(req,res){
-    res.status(200).json(req.user)
-  }
-)
 
 // LISTEN TO PORT
 app.listen(PORT, () => {

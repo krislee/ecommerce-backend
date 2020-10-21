@@ -2,7 +2,9 @@ const jsonwebtoken = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 
+// Path to Private Key File
 const pathToKey = path.join(__dirname, '.', 'id_rsa_priv.pem')
+// Get the private key in Private Key File
 const PRIV_KEY = fs.readFileSync(pathToKey, 'utf8')
 
 function issueJWT(user){
@@ -21,7 +23,7 @@ function issueJWT(user){
 
     ////// CREATE TOKEN //////
 
-    // Using the algo, hash the data that contains the header and payload & then sign that data with the private key (header is auto created by the jsonwebtoken library). By doing the hashing and signing of the data, the token now has the header + payload + hashed and signed data.
+    // Using the algo, hash the data that contains the header and payload & then sign that data with the private key (header is auto created by the jsonwebtoken library). By doing the hashing and signing of the data, the token now has the signature (signature = hashed header + hashed payload + private key) of the JWT. 
     const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {expiresIn: expiresIn, algorithm: 'RS256'})
     console.log(signedToken, "signedToken")
     return {
