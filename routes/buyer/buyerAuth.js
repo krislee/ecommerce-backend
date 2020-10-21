@@ -21,7 +21,7 @@ router.post('/register', async (req, res) => {
 
         // Check if username is trying to register acct with is already in the db
         const doesExistUser = await User.findOne({ username: result.username})
-        const doesExistSellerUser = await SellerUser.findOne({email: result.email})
+        const doesExistSellerUser = await SellerUser.findOne({username: result.username})
         if (doesExistUser || doesExistSellerUser) {
             res.status(400).json({success: false, msg:`${result.username} is already taken. Please try a different one.`})
             return
