@@ -2,11 +2,11 @@ const {Schema, model} = require ('mongoose');
 
 const healthSchema = new Schema (
     {
-        Name: String,
+        Name: {type: String, required: true},
         Image: String,
         Brand: String,
-        Description: String,
-        Price: Number,
+        Description: {type: String, required: true},
+        Price: {type: Number, required: true},
         Rating: Number,
         Review: [{type: Schema.Types.ObjectId, ref: "reviewHealth"}]
     }

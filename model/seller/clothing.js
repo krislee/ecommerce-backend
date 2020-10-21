@@ -3,11 +3,11 @@ const {Schema, model} = require ('mongoose');
 // Schema makes sure data going in and out of the db matches the Schema
 const clothingSchema = new Schema (
     {
-        Name: String,
+        Name: {type: String, required: true},
         Image: String,
         Brand: String,
-        Description: String,
-        Price: Number,
+        Description: {type: String, required: true},
+        Price: {type: Number, required: true},
         Rating: Number,
         Review: [{type: Schema.Types.ObjectId, ref: "reviewClothing"}] // make an association for another model, reviewClothing
     }
