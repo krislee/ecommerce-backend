@@ -61,7 +61,7 @@ app.use('/auth', authRoute)
 app.use('/seller', [electronicRouter, clothingRouter, healthRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
 
 // Buyer Route
-app.use('/store', [storeRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
+app.use('/buyer', [storeRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
 
 
 // Passport is an express middleware that will append diff properties to the req object, so you can store data within the req obj and each of the middlewares after will have access to the modified req object
