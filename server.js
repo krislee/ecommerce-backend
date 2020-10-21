@@ -10,7 +10,7 @@ const app = express()
 // Passport-related Dependencies
 const passport = require('passport')
 require('./db/connection')
-require('./auth/passport')(passport)
+require('./auth/sellerPassport')(passport)
 
 // Item Routers Dependencies
 const electronicRouter = require('./routes/seller/electronic')
