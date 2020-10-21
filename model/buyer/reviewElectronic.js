@@ -5,10 +5,11 @@ const {Schema, model} = require ('mongoose')
 // 1 review belongs to 1 buyer and 1 item
 const reviewElectronicSchema = new Schema (
     {
-        ElectronicItem: [{type: Schema.Types.ObjectId, ref: "electronic"}], 
         Name: {type: String, required: true},
         Comment: {type: String, required: true},
         Rating: {type: Number, required: true},
+        ElectronicItem: [{type: Schema.Types.ObjectId, ref: "electronic"}], 
+        
     }
 )
 
