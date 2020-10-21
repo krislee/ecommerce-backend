@@ -19,7 +19,7 @@ const index = async (req, res) => {
         })
     }
     catch (error) {
-        res.status(400).send(error);
+        es.status(400).json({msg: error});
     }
 }
 
