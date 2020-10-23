@@ -5,7 +5,11 @@ const index = async (req, res) => {
     try {
         if (req.user.seller){
             const sellerProfile = await SellerUser.findOne({_id: req.user._id})
-            res.status(200).json(sellerProfile);
+            res.status(200).json({
+                id: sellerProfile._id,
+                username: sellerProfile.username,
+                email: sellerProfile.email
+            });
         } else {
             res.status(400).json({msg: "You are not authorized to view this profile."})
         }
@@ -21,7 +25,11 @@ const update = async (req, res) => {
         if (req.user.seller){
             const updateSeller = await Seller.findOneAndUpdate({_id: req.user.id}, req.body, {new: true}) // {new:true} to return the document after updating
             if (updateSeller){
-                res.status(200).json(updateSeller)
+                res.status(200).json({
+                    id: updateSeller._id,
+                    username: updateSeller.username,
+                    email: updateSeller.email
+                });
             } 
         } else {
             res.status(400).json({msg: "You are not authorized to update this profile."})
@@ -38,7 +46,7 @@ const destroy = async (req, res) => {
         if (req.user.seller){
             const deleteSeller = await Seller.findOneAndDelete({_id: req.user.id})
             if (deleteSeller){
-                res.status(200).json(deleteSeller)
+                res.status(200).json(deleteSeller.username)
             } 
         } else {
             res.status(400).json({msg: "You are not authorized to delete this profile."})
