@@ -1,5 +1,5 @@
 const Electronic = require('../../model/seller/electronic')
-const User = require('../../model/seller/sellerUser')
+const SellerUser = require('../../model/seller/sellerUser')
 
 // GETTING ALL ELECTRONIC ITEMS
 // Credit: https://medium.com/javascript-in-plain-english/simple-pagination-with-node-js-mongoose-and-express-4942af479ab2
@@ -73,7 +73,7 @@ const create = async (req, res) => {
                 Price: req.body.Price,
                 Seller: req.user
             })
-            const user = await User.findById(req.user._id)
+            const user = await SellerUser.findById(req.user._id)
             await user.electronicItems.push(electronic._id)
             await user.save()
             res.status(200).json(electronic);
@@ -110,6 +110,8 @@ const destroy = async (req, res) => {
         if (req.user.seller){
             const deleteElectronic = await Electronic.findOneAndDelete({_id: req.params.id, Seller: req.user._id})
             if (deleteElectronic){
+                seller = await SellerUser.findOne({_id: req.user._id})
+                seller.electronicItems.splice(indexOf(deleteElectronic._id), 1)
                 res.status(200).json(deleteElectronic)
             } 
         } else {

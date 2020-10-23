@@ -12,10 +12,10 @@ const electronicsSchema = new Schema ({
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]
 })
 
-electronicsSchema.pre('deleteMany', async function() {
-    await this.model('electronic').deleteOne({Seller: seller._id})
-})
 const electronics = model('electronic', electronicsSchema)
 
+electronicsSchema.pre('deleteMany', async function() {
+    await this.model('electronic').deleteOne({Seller: Seller[0]._id})
+})
 
 module.exports = electronics
