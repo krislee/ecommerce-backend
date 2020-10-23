@@ -25,7 +25,7 @@ function issueJWT(user){
 
     // Using the algo, hash the data that contains the header and payload & then sign that data with the private key (header is auto created by the jsonwebtoken library). By doing the hashing and signing of the data, the token now has the signature (signature = hashed header + hashed payload + private key) of the JWT. 
     const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {expiresIn: expiresIn, algorithm: 'RS256'})
-    console.log(signedToken, "signedToken")
+    
     return {
         token: "Bearer " + signedToken,
         expires: expiresIn

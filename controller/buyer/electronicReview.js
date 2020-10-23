@@ -18,6 +18,8 @@ const index = async (req, res) => {
                 totalPages: Math.ceil(total/limit),
                 currentPage: page
             })
+        } else {
+            res.status(400).json({msg: "You are not authorized to view the reviews"})
         }
     }
     catch (error) {
@@ -50,6 +52,8 @@ const create = async (req,res) => {
     
             await matchedElectronic.save()
             res.status(200).json(electronicReview);
+        } else {
+            res.status(400).json({msg: "You are not authorized to create the review"})
         }
     } 
     catch (error) {
@@ -60,13 +64,13 @@ const create = async (req,res) => {
 // UPDATE ONE ELECTRONIC ITEM REVIEW 
 const update = async (req, res) => {
     try {
-        if (req.user.seller){
+        if (req.user.buyer){
             const reviewElectronicUpdate = await ElectronicReview.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, req.body, {new: true});
             if (reviewElectronicUpdate) {
                 res.status(200).json(reviewElectronicUpdate)
-            } else {
-                res.status(400).json({msg: "You are not authorized to update the review"})
-            }
+            } 
+        } else {
+            res.status(400).json({msg: "You are not authorized to update the review"})
         }
     }
     catch (error) {
@@ -77,14 +81,13 @@ const update = async (req, res) => {
 // DELETE ONE ELECTRONIC ITEM REVIEW 
 const destroy = async (req, res) => {
     try {
-        if (req.user.seller){
+        if (req.user.buyer){
             const deleteElectronicReview = await ElectronicReview.findOneAndDelete({_id: req.params.id, Buyer: req.user._id});
             if(deleteElectronicReview) {
                 res.status(200).json(deleteElectronicReview)
             }
-            else {
-                res.status(400).json({msg: "You are not authorized to delete the review"})
-            }
+        } else {
+            res.status(400).json({msg: "You are not authorized to delete the review"})
         }
     } 
     catch (error) {

@@ -1,5 +1,5 @@
-const User = require('../model/seller/sellerUser')
-
+const Seller = require('../model/seller/sellerUser')
+const Buyer = require('../model/buyer/buyerUser')
 const fs = require('fs')
 const path = require('path')
 const JWTStrategy = require('passport-jwt').Strategy
@@ -19,13 +19,20 @@ const options = {
 // When making the passport jwt strategy (new JWTStrategy), the passport jwt strategy has already verified the JWT token by going through the options. So as indicated in the options it will grab the JWT token from the Auth HTTP header and grab the public key. The token and public key are passed into the verify function found in jsonwebtoken library. After verifying, the payload obj is passed into verify callback and the verify callback is called.
 const strategy = new JWTStrategy(options, async (payload, done) => { 
     try {
-        const user = await User.findById(payload.sub)
-        // Once user is found, attach it to the passport obj
-        if(await user){
-            return done(null, user)
-        } else {
-            return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
+        const seller = await Seller.findById(payload.sub)
+        // Once seller is found, attach it to the passport obj
+        if(await seller){
+            return done(null, seller)
         }
+        // } else {
+        //     return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
+        // }
+
+        const buyer = await Buyer.findById(payload.sub)
+        console.log(buyer)
+        if(await buyer) return done(null, buyer)
+
+        return done(null, false)
     } catch (err) {
         console.log(err)
         done(err, null)

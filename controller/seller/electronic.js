@@ -48,9 +48,9 @@ const show = async (req, res) => {
             const oneElectronic = await Electronic.findOne({_id: req.params.id, Seller: req.user._id}).populate('Review'); 
             if (oneElectronic) {
                 res.status(200).json(oneElectronic)
-            } else {
-                res.status(400).json({msg: "You are not authorized to view the electronic item"})
-            }
+            } 
+        } else {
+            res.status(400).json({msg: "You are not authorized to view the electronic item"})
         }
     } catch (error) {
         res.status(400).send(error);
@@ -77,6 +77,8 @@ const create = async (req, res) => {
             await user.electronicItems.push(electronic._id)
             await user.save()
             res.status(200).json(electronic);
+        } else {
+            res.status(400).json({msg: "You are not authorized to create an electronic item"})
         }
     } 
     catch (error) {
@@ -92,9 +94,9 @@ const update = async (req, res) => {
             const updateElectronic = await Electronic.findOneAndUpdate({_id: req.params.id, Seller: req.user._id}, req.body, {new: true}).populate('Review'); // {new:true} to return the document after updating
             if (updateElectronic){
                 res.status(200).json(updateElectronic)
-            } else {
-                res.status(400).json({msg: "You are not authorized to update the electronic item"})
-            }
+            } 
+        } else {
+            res.status(400).json({msg: "You are not authorized to update the electronic item"})
         }
     }
     catch (error) {
@@ -109,9 +111,9 @@ const destroy = async (req, res) => {
             const deleteElectronic = await Electronic.findOneAndDelete({_id: req.params.id, Seller: req.user._id})
             if (deleteElectronic){
                 res.status(200).json(deleteElectronic)
-            } else {
-                res.status(400).json({msg: "You are not authorized to delete the electronic item"})
-            }
+            } 
+        } else {
+            res.status(400).json({msg: "You are not authorized to delete the electronic item"})
         }
     } catch (error) {
         res.status(400).send(error)

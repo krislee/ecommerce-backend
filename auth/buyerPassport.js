@@ -1,4 +1,4 @@
-const User = require('../model/seller/buyerUser')
+const User = require('../model/buyer/buyerUser')
 
 const fs = require('fs')
 const path = require('path')

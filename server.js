@@ -6,11 +6,11 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
+require('./db/connection')
 
 // Passport-related Dependencies
 const passport = require('passport')
-require('./db/connection')
-require('./auth/sellerPassport')(passport)
+require('./auth/passport')(passport)
 
 // Item Routers Dependencies
 const electronicRouter = require('./routes/seller/electronic')
