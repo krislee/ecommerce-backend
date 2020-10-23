@@ -1,5 +1,5 @@
 const Electronic = require('../../model/seller/electronic')
-const SellerUser = require('../../model/seller/sellerUser')
+const {SellerUser} = require('../../model/seller/sellerUser')
 
 // GETTING ALL ELECTRONIC ITEMS
 // Credit: https://medium.com/javascript-in-plain-english/simple-pagination-with-node-js-mongoose-and-express-4942af479ab2

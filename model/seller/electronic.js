@@ -12,11 +12,6 @@ const electronicsSchema = new Schema ({
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]
 })
 
-// electronicsSchema.pre('deleteMany', function(next) {
-//     console.log(sellerUser._id, "seller id")
-//     this.model('electronic').deleteOne({Seller: sellerUser._id}), next
-// })
-
 const electronics = model('electronic', electronicsSchema)
 
 

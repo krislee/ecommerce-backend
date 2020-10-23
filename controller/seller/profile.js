@@ -1,4 +1,4 @@
-const SellerUser = require('../../model/seller/sellerUser')
+const {SellerUser} = require('../../model/seller/sellerUser')
 
 // GETTING SELLER PROFILE
 const index = async (req, res) => {
@@ -19,7 +19,7 @@ const index = async (req, res) => {
     }
 }
 
-// UPDATING USER PROFILE
+// UPDATING SELLER PROFILE
 const update = async (req, res) => {
     try {
         if (req.user.seller){
@@ -40,12 +40,15 @@ const update = async (req, res) => {
     }
 }
 
-// DELETING ONE OF THE ELECTRONICS
+// DELETING SELLER PROFILE AND ITS ELECTRONICS
 const destroy = async (req, res) => {
     try {
         if (req.user.seller){
-            const deleteSeller = await SellerUser.findOneAndDelete({_id: req.user.id})
-            res.status(200).json("deleted")
+            await SellerUser.findById(req.user.id, function(err, seller) {
+                seller.deleteOne()
+                res.status(200).json("Successfully deleted seller's profile")
+            })
+        
         } else {
             res.status(400).json({msg: "You are not authorized to delete this profile."})
         }
