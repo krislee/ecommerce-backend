@@ -44,10 +44,8 @@ const update = async (req, res) => {
 const destroy = async (req, res) => {
     try {
         if (req.user.seller){
-            const deleteSeller = await Seller.findOneAndDelete({_id: req.user.id})
-            if (deleteSeller){
-                res.status(200).json(deleteSeller.username)
-            } 
+            const deleteSeller = await SellerUser.findOneAndDelete({_id: req.user.id})
+            res.status(200).json("deleted")
         } else {
             res.status(400).json({msg: "You are not authorized to delete this profile."})
         }
