@@ -47,10 +47,6 @@ https://mongoosejs.com/docs/middleware.html
 sellerUserSchema.pre('deleteOne', { document: true, query: false}, async function(next) {
     try {
 
-        console.log(this.model("electronic").model("reviewElectronic"), "review model")
-
-        console.log(this.model("electronic").model("reviewElectronic").model("buyerUser"), "buyer model")
-
         await this.model("electronic").model("reviewElectronic").model("buyerUser").deleteMany({electronicReviews: this.model("electronic").model("reviewElectronic")._id})
 
         await this.model("electronic").model("reviewElectronic").deleteMany({ElectronicItem: this.model("electronic")._id})

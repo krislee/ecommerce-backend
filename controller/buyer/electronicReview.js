@@ -1,5 +1,6 @@
 const Electronic = require('../../model/seller/electronic')
 const ElectronicReview = require('../../model/buyer/reviewElectronic')
+const Buyer = require('../../model/buyer/buyerUser')
 
 // SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
 const index = async (req, res) => {
@@ -52,6 +53,11 @@ const create = async (req,res) => {
             await matchedElectronic.Review.push(electronicReview._id) 
     
             await matchedElectronic.save()
+
+            const matchedBuyer = await Buyer.findById(electronicReview.Buyer) 
+            await matchedBuyer.electronicReviews.push(electronicReview._id)
+            await matchedBuyer.save()
+
             res.status(200).json(electronicReview);
         } else {
             res.status(400).json({msg: "You are not authorized to create the review"})
