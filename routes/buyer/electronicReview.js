@@ -8,7 +8,7 @@ const passportAuthenticate = passport.authenticate('jwt', {session: false})
 // Buyer does not need authentication/authorization to view reviews
 router.get('/electronic/review/:electronicId', index)
 
-router.post('/electronic/review', passportAuthenticate, create)
+router.post('/electronic/review/:electronicId', passportAuthenticate, create)
 
 router.put('/electronic/review/:id', passportAuthenticate, update)
 

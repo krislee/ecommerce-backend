@@ -1,5 +1,5 @@
 const {Schema, model} = require('mongoose')
-const Electronics = require('../seller/electronic')
+
 const sellerUserSchema = new Schema({
     username: {
         type: String,
@@ -49,9 +49,11 @@ sellerUserSchema.pre('deleteOne', { document: true, query: false}, async functio
 
         // Delete all electronic documents that referenced to the removed seller
         // this.model("electronic") points to the documents in the electronic model that has a reference to the seller(this)
+        console.log(this.model("electronic").model("reviewElectronic"), "electronic model")
+        await this.model("electronic").model("reviewElectronic").deleteMany({ElectronicItem: this.model("electronic")._id})
         await this.model("electronic").deleteMany({Seller: this._id})
 
-        /* Could have also ran remove pre hook middleware instead of deleteOne pre hook middleware which will run with the route handler function containing seller.remove()
+        /* Could have also ran remove pre hook middleware instead of deleteOne pre hook middleware which will run with the route handler function containing seller.remove() and would need to import const Electronics = require('../seller/electronic') here
         await Electronics.remove({_id: {$in: this.electronicItems}}) */
 
         // Since pre hook is a middleware, continue running the route handler function with next()

@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const {index, update, destroy} = require('../../controller/seller/profile');
+const {index, update, destroy} = require('../../controller/seller/sellerProfile');
 
 passportAuthenticate = passport.authenticate('jwt', {session: false})
 

@@ -29,7 +29,7 @@ const sellerAuthRoute = require('./routes/seller/sellerAuth')
 const buyerAuthRoute = require('./routes/buyer/buyerAuth')
 
 // Profile Dependencies
-const sellerProfile = require('./routes/seller/profile')
+const sellerProfile = require('./routes/seller/sellerProfile')
 
 //GLOBAL VARIABLES
 const PORT = process.env.PORT

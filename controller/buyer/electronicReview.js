@@ -36,12 +36,13 @@ const create = async (req,res) => {
     try {
         console.log(req.user)
         if (req.user.buyer){
-            // From the frontend, the req.body will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId
+            // From the frontend, the req.params will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId
             const electronicReview = await ElectronicReview.create({
                 Name: req.user.username,
                 Comment: req.body.Comment,
                 Rating: req.body.Rating,
-                Buyer: req.user._id
+                Buyer: req.user._id,
+                ElectronicItem: req.params.electronicId
             }) 
             
             // Find the electronic item the review is for using the ObjectId of the electronic item stored in model reviewElectronic document's ElectronicItem key
