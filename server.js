@@ -12,6 +12,7 @@ require('./db/connection')
 const passport = require('passport')
 require('./auth/passport')(passport)
 
+
 // Item Routers Dependencies
 const electronicRouter = require('./routes/seller/electronic')
 const clothingRouter = require('./routes/seller/clothing')
@@ -71,6 +72,7 @@ app.use('/buyer', [storeRouter, electronicReviewRouter, clothingReviewRouter, he
 
 // Need to initialize the passport object for every passport strategy on each request.
 app.use(passport.initialize())
+
 
 // TEST ROUTE
 app.get('/', (req,res) => {

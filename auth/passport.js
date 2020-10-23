@@ -20,21 +20,15 @@ const options = {
 const strategy = new JWTStrategy(options, async (payload, done) => { 
     try {
         const seller = await Seller.findById(payload.sub)
-        // Once seller is found, attach it to the passport obj
-        if(await seller){
-            return done(null, seller)
-        }
-        // } else {
-        //     return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
-        // }
+        
+        if(await seller) return done(null, seller)
 
         const buyer = await Buyer.findById(payload.sub)
-        console.log(buyer)
+        
         if(await buyer) return done(null, buyer)
 
-        return done(null, false)
+        return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
     } catch (err) {
-        console.log(err)
         done(err, null)
     }
 })
