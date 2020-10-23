@@ -1,12 +1,15 @@
 const express = require('express');
+const passport = require('passport');
 const router = express.Router();
 const {index, update, destroy} = require('../../controller/seller/profile');
 
+passportAuthenticate = passport.authenticate('jwt', {session: false})
 
-router.get('/profile', index)
 
-router.put('/profile', update);
+router.get('/profile', passportAuthenticate, index)
 
-router.delete('/profile', destroy);
+router.put('/profile', passportAuthenticate, update);
+
+router.delete('/profile', passportAuthenticate, destroy);
 
 module.exports = router
