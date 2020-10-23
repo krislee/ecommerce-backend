@@ -47,10 +47,16 @@ https://mongoosejs.com/docs/middleware.html
 sellerUserSchema.pre('deleteOne', { document: true, query: false}, async function(next) {
     try {
 
+        console.log(this.model("electronic").model("reviewElectronic"), "review model")
+
+        console.log(this.model("electronic").model("reviewElectronic").model("buyerUser"), "buyer model")
+
+        await this.model("electronic").model("reviewElectronic").model("buyerUser").deleteMany({electronicReviews: this.model("electronic").model("reviewElectronic")._id})
+
+        await this.model("electronic").model("reviewElectronic").deleteMany({ElectronicItem: this.model("electronic")._id})
+
         // Delete all electronic documents that referenced to the removed seller
         // this.model("electronic") points to the documents in the electronic model that has a reference to the seller(this)
-        console.log(this.model("electronic").model("reviewElectronic"), "electronic model")
-        await this.model("electronic").model("reviewElectronic").deleteMany({ElectronicItem: this.model("electronic")._id})
         await this.model("electronic").deleteMany({Seller: this._id})
 
         /* Could have also ran remove pre hook middleware instead of deleteOne pre hook middleware which will run with the route handler function containing seller.remove() and would need to import const Electronics = require('../seller/electronic') here
