@@ -17,7 +17,7 @@ const index = async (req, res) => {
             res.status(200).json({
                 allElectronic,
                 totalPages: Math.ceil(total/limit),
-                currentPage: page //page is received from req.query
+                currentPage: page //page is received from req.query i.e. route would be localhost:3000/seller/electronic?page=2, and the page number is 2
             });
         } else {
             const {limit = 10, page = 1} = req.query // set default values to limit and page for pagination
@@ -73,9 +73,9 @@ const create = async (req, res) => {
                 Price: req.body.Price,
                 Seller: req.user
             })
-            const user = await SellerUser.findById(req.user._id)
-            await user.electronicItems.push(electronic._id)
-            await user.save()
+            const seller = await SellerUser.findById(req.user._id)
+            await seller.electronicItems.push(electronic._id)
+            await seller.save()
             res.status(200).json(electronic);
         } else {
             res.status(400).json({msg: "You are not authorized to create an electronic item"})
@@ -111,7 +111,8 @@ const destroy = async (req, res) => {
             const deleteElectronic = await Electronic.findOneAndDelete({_id: req.params.id, Seller: req.user._id})
             if (deleteElectronic){
                 seller = await SellerUser.findOne({_id: req.user._id})
-                await seller.electronicItems.splice(indexOf(deleteElectronic._id), 1)
+                await seller.electronicItems.splice(seller.electronicItems.indexOf(deleteElectronic._id), 1)
+                seller.save()
                 res.status(200).json(deleteElectronic)
             } 
         } else {

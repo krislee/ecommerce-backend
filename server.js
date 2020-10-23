@@ -28,6 +28,8 @@ const healthReviewRouter = require('./routes/buyer/healthReview')
 const sellerAuthRoute = require('./routes/seller/sellerAuth')
 const buyerAuthRoute = require('./routes/buyer/buyerAuth')
 
+// Profile Dependencies
+const sellerProfile = require('./routes/seller/profile')
 
 //GLOBAL VARIABLES
 const PORT = process.env.PORT
@@ -62,7 +64,7 @@ app.use('/auth/seller', sellerAuthRoute)
 app.use('/auth/buyer', buyerAuthRoute)
 
 // Seller Account Route
-app.use('/seller', [electronicRouter, clothingRouter, healthRouter])
+app.use('/seller', [electronicRouter, clothingRouter, healthRouter, sellerProfile])
 
 // Buyer Route
 app.use('/buyer', [storeRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
