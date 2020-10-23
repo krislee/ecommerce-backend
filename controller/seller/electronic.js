@@ -111,7 +111,7 @@ const destroy = async (req, res) => {
             const deleteElectronic = await Electronic.findOneAndDelete({_id: req.params.id, Seller: req.user._id})
             if (deleteElectronic){
                 seller = await SellerUser.findOne({_id: req.user._id})
-                seller.electronicItems.splice(indexOf(deleteElectronic._id), 1)
+                await seller.electronicItems.splice(indexOf(deleteElectronic._id), 1)
                 res.status(200).json(deleteElectronic)
             } 
         } else {
