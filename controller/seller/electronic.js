@@ -1,4 +1,4 @@
-const Electronic = require('../../model/seller/electronic')
+const {Electronic} = require('../../model/seller/electronic')
 const {SellerUser} = require('../../model/seller/sellerUser')
 
 // GETTING ALL ELECTRONIC ITEMS

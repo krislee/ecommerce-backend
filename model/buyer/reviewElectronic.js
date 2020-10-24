@@ -13,5 +13,5 @@ const reviewElectronicSchema = new Schema (
     }
 )
 
-const reviewElectronic = model('reviewElectronic', reviewElectronicSchema);
-module.exports = reviewElectronic;
+const ElectronicReview = model('reviewElectronic', reviewElectronicSchema);
+module.exports = {ElectronicReview, reviewElectronicSchema};

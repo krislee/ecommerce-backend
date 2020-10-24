@@ -1,4 +1,6 @@
 const {Schema, model} = require('mongoose')
+const {electronicsSchema} = require('./electronic')
+const {reviewElectronicSchema} = require('../buyer/reviewElectronic')
 
 const sellerUserSchema = new Schema({
     username: {
@@ -44,12 +46,22 @@ https://mongoosejs.com/docs/middleware.html
 */
 
 // Need {document: true} in order to run the deleteOne pre hook middleware because by default deleteOne pre hook this refers to a query and not a document. To register deleteOne middleware as document middleware instead of query middleware, use schema.pre('updateOne', { document: true, query: false }).
+
+electronicsSchema.pre('deleteMany', { document: true, query: false}, async function(next) {
+    try {
+        await this.model("reviewElectronic").deleteMany
+    }
+    catch (error) {
+        next(error)
+    }
+})
+
 sellerUserSchema.pre('deleteOne', { document: true, query: false}, async function(next) {
     try {
 
-        await this.model("electronic").model("reviewElectronic").model("BuyerUser").deleteMany({electronicReviews: this.model("electronic").model("reviewElectronic")._id})
+        // await this.model("electronic").model("reviewElectronic").model("BuyerUser").deleteMany({electronicReviews: this.electronicItems.model("reviewElectronic")._id})
 
-        await this.model("electronic").model("reviewElectronic").deleteMany({ElectronicItem: this.model("electronic")._id})
+        // await this.model("electronic").model("reviewElectronic").deleteMany({ElectronicItem: this.electronicItems._id}) // need electronic review ids
 
         // Delete all electronic documents that referenced to the removed seller
         // this.model("electronic") points to the documents in the electronic model that has a reference to the seller(this)

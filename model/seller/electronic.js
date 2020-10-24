@@ -1,5 +1,4 @@
 const {Schema, model} = require('mongoose')
-const sellerUser = require('./sellerUser')
 
 const electronicsSchema = new Schema ({
     Name: {type: String, required: true},
@@ -12,8 +11,9 @@ const electronicsSchema = new Schema ({
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]
 })
 
-const electronics = model('electronic', electronicsSchema)
+
+const Electronics = model('electronic', electronicsSchema)
 
 
 
-module.exports = electronics
+module.exports = {Electronics, electronicsSchema}

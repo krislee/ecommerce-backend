@@ -1,4 +1,6 @@
 const {SellerUser} = require('../../model/seller/sellerUser')
+const {Electronic} = require('../../model/seller/electronic')
+const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 
 // GETTING SELLER PROFILE
 const index = async (req, res) => {
@@ -45,6 +47,7 @@ const destroy = async (req, res) => {
     try {
         if (req.user.seller){
             await SellerUser.findById(req.user.id, function(err, seller) {
+                console.log(await Electronic.find({_id: {$in: seller.electronicItems}}))
                 seller.deleteOne()
                 res.status(200).json("Successfully deleted seller's profile")
             })

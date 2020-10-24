@@ -1,5 +1,5 @@
 const Electronic = require('../../model/seller/electronic')
-const ElectronicReview = require('../../model/buyer/reviewElectronic')
+const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 const Buyer = require('../../model/buyer/buyerUser')
 
 // SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
