@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose')
+
 const buyerUserSchema = new Schema({
     username: {
         type: String,
@@ -31,5 +32,6 @@ const buyerUserSchema = new Schema({
     clothingReviews: [{type: Schema.Types.ObjectId, ref: "reviewClothing"}],
     healthReviews: [{type: Schema.Types.ObjectId, ref: "reviewHealth"}]
 })
+
 
 module.exports = model('BuyerUser', buyerUserSchema)

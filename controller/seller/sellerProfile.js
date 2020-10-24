@@ -47,7 +47,18 @@ const destroy = async (req, res) => {
     try {
         if (req.user.seller){
             await SellerUser.findById(req.user.id, function(err, seller) {
-            console.log(Electronic.find({_id: {$in: seller.electronicItems}}), "electronic")
+
+                const queryElectronicReviews = ElectronicReview.find({_id: {$in: }})
+
+                // Delete reviews in buyer
+                queryElectronicReviews.deleteMany()
+
+                const queryElectronicItems = Electronic.find({_id: {$in: seller.electronicItems}})
+
+                // Delete reviews of the electronic items
+                queryElectronicItems.deleteMany()
+
+                // Runs the pre deleteOne hook in seller schema. Then deletes the seller and its electronic items
                 seller.deleteOne()
                 res.status(200).json("Successfully deleted seller's profile")
             })

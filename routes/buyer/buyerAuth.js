@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const User = require('../../model/buyer/buyerUser')
-const SellerUser = require('../../model/seller/sellerUser')
+const {SellerUser} = require('../../model/seller/sellerUser')
 const { authSchema } = require('../../auth/validation')
 const bcrypt = require('bcrypt');
 const {issueJWT} = require('../../auth/issueJWT')
