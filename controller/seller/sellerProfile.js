@@ -47,7 +47,7 @@ const destroy = async (req, res) => {
     try {
         if (req.user.seller){
             await SellerUser.findById(req.user.id, function(err, seller) {
-                console.log(await Electronic.find({_id: {$in: seller.electronicItems}}))
+            console.log(Electronic.find({_id: {$in: seller.electronicItems}}), "electronic")
                 seller.deleteOne()
                 res.status(200).json("Successfully deleted seller's profile")
             })

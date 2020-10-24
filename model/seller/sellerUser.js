@@ -47,14 +47,14 @@ https://mongoosejs.com/docs/middleware.html
 
 // Need {document: true} in order to run the deleteOne pre hook middleware because by default deleteOne pre hook this refers to a query and not a document. To register deleteOne middleware as document middleware instead of query middleware, use schema.pre('updateOne', { document: true, query: false }).
 
-electronicsSchema.pre('deleteMany', { document: true, query: false}, async function(next) {
-    try {
-        await this.model("reviewElectronic").deleteMany
-    }
-    catch (error) {
-        next(error)
-    }
-})
+// electronicsSchema.pre('deleteMany', { document: true, query: false}, async function(next) {
+//     try {
+//         await this.model("reviewElectronic").deleteMany
+//     }
+//     catch (error) {
+//         next(error)
+//     }
+// })
 
 sellerUserSchema.pre('deleteOne', { document: true, query: false}, async function(next) {
     try {

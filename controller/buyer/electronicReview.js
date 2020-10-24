@@ -1,4 +1,4 @@
-const Electronic = require('../../model/seller/electronic')
+const {Electronic} = require('../../model/seller/electronic')
 const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 const Buyer = require('../../model/buyer/buyerUser')
 
@@ -35,7 +35,7 @@ const index = async (req, res) => {
 
 const create = async (req,res) => {
     try {
-        console.log(req.user)
+        // console.log(req.user)
         if (req.user.buyer){
             // From the frontend, the req.params will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId
             const electronicReview = await ElectronicReview.create({

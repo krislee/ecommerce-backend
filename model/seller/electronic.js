@@ -12,8 +12,8 @@ const electronicsSchema = new Schema ({
 })
 
 
-const Electronics = model('electronic', electronicsSchema)
+const Electronic = model('electronic', electronicsSchema)
 
 
 
-module.exports = {Electronics, electronicsSchema}
+module.exports = {Electronic, electronicsSchema}
