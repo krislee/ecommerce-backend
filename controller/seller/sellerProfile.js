@@ -11,7 +11,8 @@ const index = async (req, res) => {
             res.status(200).json({
                 id: sellerProfile._id,
                 username: sellerProfile.username,
-                email: sellerProfile.email
+                email: sellerProfile.email,
+                electronicItems: electronicItems
             });
         } else {
             res.status(400).json({msg: "You are not authorized to view this profile."})
