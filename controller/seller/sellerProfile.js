@@ -55,18 +55,16 @@ const update = async (req, res) => {
                         });
                     } 
                 }
-            } 
-            [1] 
+            }
             
             if (req.body.password) {
                 // Check if password is valid
                 const validatedPassword = await passwordSchema.validateAsync(req.body)
+                
+                // Grab the seller document
+                seller = await SellerUser.findById(req.user._id)
 
-                // Check if entered password is the last 5 old passwords seller made
-                console.log(validatedPassword, "validated password")
-                seller= await SellerUser.findById(req.user._id)
-                // console.log(seller.oldPasswords, "previous passwords")
-                // console.log(seller, "seller")
+                // Check if the entered password seller is trying to update is the last 5 (or less) passwords. If it is, return.
                 for (let i = 0; i < seller.oldPasswords.length; i ++) {
                     const comparePasswords = await bcrypt.compare(req.body.password, seller.oldPasswords[i])
 
@@ -75,24 +73,34 @@ const update = async (req, res) => {
                     }
                 }
 
-                 // Hash and salt new password
-                 const newPassword = await bcrypt.hash(req.body, 10)
-                 console.log(newPassword, "new password")
+                // If the entered password is not the same as the last 5 (or less) passwords (seller can make the same password as long as it is not the most recent 5 passwords), then:
 
-                 // Update seller's password
-                 await Seller.findOneAndUpdate({_id: req.user.id}, req.body, {new:true})
+                // Hash and salt new password
+                const newPassword = await bcrypt.hash(req.body.password, 10)
 
+                // Initialize variable that will store the updated seller
+                let updateSeller 
+                
                 if (await seller.oldPasswords.length == 5) {
+                    // Remove the oldest password aka 1st password in the oldPasswords array
+                    updateSeller = await SellerUser.findOneAndUpdate({_id: req.user._id}, {password: newPassword, $pop: {oldPasswords: -1}, }, {new:true})
+                    // Then add the newly updated password to the oldPasswords array
+                    updateSeller = await SellerUser.findOneAndUpdate({_id: req.user._id}, {$push: {oldPasswords: newPassword}}, {new:true})
 
-                    // Take out the oldest password
-                    await seller.oldPasswords.shift()
+                    /* Could have also updated password by doing: 
+                    const updateSeller = await SellerUser.findOneAndUpdate({_id: req.user.id}, {password: newPassword}, {new:true})
+                    await updateSeller.oldPasswords.shift()
+                    await updateSeller.oldPasswords.push(updateSeller.password)
+                     updateSeller.save() */
 
-                    // Push in new hashed salted password
-                    await seller.oldPasswords.push(seller.password)
                 } else if (await seller.oldPasswords.length < 5) {
+                    // Do not need to remove from oldPasswords array since the length of the array is not 5 yet
+                    updateSeller = await SellerUser.findOneAndUpdate({_id: req.user._id}, {password: newPassword, $push: {oldPasswords: newPassword}}, {new:true})
 
-                    // Push in new hashed salted password
-                    await seller.oldPasswords.push(seller.password)
+                    /* Could have also updated password by doing: 
+                    const updateSeller = await SellerUser.findOneAndUpdate({_id: req.user.id}, {password: newPassword}, {new:true})
+                    updateSeller.oldPasswords.push(updateSeller.password)
+                    updateSeller.save() */
                 }
 
                 return res.status(200).json({
@@ -124,7 +132,7 @@ const destroy = async (req, res) => {
 
                 // Runs the pre deleteOne hook in seller schema. Then deletes the seller and its electronic items
                 seller.deleteOne()
-                res.status(200).json("Successfully deleted seller's profile")
+                res.status(200).json({success: true})
             })
         
         } else {
