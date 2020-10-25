@@ -1,5 +1,5 @@
-const Buyer = require('../../model/seller/sellerUser')
-const {ElectronicReview} = require('../buyer/electronicReview')
+const Buyer = require('../../model/buyer/buyerUser')
+const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 
 // GETTING SELLER PROFILE
 const index = async (req, res) => {
@@ -7,6 +7,7 @@ const index = async (req, res) => {
         if (req.user.buyer){
             const buyerProfile = await Buyer.findOne({_id: req.user._id})
             const BuyerReviews = ElectronicReview.find({Buyer: sellerProfile._id})
+            console.log(BuyerReviews, "buyer reviews")
             res.status(200).json({
                 id: buyerProfile._id,
                 username: buyerProfile.username,
