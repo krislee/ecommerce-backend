@@ -8,7 +8,7 @@ const electronicsSchema = new Schema ({
     Description: {type: String, required: true},
     Price: {type: Number, required: true},
     Rating: Number,
-    Review: [{type: Schema.Types.ObjectId, ref: "reviewElectronic"}],
+    // Review: [{type: Schema.Types.ObjectId, ref: "reviewElectronic"}],
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]
 })
 
@@ -22,17 +22,6 @@ electronicsSchema.pre('deleteMany', { document: false, query: true }, async func
 
         // For each of the electronic items, get the ids of the electronic documents and store them in an array.
         const electronicItems = docs.map(item => item._id)
-
-        // For each of the electronic items that has a review, get the ids of the electronic reviews
-        const reviews = docs.map(item => item.Review)
-        console.log(reviews, "reviews", reviews[0], "reviews0")
-
-        // Find all the buyers who made each of the reviews for each electronic item
-        const buyerWithReview = await buyerUser.updateMany({electronicReviews: {$in: reviews[0]}}, {$pull: {electronicReviews: {$in: reviews[0]}}})
-        console.log(buyerWithReview, "buyerWithReview")
-
-        // Update electronicReviews key in each of the buyers document 
-
 
         // Delete all the electronic review documents from reviewElectronic model that has the electronic document id
         await ElectronicReview.deleteMany({ElectronicItem: {$in: electronicItems}})

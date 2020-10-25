@@ -28,11 +28,7 @@ const sellerUserSchema = new Schema({
     seller: {
         type: Boolean, 
         required: true
-    },
-    // Create relationship between seller and seller's items
-    electronicItems: [{type: Schema.Types.ObjectId, ref: "electronic"}],
-    clothingItems: [{type: Schema.Types.ObjectId, ref: "clothing"}],
-    healthItems: [{type: Schema.Types.ObjectId, ref: "health"}]
+    }
 })
 
 /* Resources for remove and deleteOne pre hooks: 

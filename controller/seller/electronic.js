@@ -1,5 +1,6 @@
 const {Electronic} = require('../../model/seller/electronic')
 const {SellerUser} = require('../../model/seller/sellerUser')
+const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 
 // GETTING ALL ELECTRONIC ITEMS
 // Credit: https://medium.com/javascript-in-plain-english/simple-pagination-with-node-js-mongoose-and-express-4942af479ab2
@@ -13,7 +14,7 @@ const index = async (req, res) => {
             // .limit(limit*1).skip((page-1) * limit) paginates up to the limit
             // .populate(model_key_name) used in order to have the documents from referenced model, reviewElectronic to populate each Electronic document
             const allElectronic = await Electronic.find({Seller: req.user._id}).limit(limit*1).skip((page-1) * limit).populate('Review'); 
-            
+
             res.status(200).json({
                 allElectronic,
                 totalPages: Math.ceil(total/limit),
@@ -45,9 +46,14 @@ const show = async (req, res) => {
     try {
         if (req.user.seller){
             // Find one electronic item that belongs to the logged in seller. The query, _id: req.params.id will only get one electronic item with that id and the query, Seller: req.user_id will only get the one electronic item of the logged in user
-            const oneElectronic = await Electronic.findOne({_id: req.params.id, Seller: req.user._id}).populate('Review'); 
+            const oneElectronic = await Electronic.findOne({_id: req.params.id, Seller: req.user._id})
+            const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id})
+
             if (oneElectronic) {
-                res.status(200).json(oneElectronic)
+                res.status(200).json({
+                    electronicItem: oneElectronic,
+                    review: electronicReview
+                })
             } 
         } else {
             res.status(400).json({msg: "You are not authorized to view the electronic item"})
@@ -110,9 +116,6 @@ const destroy = async (req, res) => {
         if (req.user.seller){
             const deleteElectronic = await Electronic.findOneAndDelete({_id: req.params.id, Seller: req.user._id})
             if (deleteElectronic){
-                seller = await SellerUser.findOne({_id: req.user._id})
-                await seller.electronicItems.splice(seller.electronicItems.indexOf(deleteElectronic._id), 1)
-                seller.save()
                 res.status(200).json(deleteElectronic)
             } 
         } else {
