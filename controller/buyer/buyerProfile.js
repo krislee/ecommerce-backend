@@ -4,14 +4,14 @@ const {ElectronicReview} = require('../buyer/electronicReview')
 // GETTING SELLER PROFILE
 const index = async (req, res) => {
     try {
-        if (req.user.seller){
-            const sellerProfile = await Buyer.findOne({_id: req.user._id})
-            const reviews = ElectronicReview.find({Buyer: sellerProfile._id})
+        if (req.user.buyer){
+            const buyerProfile = await Buyer.findOne({_id: req.user._id})
+            const BuyerReviews = ElectronicReview.find({Buyer: sellerProfile._id})
             res.status(200).json({
-                id: sellerProfile._id,
-                username: sellerProfile.username,
-                email: sellerProfile.email,
-                reviews: reviews
+                id: buyerProfile._id,
+                username: buyerProfile.username,
+                email: buyerProfile.email,
+                reviews: BuyerReviews
             });
         } else {
             res.status(400).json({msg: "You are not authorized to view this profile."})
@@ -25,9 +25,9 @@ const index = async (req, res) => {
 // UPDATING SELLER PROFILE
 const update = async (req, res) => {
     try {
-        if (req.user.seller){
-            const updateSeller = await Buyer.findOneAndUpdate({_id: req.user.id}, req.body, {new: true}) // {new:true} to return the document after updating
-            if (updateSeller){
+        if (req.user.buyer){
+            const updateBuyer = await Buyer.findOneAndUpdate({_id: req.user.id}, req.body, {new: true}) // {new:true} to return the document after updating
+            if (updateBuyer){
                 res.status(200).json({
                     id: updateSeller._id,
                     username: updateSeller.username,
@@ -46,7 +46,7 @@ const update = async (req, res) => {
 // DELETING SELLER PROFILE AND ITS ELECTRONICS
 const destroy = async (req, res) => {
     try {
-        if (req.user.seller){
+        if (req.user.buyer){
             await Buyer.findById(req.user.id, function(err, seller) {
                 seller.deleteOne()
                 res.status(200).json("Successfully deleted seller's profile")

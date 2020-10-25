@@ -24,9 +24,9 @@ const strategy = new JWTStrategy(options, async (payload, done) => {
         if(await seller) return done(null, seller)
 
         const buyer = await Buyer.findById(payload.sub)
-        
+        console.log(buyer, "buyer")
         if(await buyer) return done(null, buyer)
-
+        console.log(2)
         return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
     } catch (err) {
         done(err, null)
