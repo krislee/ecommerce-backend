@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose')
+const buyerUser = require('../buyer/buyerUser')
 const {ElectronicReview} = require('../buyer/reviewElectronic')
 const electronicsSchema = new Schema ({
     Name: {type: String, required: true},
@@ -16,11 +17,22 @@ const electronicsSchema = new Schema ({
 electronicsSchema.pre('deleteMany', { document: false, query: true }, async function(next) {
     try {
 
-        // Finds all the electronic documents that matches the query: {Seller: idOfSeller}
+        // Finds all the electronic documents that matches the query: {Seller: idOfSeller}. In other words, finding all the electronic items the seller made.
         const docs = await this.model.find(this.getFilter()) // this.getFilter() returns {Seller: idOfSeller}
 
-        // Make an array with electronic documents ids
+        // For each of the electronic items, get the ids of the electronic documents and store them in an array.
         const electronicItems = docs.map(item => item._id)
+
+        // For each of the electronic items that has a review, get the ids of the electronic reviews
+        const reviews = docs.map(item => item.Review)
+        console.log(reviews, "reviews", reviews[0], "reviews0")
+
+        // Find all the buyers who made each of the reviews for each electronic item
+        const buyerWithReview = await buyerUser.updateMany({electronicReviews: {$in: reviews[0]}}, {$pull: {electronicReviews: {$in: reviews[0]}}})
+        console.log(buyerWithReview, "buyerWithReview")
+
+        // Update electronicReviews key in each of the buyers document 
+
 
         // Delete all the electronic review documents from reviewElectronic model that has the electronic document id
         await ElectronicReview.deleteMany({ElectronicItem: {$in: electronicItems}})

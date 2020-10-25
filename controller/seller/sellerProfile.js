@@ -48,10 +48,10 @@ const destroy = async (req, res) => {
         if (req.user.seller){
             await SellerUser.findById(req.user.id, function(err, seller) {
 
-                const queryElectronicReviews = ElectronicReview.find({_id: {$in: }})
+                // const queryElectronicReviews = ElectronicReview.find({_id: {$in: buyer.elec}})
 
-                // Delete reviews in buyer
-                queryElectronicReviews.deleteMany()
+                // // Delete reviews in buyer
+                // queryElectronicReviews.deleteMany()
 
                 const queryElectronicItems = Electronic.find({_id: {$in: seller.electronicItems}})
 

@@ -1,14 +1,17 @@
 const Buyer = require('../../model/seller/sellerUser')
+const {ElectronicReview} = require('../buyer/electronicReview')
 
 // GETTING SELLER PROFILE
 const index = async (req, res) => {
     try {
         if (req.user.seller){
             const sellerProfile = await Buyer.findOne({_id: req.user._id})
+            const reviews = ElectronicReview.find({Buyer: sellerProfile._id})
             res.status(200).json({
                 id: sellerProfile._id,
                 username: sellerProfile.username,
-                email: sellerProfile.email
+                email: sellerProfile.email,
+                reviews: reviews
             });
         } else {
             res.status(400).json({msg: "You are not authorized to view this profile."})
