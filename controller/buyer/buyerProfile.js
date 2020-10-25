@@ -13,7 +13,7 @@ const index = async (req, res) => {
                 id: buyerProfile._id,
                 username: buyerProfile.username,
                 email: buyerProfile.email,
-                reviews: [BuyerReviews.Comment, BuyerReviews.Rating]
+                reviews: BuyerReviews
             });
         } else {
             res.status(400).json({msg: "You are not authorized to view this profile."})
@@ -31,9 +31,9 @@ const update = async (req, res) => {
             const updateBuyer = await Buyer.findOneAndUpdate({_id: req.user.id}, req.body, {new: true}) // {new:true} to return the document after updating
             if (updateBuyer){
                 res.status(200).json({
-                    id: updateSeller._id,
-                    username: updateSeller.username,
-                    email: updateSeller.email
+                    id: updateBuyer._id,
+                    username: updateBuyer.username,
+                    email: updateBuyer.email
                 });
             } 
         } else {
@@ -49,8 +49,8 @@ const update = async (req, res) => {
 const destroy = async (req, res) => {
     try {
         if (req.user.buyer){
-            await Buyer.findById(req.user.id, function(err, seller) {
-                seller.deleteOne()
+            await Buyer.findById(req.user.id, function(err, buyer) {
+                // buyer.deleteOne()
                 res.status(200).json("Successfully deleted seller's profile")
             })
         
