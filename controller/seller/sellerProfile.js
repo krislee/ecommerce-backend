@@ -63,33 +63,43 @@ const update = async (req, res) => {
                 const validatedPassword = await passwordSchema.validateAsync(req.body)
 
                 // Check if entered password is the last 5 old passwords seller made
+                console.log(validatedPassword, "validated password")
+                seller= await SellerUser.findById(req.user._id)
+                // console.log(seller.oldPasswords, "previous passwords")
+                // console.log(seller, "seller")
+                for (let i = 0; i < seller.oldPasswords.length; i ++) {
+                    const comparePasswords = await bcrypt.compare(req.body.password, seller.oldPasswords[i])
 
-                sellerPreviousPasswords = await SellerUser.findById(req.user._id).oldPasswords
-                
-                for (let i = 0; i < sellerPreviousPasswords.length; i ++) {
-                    if (await bcrypt.compare(req.body, sellerPreviousPasswords[i])) {
+                    if (comparePasswords) {
                         return res.status(200).json({msg: "Your password cannot be your last 5 passwords."})
                     }
                 }
 
-                if (await sellerPreviousPasswords.length == 5) {
+                 // Hash and salt new password
+                 const newPassword = await bcrypt.hash(req.body, 10)
+                 console.log(newPassword, "new password")
+
+                 // Update seller's password
+                 await Seller.findOneAndUpdate({_id: req.user.id}, req.body, {new:true})
+
+                if (await seller.oldPasswords.length == 5) {
+
                     // Take out the oldest password
-                    await sellerPreviousPasswords.shift()
+                    await seller.oldPasswords.shift()
+
                     // Push in new hashed salted password
-                    await sellerPreviousPasswords.push(bcrypt.hash(req.body, 10))
-                    return res.status(200).json({
-                        id: updateSeller._id,
-                        username: updateSeller.username,
-                        email: updateSeller.email
-                    })
-                } else if (await sellerPreviousPasswords.length < 5) {
-                    await sellerPreviousPasswords.push(bcrypt.hash(req.body, 10))
-                    return res.status(200).json({
-                        id: updateSeller._id,
-                        username: updateSeller.username,
-                        email: updateSeller.email
-                    })
+                    await seller.oldPasswords.push(seller.password)
+                } else if (await seller.oldPasswords.length < 5) {
+
+                    // Push in new hashed salted password
+                    await seller.oldPasswords.push(seller.password)
                 }
+
+                return res.status(200).json({
+                    id: updateSeller._id,
+                    username: updateSeller.username,
+                    email: updateSeller.email
+                })
             }
         } else {
             res.status(400).json({msg: "You are not authorized to update this profile."})
