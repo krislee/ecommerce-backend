@@ -72,11 +72,11 @@ router.post('/login', async (req, res) => {
 
             res.status(200).json({
                 success: true,
-                userID: savedUser._id,
-                username: savedUser.username,
-                email: savedUser.email,
-                token: registerToken.token, 
-                expiresIn: registerToken.expires
+                userID: existUser._id,
+                username: existUser.username,
+                email: existUser.email,
+                token: loginToken.token, 
+                expiresIn: loginToken.expires
             })
         } else {
             res.status(400).json({success: false, msg: 'Wrong password'})
