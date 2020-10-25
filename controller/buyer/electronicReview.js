@@ -45,18 +45,6 @@ const create = async (req,res) => {
                 Buyer: req.user._id,
                 ElectronicItem: req.params.electronicId
             }) 
-            
-            // Find the electronic item the review is for using the ObjectId of the electronic item stored in model reviewElectronic document's ElectronicItem key
-            const matchedElectronic = await Electronic.findById(electronicReview.ElectronicItem[0]) 
-        
-            // store id of the review for the electronic item in model electronic document's Review key
-            await matchedElectronic.Review.push(electronicReview._id) 
-    
-            await matchedElectronic.save()
-
-            const matchedBuyer = await Buyer.findById(electronicReview.Buyer) 
-            await matchedBuyer.electronicReviews.push(electronicReview._id)
-            await matchedBuyer.save()
 
             res.status(200).json(electronicReview);
         } else {
