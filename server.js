@@ -30,6 +30,7 @@ const buyerAuthRoute = require('./routes/buyer/buyerAuth')
 
 // Profile Dependencies
 const sellerProfile = require('./routes/seller/sellerProfile')
+const buyerProfile = require('./routes/buyer/buyerProfile')
 
 //GLOBAL VARIABLES
 const PORT = process.env.PORT
@@ -67,7 +68,7 @@ app.use('/auth/buyer', buyerAuthRoute)
 app.use('/seller', [electronicRouter, clothingRouter, healthRouter, sellerProfile])
 
 // Buyer Route
-app.use('/buyer', [storeRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter])
+app.use('/buyer', [storeRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter, buyerProfile])
 
 
 // Passport is an express middleware that will append diff properties to the req object, so you can store data within the req obj and each of the middlewares after will have access to the modified req object
