@@ -43,7 +43,7 @@ router.post('/register', async (req, res) => {
             success: true,
             userID: savedUser._id,
             username: savedUser.username,
-            email: savedUsed.email,
+            email: savedUser.email,
             token: registerToken.token, 
             expiresIn: registerToken.expires
         })
