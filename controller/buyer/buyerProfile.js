@@ -6,13 +6,14 @@ const index = async (req, res) => {
     try {
         if (req.user.buyer){
             const buyerProfile = await Buyer.findOne({_id: req.user._id})
-            const BuyerReviews = ElectronicReview.find({Buyer: sellerProfile._id})
-            console.log(BuyerReviews, "buyer reviews")
+
+            const BuyerReviews = await ElectronicReview.find({Buyer: buyerProfile._id})
+
             res.status(200).json({
                 id: buyerProfile._id,
                 username: buyerProfile.username,
                 email: buyerProfile.email,
-                reviews: BuyerReviews
+                reviews: [BuyerReviews.Comment, BuyerReviews.Rating]
             });
         } else {
             res.status(400).json({msg: "You are not authorized to view this profile."})
