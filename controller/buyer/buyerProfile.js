@@ -1,7 +1,7 @@
 const Buyer = require('../../model/buyer/buyerUser')
 const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 
-// GETTING SELLER PROFILE
+// GETTING BUYER PROFILE
 const index = async (req, res) => {
     try {
         if (req.user.buyer){
@@ -24,7 +24,7 @@ const index = async (req, res) => {
     }
 }
 
-// UPDATING SELLER PROFILE
+// UPDATING BUYER PROFILE
 const update = async (req, res) => {
     try {
         if (req.user.buyer){
@@ -45,7 +45,7 @@ const update = async (req, res) => {
     }
 }
 
-// DELETING SELLER PROFILE AND ITS ELECTRONICS
+// DELETING BUYER PROFILE 
 const destroy = async (req, res) => {
     try {
         if (req.user.buyer){

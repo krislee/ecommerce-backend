@@ -21,6 +21,10 @@ const sellerUserSchema = new Schema({
         max: 1024,
         min: 8
     },
+    oldPasswords: {
+        type: [String], 
+        required: true
+    },
     date: {
         type: Date,
         default: Date.now()

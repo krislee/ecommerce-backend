@@ -6,6 +6,14 @@ const authSchema = Joi.object({
     password: Joi.string().min(8).max(255).required(),
 })
 
+const emailSchema = Joi.object({
+    email: Joi.string().email().required(),
+})
+
+const passwordSchema = Joi.object({
+    password: Joi.string().min(8).max(255).required()
+})
+
 module.exports = {
-    authSchema
+    authSchema, emailSchema, passwordSchema
 }
