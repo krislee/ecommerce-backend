@@ -79,9 +79,6 @@ const create = async (req, res) => {
                 Price: req.body.Price,
                 Seller: req.user
             })
-            const seller = await SellerUser.findById(req.user._id)
-            await seller.electronicItems.push(electronic._id)
-            await seller.save()
             res.status(200).json(electronic);
         } else {
             res.status(400).json({msg: "You are not authorized to create an electronic item"})
