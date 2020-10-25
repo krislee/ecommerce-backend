@@ -1,12 +1,13 @@
 const {SellerUser} = require('../../model/seller/sellerUser')
 const {Electronic} = require('../../model/seller/electronic')
-const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
+
 
 // GETTING SELLER PROFILE
 const index = async (req, res) => {
     try {
         if (req.user.seller){
             const sellerProfile = await SellerUser.findOne({_id: req.user._id})
+            const electronicItems = await Electronic.find({Seller: sellerProfile._id})
             res.status(200).json({
                 id: sellerProfile._id,
                 username: sellerProfile.username,
