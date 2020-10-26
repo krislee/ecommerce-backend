@@ -1,4 +1,4 @@
-const BuyerUser = require('../../model/buyer/buyerUser')
+const {BuyerUser} = require('../../model/buyer/buyerUser')
 const {SellerUser} = require('../../model/seller/sellerUser')
 const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 

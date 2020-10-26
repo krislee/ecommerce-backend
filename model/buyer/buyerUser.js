@@ -43,4 +43,6 @@ buyerUserSchema.pre('deleteOne', { document: true, query: true}, async function(
     }
 })
 
-module.exports = model('BuyerUser', buyerUserSchema)
+const BuyerUser = model('BuyerUser', buyerUserSchema)
+
+module.exports = {BuyerUser}

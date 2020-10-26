@@ -9,13 +9,13 @@ const bcrypt = require('bcrypt');
 const index = async (req, res) => {
     try {
         if (req.user.seller){
+
             const sellerProfile = await SellerUser.findOne({_id: req.user._id})
-            const electronicItems = await Electronic.find({Seller: sellerProfile._id})
+
             res.status(200).json({
                 id: sellerProfile._id,
                 username: sellerProfile.username,
                 email: sellerProfile.email,
-                electronicItems: electronicItems
             });
         } else {
             res.status(400).json({msg: "You are not authorized to view this profile."})
@@ -122,8 +122,9 @@ const update = async (req, res) => {
 const destroy = async (req, res) => {
     try {
         if (req.user.seller){
-            await SellerUser.findById(req.user.id, function(err, seller) {
+            await SellerUser.findById(req.user.id, function(err, seller) { // after finding the seller document by id, the document is passed to the seller param of the callback function 
 
+                // ???? WILL UPDATE THIS COMMENT
                 const queryElectronicItems = Electronic.find({_id: {$in: seller.electronicItems}})
 
                 // Delete reviews of the electronic items by running the pre deleteMany hook in electronic schema
