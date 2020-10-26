@@ -39,7 +39,7 @@ electronicsSchema.pre('deleteOne',  { document: false, query: true }, async func
     catch (error) {
         next(error)
     }
-)
+})
 const Electronic = model('electronic', electronicsSchema)
 
 
