@@ -13,3 +13,5 @@ mongoose.connect(mongoURI, mongoConfigObject, () => {
 db.on("error", (err) => console.log(err.message + " is Mongod not running?"));
 db.on("connected", () => console.log("mongo connected!"));
 db.on("disconnected", () => console.log("mongo disconnected"));
+
+mongoose.set('useFindAndModify', false);

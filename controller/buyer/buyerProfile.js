@@ -91,7 +91,7 @@ const update = async (req, res) => {
                     // Then add the newly updated password to the oldPasswords array
                     updateBuyer= await BuyerUser.findOneAndUpdate({_id: req.user._id}, {$push: {oldPasswords: newPassword}}, {new:true})
 
-                } else if (await seller.oldPasswords.length < 5) {
+                } else if (await buyer.oldPasswords.length < 5) {
                     // Do not need to remove from oldPasswords array since the length of the array is not 5 yet
                     updateBuyer = await BuyerUser.findOneAndUpdate({_id: req.user._id}, {password: newPassword, $push: {oldPasswords: newPassword}}, {new:true})
                 }
