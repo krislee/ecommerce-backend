@@ -13,7 +13,7 @@ const index = async (req, res) => {
             // .find({Seller:req.user._id}) finds all electronic item documents that belong to the logged in seller
             // .limit(limit*1).skip((page-1) * limit) paginates up to the limit
             // .populate(model_key_name) used in order to have the documents from referenced model, reviewElectronic to populate each Electronic document
-            const allElectronic = await Electronic.find({Seller: req.user._id}).limit(limit*1).skip((page-1) * limit).populate('Review'); 
+            const allElectronic = await Electronic.find({Seller: req.user._id}).limit(limit*1).skip((page-1) * limit)
 
             res.status(200).json({
                 allElectronic,

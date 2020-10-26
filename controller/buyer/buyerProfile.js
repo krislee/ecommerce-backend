@@ -40,8 +40,8 @@ const update = async (req, res) => {
                 await emailSchema.validateAsync(req.body)
 
                 // Check if email exists in the database 
-                const doesExistSellerEmail = await SellerUser.findOne({email: result.email})
-                const doesExistBuyerEmail = await BuyerUser.findOne({email: result.email})
+                const doesExistSellerEmail = await SellerUser.findOne({email: req.body.email})
+                const doesExistBuyerEmail = await BuyerUser.findOne({email: req.body.email})
 
                 // If email exists in the database or is the current email then return. Else update the email.
                 if (req.user.email === req.body.email) {
@@ -66,11 +66,11 @@ const update = async (req, res) => {
                 await passwordSchema.validateAsync(req.body)
                 
                 // Grab the seller document
-                seller = await BuyerUser.findById(req.user._id)
+                buyer = await BuyerUser.findById(req.user._id)
 
                 // Check if the entered password seller is trying to update is the last 5 (or less) passwords. If it is, return.
-                for (let i = 0; i < seller.oldPasswords.length; i ++) {
-                    const comparePasswords = await bcrypt.compare(req.body.password, seller.oldPasswords[i])
+                for (let i = 0; i < buyer.oldPasswords.length; i ++) {
+                    const comparePasswords = await bcrypt.compare(req.body.password, buyer.oldPasswords[i])
 
                     if (comparePasswords) {
                         return res.status(200).json({msg: "Your password cannot be your last 5 passwords."})
@@ -85,7 +85,7 @@ const update = async (req, res) => {
                 // Initialize variable that will store the updated seller
                 let updateBuyer
                 
-                if (await seller.oldPasswords.length == 5) {
+                if (await buyer.oldPasswords.length == 5) {
                     // Remove the oldest password aka 1st password in the oldPasswords array
                     updateBuyer = await BuyerUser.findOneAndUpdate({_id: req.user._id}, {password: newPassword, $pop: {oldPasswords: -1}, }, {new:true})
                     // Then add the newly updated password to the oldPasswords array
@@ -93,7 +93,7 @@ const update = async (req, res) => {
 
                 } else if (await seller.oldPasswords.length < 5) {
                     // Do not need to remove from oldPasswords array since the length of the array is not 5 yet
-                    updateSeller = await BuyerUser.findOneAndUpdate({_id: req.user._id}, {password: newPassword, $push: {oldPasswords: newPassword}}, {new:true})
+                    updateBuyer = await BuyerUser.findOneAndUpdate({_id: req.user._id}, {password: newPassword, $push: {oldPasswords: newPassword}}, {new:true})
                 }
 
                 return res.status(200).json({

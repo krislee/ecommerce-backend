@@ -1,5 +1,4 @@
 const {Schema, model} = require ('mongoose')
-const Buyer = require('../buyer/buyerUser')
 
 // 1 buyer has many reviews
 // 1 item has many reviews 
