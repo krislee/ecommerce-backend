@@ -61,11 +61,21 @@ const show = async (req, res) => {
         } else {
 
             // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
-            const oneElectronic = await Electronic.findById(req.params.id)
+            const oneElectronic = await  Electronic.findById(req.params.id)
+
+            // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
+            const seller = await SellerUser.findById(oneElectronic.Seller[0])
 
             // Get all the reviews documents of that one electronic item
             const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id})
             console.log(electronicReview, "all electronic reviews")
+
+            res.status(200).json({
+                electronicItem: oneElectronic,
+                sellerInfo: {username: seller.username, email: seller.email},
+                review: electronicReview
+            })
+
         }
     } catch (error) {
         res.status(400).send(error);
@@ -86,7 +96,7 @@ const create = async (req, res) => {
                 Image: req.body.Image,
                 Description: req.body.Description,
                 Price: req.body.Price,
-                Seller: req.user
+                Seller: req.user._id
             })
             res.status(200).json(electronic);
         } else {
@@ -103,7 +113,7 @@ const create = async (req, res) => {
 const update = async (req, res) => {
     try {
         if (req.user.seller){
-            const updateElectronic = await Electronic.findOneAndUpdate({_id: req.params.id, Seller: req.user._id}, req.body, {new: true}).populate('Review'); // {new:true} to return the document after updating
+            const updateElectronic = await Electronic.findOneAndUpdate({_id: req.params.id, Seller: req.user._id}, req.body, {new: true}) // {new:true} to return the document after updating
             if (updateElectronic){
                 res.status(200).json(updateElectronic)
             } 
@@ -120,10 +130,10 @@ const update = async (req, res) => {
 const destroy = async (req, res) => {
     try {
         if (req.user.seller){
-            const deleteElectronic = await Electronic.findOneAndDelete({_id: req.params.id, Seller: req.user._id})
-            if (deleteElectronic){
-                res.status(200).json(deleteElectronic)
-            } 
+            await Electronic.findById({_id: req.params.id, Seller: req.user._id}, function(err, electronic) {
+                electronic.deleteOne()
+                res.status(200).json({success: true})
+            })
         } else {
             res.status(400).json({msg: "You are not authorized to delete the electronic item"})
         }

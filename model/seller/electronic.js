@@ -31,6 +31,15 @@ electronicsSchema.pre('deleteMany', { document: false, query: true }, async func
     }
 })
 
+electronicsSchema.pre('deleteOne',  { document: false, query: true }, async function(next) {
+    try {
+        await ElectronicReview.deleteMany({ElectronicItem: this._id})
+        next()
+    }
+    catch (error) {
+        next(error)
+    }
+)
 const Electronic = model('electronic', electronicsSchema)
 
 
