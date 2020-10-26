@@ -1,5 +1,5 @@
 const {SellerUser} = require('../model/seller/sellerUser')
-const Buyer = require('../model/buyer/buyerUser')
+const {BuyerUser} = require('../model/buyer/buyerUser')
 const fs = require('fs')
 const path = require('path')
 const JWTStrategy = require('passport-jwt').Strategy
@@ -23,7 +23,7 @@ const strategy = new JWTStrategy(options, async (payload, done) => {
         
         if(await seller) return done(null, seller)
 
-        const buyer = await Buyer.findById(payload.sub)
+        const buyer = await BuyerUser.findById(payload.sub)
 
         if(await buyer) return done(null, buyer)
 
