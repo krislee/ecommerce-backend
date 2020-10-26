@@ -39,7 +39,7 @@ buyerUserSchema.pre('deleteOne', { document: true, query: true}, async function(
     try {
         console.log(this, "this")
         // Delete all electronic review documents that referenced to the removed buyer
-        await this.model('ElectronicReview').deleteMany({Buyer: this._id})
+        await this.model('reviewElectronic').deleteMany({Buyer: this._id})
         next()
     }
     catch (error) {
