@@ -57,7 +57,7 @@ sellerUserSchema.pre('deleteOne', { document: true, query: false}, async functio
         /* Could have also ran remove pre hook middleware instead of deleteOne pre hook middleware which will run with the route handler function containing seller.remove() and would need to import const Electronics = require('../seller/electronic') here
         await Electronics.remove({_id: {$in: this.electronicItems}}) */
 
-        // Since pre hook is a middleware, continue running the route handler function with next()
+        // Since pre hook is a middleware, continue running the delete seller profile route handler function with next()
         next()
     } 
     catch (error) {

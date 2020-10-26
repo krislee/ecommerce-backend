@@ -32,9 +32,8 @@ const update = async (req, res) => {
         if (req.user.seller){
             if (req.body.email){
                  // Check if email is validated 
-                const validatedEmail = await emailSchema.validateAsync(req.body)
+                await emailSchema.validateAsync(req.body)
 
-                // 
                 // Check if email exists in the database 
                 const doesExistSellerEmail = await SellerUser.findOne({email: result.email})
                 const doesExistBuyerEmail = await BuyerUser.findOne({email: result.email})
@@ -127,7 +126,7 @@ const destroy = async (req, res) => {
 
                 const queryElectronicItems = Electronic.find({_id: {$in: seller.electronicItems}})
 
-                // Delete reviews of the electronic items
+                // Delete reviews of the electronic items by running the pre deleteMany hook in electronic schema
                 queryElectronicItems.deleteMany()
 
                 // Runs the pre deleteOne hook in seller schema. Then deletes the seller and its electronic items

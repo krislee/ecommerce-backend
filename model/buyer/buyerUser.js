@@ -30,4 +30,17 @@ const buyerUserSchema = new Schema({
 })
 
 
+
+buyerUserSchema.pre('deleteOne', { document: true, query: true}, async function(next) {
+    try {
+        console.log(this, "this")
+        // Delete all electronic review documents that referenced to the removed buyer
+        this.model('ElectronicReview').deleteMany({Buyer: this._id})
+        next()
+    }
+    catch (error) {
+        next(error)
+    }
+})
+
 module.exports = model('BuyerUser', buyerUserSchema)
