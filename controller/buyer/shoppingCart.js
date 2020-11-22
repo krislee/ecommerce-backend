@@ -1,8 +1,6 @@
 const {Electronic} = require('../../model/seller/electronic')
 const Cart = require('../../model/buyer/cart')
 
-// Will not check if(req.user.buyer) because the user does not need to be logged in to do CRUD functions on shopping cart
-
 // Add or update item from ITEM'S DESCRIPTION PAGE to shopping cart. The add button in description page would have the item's id as the CSS id.
 const addOrUpdateItem = async(req, res) => {
     try {
