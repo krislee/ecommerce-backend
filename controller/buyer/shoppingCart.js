@@ -7,7 +7,7 @@ const addOrUpdateItem = async(req, res) => {
         const item = await Electronic.findById(req.params.id)
         console.log(item.Price, 'itemPriceOne');
         console.log(req.user, 'req.user');
-        console.log(req, 'req');
+        // console.log(req, 'req');
         if (req.user) {
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
             console.log('testcart')

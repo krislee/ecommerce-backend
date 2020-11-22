@@ -4,13 +4,13 @@ const {indexCart, addOrUpdateItem, updateItemQuantity, deleteItem} = require('..
 
 const router = express.Router();
 
-router.get('/electronic/cart', indexCart)
+router.get('/electronic/cart', passportAuthenticate, indexCart)
 
-router.post('/electronic/cart/:id', addOrUpdateItem)
+router.post('/electronic/cart/:id', passportAuthenticate, addOrUpdateItem)
 
-router.put('/electronic/cart/:id', updateItemQuantity)
+router.put('/electronic/cart/:id', passportAuthenticate, updateItemQuantity)
 
-router.delete('/electronic/cart/:id', deleteItem)
+router.delete('/electronic/cart/:id', passportAuthenticate, deleteItem)
 
 
 
