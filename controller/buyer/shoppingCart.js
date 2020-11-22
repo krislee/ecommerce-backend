@@ -94,23 +94,23 @@ const updateItemQuantity = async (req, res) => {
     try {
         const item = await Electronic.findById(req.params.id)
         
-        if(req.user.buyer){
+        if(req.user){
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
             
             const cartItem = await cart.Items.find(i => i.Id == item.id)
-            cartItem.Quantity += req.body.Quantity
-            cartItem.totalPrice += (item.Price * req.body.Quantity)
+            cartItem.Quantity = req.body.Quantity
+            cartItem.TotalPrice = (item.Price * req.body.Quantity)
 
             await cart.save()
 
             res.status(200).json(cart)
-        } else if (!req.user) {
-            const cartItem = req.session.cart.Items.find(i => i.Id == item.id)
+        } else {
+            const cartItem = req.session.cart.find(i => i.Id == item.id)
 
-            cartItem.Quantity += req.body.Quantity
-            cartItem.totalPrice += (item.Price * req.body.Quantity)
+            cartItem.Quantity = req.body.Quantity
+            cartItem.TotalPrice = (item.Price * req.body.Quantity)
 
-            res.status(200).json(req.session.cart.Items)
+            res.status(200).json(req.session.cart)
         }
     }
     catch (error) {
@@ -140,8 +140,7 @@ const indexCart = async(req, res) => {
 const deleteItem = async (req, res) => {
     try {
         const item = await Electronic.findById(req.params.id)
-
-        if(req.user.buyer){
+        if(req.user){
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
 
             const cartItemIndex = await cart.Items.findIndex(i => i.Id == item.id)
@@ -150,10 +149,10 @@ const deleteItem = async (req, res) => {
             await cart.save()
 
             res.status(200).json(cart)
-        } else if (!req.user) {
-            const cartItemIndex = req.session.cart.Items.findIndex(i => i.Id == item.id)
-            cart.Items.splice(cartItemIndex, 1)
-            res.status(200).json(req.session.cart.Items)
+        } else {
+            const cartItemIndex = req.session.cart.findIndex(i => i.Id == item.id)
+            req.session.cart.splice(cartItemIndex, 1)
+            res.status(200).json(req.session.cart)
         }
     } catch(error) {
         res.status(400).send(error)

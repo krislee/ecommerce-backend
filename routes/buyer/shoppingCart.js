@@ -8,9 +8,9 @@ router.get('/electronic/cart', indexCart)
 
 router.post('/electronic/cart/:id', addOrUpdateItem)
 
-router.put('/electronic/cart/:id', passportAuthenticate, updateItemQuantity)
+router.put('/electronic/cart/:id', updateItemQuantity)
 
-router.delete('/electronic/cart/:id', passportAuthenticate, deleteItem)
+router.delete('/electronic/cart/:id', deleteItem)
 
 
 
