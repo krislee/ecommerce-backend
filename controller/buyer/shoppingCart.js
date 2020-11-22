@@ -49,28 +49,27 @@ const addOrUpdateItem = async(req, res) => {
                 res.status(200).json(newCart)
             }
         } else {
-            console.log('not logged in');
-            if(req.session) {
-                const cartItem = req.session.cart.Items.find(i => i.Id == item.id)
+            if(req.session.cart) {
+                const cartItem = req.session.cart.find(i => i.Id == item.id)
+                console.log(cartItem, 'cartItem')
                 if (cartItem) {
                     cartItem.Quantity += req.body.Quantity
                     cartItem.TotalPrice += (req.body.Quantity * item.Price) 
                 } else {
-                    req.session.cart.Items.push({
+                    req.session.cart.push({
                         Id: item.id,
                         Name: item.Name,
                         Brand: item.Brand,
                         Image: item.Image,
-                        Quantity: 1,
+                        Quantity: req.body.Quantity,
                         Price: item.Price
                     })
                 }
-                res.status(200).json(req.session.cart.Items)
+                console.log(req.sessions.cart, 'cartItems');
+                res.status(200).json(req.session.cart);
             } else {
-                // console.log('hi');
-                req.session.cart = Cart.create({
-                    GuestBuyer: req.session.id,
-                    Items: [{
+                req.session.cart = 
+                    [{
                         Id: item.id,
                         Name: item.Name,
                         Image: item.Image,
@@ -78,8 +77,7 @@ const addOrUpdateItem = async(req, res) => {
                         Quantity: req.body.Quantity,
                         Price: req.body.Quantity * item.Price
                     }]
-                })
-                // console.log(req.session.cart);
+                
                 res.status(200).json(req.session.cart.Items)
             }
         }
