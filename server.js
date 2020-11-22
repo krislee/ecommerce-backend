@@ -1,4 +1,4 @@
-// DEPENDENCIES
+//////// DEPENDENCIES ////////
 
 // General Dependencies
 require("dotenv").config()
@@ -6,12 +6,19 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
-require('./db/connection')
+const connection = require('./db/connection')
 
 // Passport-related Dependencies
 const passport = require('passport')
 require('./auth/passport')(passport)
 
+// Express-sessions Dependencies
+const session = require('express-session')
+const MongoStore = require('connect-mongo')(session) // session store
+const sessionStore = new MongoStore({
+  mongooseConnection: connection, // the connection to mongoDB is the database connection we have set up
+  collection: 'sessions' // the database collections that we will put the sessions in will be named sessions 
+})
 
 // Item Routers Dependencies
 const electronicRouter = require('./routes/seller/electronic')
@@ -32,11 +39,12 @@ const buyerAuthRoute = require('./routes/buyer/buyerAuth')
 const sellerProfile = require('./routes/seller/sellerProfile')
 const buyerProfile = require('./routes/buyer/buyerProfile')
 
-//GLOBAL VARIABLES
+//////// GLOBAL VARIABLES ////////
 const PORT = process.env.PORT
 const NODE_ENV = process.env.NODE_ENV
+const SESSION_SECRET = process.env.SESSION_SECRET
 
-// CORS
+//////// CORS ////////
 const whitelist = ["http://localhost:3000/"]; 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -50,15 +58,22 @@ const corsOptions = {
   },
 };
 
+//////// MIDDLEWARES ////////
 
 // Put ternary to see if sites are allowed before making the server run in app.use()
 NODE_ENV === "development" ? app.use(cors()) : app.use(cors(corsOptions)); // If in development, allow all websites; if in production, allow websites in whitelist to make API calls to server
+
 app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
 app.use(morgan("dev"));
 app.use(express.static("public"));
+app.use(session({
+  secret: process.env.SESSION_SECRET, 
+  resave: false,
+  saveUninitialized: true,
+  store: sessionStore
+}))
 
-
-// ROUTES AND ROUTER
+//////// ROUTES AND ROUTER ////////
 
 // Login/Register Route
 app.use('/auth/seller', sellerAuthRoute) 
@@ -77,7 +92,7 @@ app.use('/buyer', [storeRouter, electronicReviewRouter, clothingReviewRouter, he
 app.use(passport.initialize())
 
 
-// TEST ROUTE
+// Test Route
 app.get('/', (req,res) => {
     res.send("Your server is working")
 })
