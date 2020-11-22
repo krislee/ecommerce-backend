@@ -5,10 +5,10 @@ const Cart = require('../../model/buyer/cart')
 const addOrUpdateItem = async(req, res) => {
     try {
         const item = await Electronic.findById(req.params.id)
-
-        if (req.user.buyer) {
+        // console.log(req.user);
+        if (req.user) {
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
-
+            // console.log('testcart')
             // if cart exists
             if  (await cart) {
                 // check if the cart contains the item by seeing if the item is in the Items array
@@ -48,8 +48,9 @@ const addOrUpdateItem = async(req, res) => {
 
                 res.status(200).json(newCart)
             }
-        } else if (!req.user) {
-            if(req.session.cart) {
+        } else {
+            console.log('not logged in');
+            if(req.session) {
                 const cartItem = req.session.cart.Items.find(i => i.Id == item.id)
                 if (cartItem) {
                     cartItem.Quantity += req.body.Quantity
@@ -66,6 +67,7 @@ const addOrUpdateItem = async(req, res) => {
                 }
                 res.status(200).json(req.session.cart.Items)
             } else {
+                // console.log('hi');
                 req.session.cart = Cart.create({
                     GuestBuyer: req.session.id,
                     Items: [{
@@ -77,6 +79,7 @@ const addOrUpdateItem = async(req, res) => {
                         Price: req.body.Quantity * item.Price
                     }]
                 })
+                // console.log(req.session.cart);
                 res.status(200).json(req.session.cart.Items)
             }
         }

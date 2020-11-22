@@ -4,7 +4,7 @@ const {addOrUpdateItem, updateItemQuantity, deleteItem} = require('../../control
 
 const router = express.Router();
 
-router.post('/electronic/cart/:electronicId', passportAuthenticate, addOrUpdateItem)
+router.post('/electronic/cart/:id', addOrUpdateItem)
 
 router.put('/electronic/cart/:id', passportAuthenticate, updateItemQuantity)
 

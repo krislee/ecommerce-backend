@@ -15,3 +15,5 @@ db.on("connected", () => console.log("mongo connected!"));
 db.on("disconnected", () => console.log("mongo disconnected"));
 
 mongoose.set('useFindAndModify', false);
+
+module.exports = db;
