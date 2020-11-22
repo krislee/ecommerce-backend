@@ -5,6 +5,7 @@ const Cart = require('../../model/buyer/cart')
 const addOrUpdateItem = async(req, res) => {
     try {
         const item = await Electronic.findById(req.params.id)
+        console.log(item.Price, 'itemPriceOne');
         // console.log(req.user);
         if (req.user) {
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
@@ -25,8 +26,8 @@ const addOrUpdateItem = async(req, res) => {
                         Name: item.Name,
                         Brand: item.Brand,
                         Image: item.Image,
-                        Quantity: 1,
-                        TotalPrice: item.Price
+                        Quantity: req.body.Quantity,
+                        TotalPrice: req.body.Quantity * item.Price
                     })
                 }
 
@@ -53,8 +54,9 @@ const addOrUpdateItem = async(req, res) => {
                 const cartItem = req.session.cart.find(i => i.Id == item.id)
                 console.log(cartItem, 'cartItem')
                 if (cartItem) {
+                    console.log(item.Price, 'itemPriceTwo');
                     cartItem.Quantity += req.body.Quantity
-                    cartItem.TotalPrice += (req.body.Quantity * item.Price) 
+                    cartItem.TotalPrice += (req.body.Quantity * item.Price)
                 } else {
                     req.session.cart.push({
                         Id: item.id,
@@ -62,10 +64,10 @@ const addOrUpdateItem = async(req, res) => {
                         Brand: item.Brand,
                         Image: item.Image,
                         Quantity: req.body.Quantity,
-                        Price: item.Price
+                        TotalPrice: req.body.Quantity * item.Price
                     })
                 }
-                console.log(req.sessions.cart, 'cartItems');
+                console.log(req.session.cart, 'cartItems');
                 res.status(200).json(req.session.cart);
             } else {
                 req.session.cart = 
@@ -75,10 +77,10 @@ const addOrUpdateItem = async(req, res) => {
                         Image: item.Image,
                         Brand: item.Brand,
                         Quantity: req.body.Quantity,
-                        Price: req.body.Quantity * item.Price
+                        TotalPrice: req.body.Quantity * item.Price
                     }]
                 
-                res.status(200).json(req.session.cart.Items)
+                res.status(200).json(req.session.cart);
             }
         }
     }
