@@ -173,9 +173,25 @@ module.exports = {addOrUpdateItem, updateItemQuantity, deleteItem}
     // if the item does not exist in the cartObj: 
         // cartObj.push({id: item.id, name: item.Name, brand: item.Brand, image: item.Image, quantity: input.value, totalPrice: input.value * item.Price})
     // if the item exists first in the cartObj:
-        // const cartItem = cartObject.find(i => i.id == item.id)
+        // const cartItem = cartObject.find(i => i.id == e.target.id)
         // if(cartItem) {cartItem.quantity += input.value; cartItem.totalPrice = cartItem.quantity * item.Price}
 // localStorage.setItem("cart", JSON.stringify(cartObj)) 
     // need to keep resetting the local storage every time the user adds items
+
 // when clicking on the shopping cart, display the items in the shopping cart: 
+    // const cart = JSON.parse(localStorage.getItem("cart"))
+
+// updating the quantities in the shopping cart from local storage:
+    // hit the server: const item = await Electronic.findById(req.params.id); res.status(200).json(item)
+    // then after receiving from the server:
+        // const cart = cartObject.find(i => i.id == e.target.id)
+        // cart.quantity = input.value
+        // cart.totalPrice = input.value * item.Price
+        // localStorage.setItem("cart", JSON.stringify(cartObj)) 
+        // JSON.parse(localStorage.getItem("cart"))
+
+// delete item from local storage shopping cart:
+    // const cartItemIndex = cartObject.findIndex(i => i.id == e.target.id)
+    // cart.splice(cartItemIndex, 1)
+    // localStorage.setItem("cart", JSON.stringify(cartObj)) 
     // JSON.parse(localStorage.getItem("cart"))
