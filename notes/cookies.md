@@ -1,0 +1,8 @@
+Request header is the client sending information to the server to tell what data the client wants back as a response. 
+The response header is the server sending information to the client.
+
+There is a cookie header in the request header and set-cookie header in the response header. The set-cookie header is the server saying to the client that it wants to set information about the client. For example, the server may tell the browser client that the client is logged in and you do not need to reauthenticate every time. We set a cookie, and in every request made within the same domain, or website, the cookie that we set is going to be attached to the cookie header in request header:
+
+Client requests data to server --> server will also set a cookie in the client's browser by setting the cookie in response header --> when refreshing the page, the browser's default behavior is to look up cookies set in its browser and attach the cookies on every request for the domain. The expired piece of cookie will tell the browser how long to store the cookie for the client before deleting the cookie. Once the cookie is expired, the cookie will no longer be attached to the HTTP request header.
+
+HTTP protocol is a stateless protocol, meaning HTTP requests forgets what the user has done on the site unless we have a way to remember it. If there is no persistent storage to store the current state, then when we refresh the page the previous state is lost (i.e. if you logged in but then you refresh the page and now you are not logged in and have to re-log again).  

@@ -1,5 +1,4 @@
 const {Electronic} = require('../../model/seller/electronic')
-const {SellerUser} = require('../../model/seller/sellerUser')
 const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 
 // GETTING ALL ELECTRONIC ITEMS
@@ -17,24 +16,12 @@ const index = async (req, res) => {
                 // .skip((page-1) * limit) skips the previous number of documents from previous pages to show the current page's documents (i.e. There are 3 pages, each with a limit of showing 5 docs. Then to have the 3rd page show 11-15 items, server needs to skip 10 documents) 
             const allElectronic = await Electronic.find({Seller: req.user._id}).limit(limit*1).skip((page-1) * limit)
 
-            res.status(200).json({
+            return res.status(200).json({
                 allElectronic,
                 totalPages: Math.ceil(total/limit),
                 currentPage: page //page is received from req.query i.e. route would be localhost:3000/seller/electronic?page=2, and the page number is 2
             });
-        } else {  // Buyer will see all the electronic items made by all sellers
-
-            const {limit = 10, page = 1} = req.query // set default values to limit and page for pagination
-            const total = await Electronic.find().countDocuments() // count the number of electronic items docs made by all sellers 
-
-            const allElectronic = await Electronic.find().limit(limit*1).skip((page-1) * limit)
-            
-            res.status(200).json({
-                allElectronic,
-                totalPages: Math.ceil(total/limit),
-                currentPage: page //page is received from req.query
-            });
-        }
+        } 
     }
     catch (error) {
         res.status(400).send(error);
@@ -49,41 +36,23 @@ const show = async (req, res) => {
             // Find one electronic item that belongs to the logged in seller. The query, _id: req.params.id, will only get one electronic item with that id and the query, Seller: req.user_id, will only get the one electronic item of the logged in user
             const oneElectronic = await Electronic.findOne({_id: req.params.id, Seller: req.user._id})
 
+            // If the electronic item document cannot be found because the database does not contain a document with the combination of the item's id and seller's id, then return message
+            if (!oneElectronic) return res.status(400).json({msg: "Electronic is not found"})
+
             // Find all the electronic reviews for the one electronic item
             const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id})
-
+           
             if (oneElectronic) {
-                res.status(200).json({
+                return res.status(200).json({
                     electronicItem: oneElectronic,
                     review: electronicReview
                 })
             } 
-        } else {
-
-            // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
-            const oneElectronic = await  Electronic.findById(req.params.id)
-
-            // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
-            const seller = await SellerUser.findById(oneElectronic.Seller[0])
-
-            // Get all the reviews documents of that one electronic item
-            const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id})
-            console.log(electronicReview, "all electronic reviews")
-
-            res.status(200).json({
-                electronicItem: oneElectronic,
-                sellerInfo: {username: seller.username, email: seller.email},
-                review: electronicReview
-            })
-
         }
     } catch (error) {
         res.status(400).send(error);
     }
 }
-
-// Click on Review button, which has an attribute id equal to the item ObjectId
-// Click on Submit of Review button, which will generate an ObjectId of that review
 
 // CREATE ELECTRONIC ITEM
 const create = async (req, res) => {
@@ -104,7 +73,6 @@ const create = async (req, res) => {
         }
     } 
     catch (error) {
-        console.log("error")
         res.status(400).send(error);
     }
 }
@@ -130,8 +98,12 @@ const update = async (req, res) => {
 const destroy = async (req, res) => {
     try {
         if (req.user.seller){
+            // Find the electronic document and pass it to the callback function's electronic param
             await Electronic.findById({_id: req.params.id, Seller: req.user._id}, function(err, electronic) {
+
+                // Run the deleteOne pre hook in electronic model to delete all reviews of the electronic item when deleted. Then deleteOne method will be called when next() in the pre hook is run.
                 electronic.deleteOne()
+
                 res.status(200).json({success: true})
             })
         } else {
@@ -142,4 +114,8 @@ const destroy = async (req, res) => {
     }
 }
 
+// PUBLISH ELECTRONICS TO STORE 
+
 module.exports = {index, show, create, update, destroy}
+
+// needs a publish function where after seller creates/updates the item, publish to the store site --> make a publishedElectronic model and index that
