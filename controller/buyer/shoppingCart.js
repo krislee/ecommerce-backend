@@ -6,21 +6,25 @@ const addOrUpdateItem = async(req, res) => {
     try {
         const item = await Electronic.findById(req.params.id)
         console.log(item.Price, 'itemPriceOne');
-        // console.log(req.user);
+        console.log(req.user, 'req.user');
+        console.log(req, 'req');
         if (req.user) {
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
-            // console.log('testcart')
+            console.log('testcart')
             // if cart exists
             if  (await cart) {
+                console.log('if cart exists');
                 // check if the cart contains the item by seeing if the item is in the Items array
                 const cartItem = cart.Items.find(i => i.Id === item.id)
                 console.log(item)
 
                 // if the item exists then update quantity and total price in the cart
                 if(cartItem) {
+                    console.log('cartItem exists')
                     cartItem.Quantity += req.body.Quantity
                     cartItem.TotalPrice += (item.Price * req.body.Quantity) // get price from server and not from client side to ensure charge is not made up
                 } else {
+                    console.log('cartItem is created')
                     cart.Items.push({
                         Id: item.id,
                         Name: item.Name,
@@ -35,6 +39,7 @@ const addOrUpdateItem = async(req, res) => {
 
                 res.status(200).json(cart)
             } else { // create a new cart to hold the items if cart does not exist
+                console.log('new cart is created')
                 const newCart = await Cart.create({
                     LoggedInBuyer: req.user._id,
                     Items: [{
