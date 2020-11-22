@@ -117,8 +117,20 @@ const updateItemQuantity = async (req, res) => {
     }
 } 
 
-// Show cart items
-
+// Show all items in the cart
+const indexCart = async(req, res) => {
+    try {
+        if(req.user.buyer) {
+            const cart = await Cart.find({LoggedInBuyer: req.user._id})
+            res.status(200).json(cart.Items)
+        } else if (!req.user) {
+            res.status(200).json(req.session.cart.Items)
+        }
+    }
+    catch(error) {
+        res.status(400).send(error)
+    }
+}
 
 // Delete item from shopping cart page
 const deleteItem = async (req, res) => {
@@ -153,3 +165,11 @@ const deleteItem = async (req, res) => {
 // https://stackoverflow.com/questions/59174763/how-to-add-product-to-shopping-cart-with-nodejs-express-and-mongoose
 
 module.exports = {addOrUpdateItem, updateItemQuantity, deleteItem}
+
+// if using local storage:
+// create const cartObj = []
+// push the items to cartObj each time the add item button is clicked on
+// localStorage.setItem("cart", JSON.stringify(cartObj)) 
+    // need to keep resetting the local storage every time the user adds items
+// when clicking on the shopping cart, display the items in the shopping cart: 
+    // JSON.parse(localStorage.getItem("cart"))
