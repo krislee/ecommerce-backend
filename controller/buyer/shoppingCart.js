@@ -120,12 +120,15 @@ const updateItemQuantity = async (req, res) => {
 
 // Show all items in the cart
 const indexCart = async(req, res) => {
+    console.log('indexCart route used');
     try {
-        if(req.user.buyer) {
+        console.log(req.user, 'user');
+        if(req.user) {
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
-            res.status(200).json(cart.Items)
-        } else if (!req.user) {
-            res.status(200).json(req.session.cart.Items)
+            res.status(200).json(cart)
+        } else {
+            console.log(req.session.cart);
+            res.status(200).json(req.session.cart)
         }
     }
     catch(error) {
@@ -165,7 +168,7 @@ const deleteItem = async (req, res) => {
 // https://stackoverflow.com/questions/55049421/add-items-to-cart-without-the-user-logged-in-react-js-and-redux
 // https://stackoverflow.com/questions/59174763/how-to-add-product-to-shopping-cart-with-nodejs-express-and-mongoose
 
-module.exports = {addOrUpdateItem, updateItemQuantity, deleteItem}
+module.exports = {indexCart, addOrUpdateItem, updateItemQuantity, deleteItem}
 
 // if using local storage when clicking add button in the item description page:
 // create const cartObj = []
