@@ -57,6 +57,7 @@ const loggedInAddItem = async(req, res, next) => {
                 res.status(200).json(newCart)
             }
         }
+        next();
     }
     catch (error) {
         res.status(400).send(error)
@@ -110,7 +111,7 @@ const guestAddItem = async(req, res, next) => {
             res.status(200).json(req.session.cart);
         }
 
-        next() // runs loggedInAddItem() for logged in user since the if(!req.user) statement would not run
+        // next() // runs loggedInAddItem() for logged in user since the if(!req.user) statement would not run
     }
     catch (error) {
         res.status(400).send(error)
