@@ -22,14 +22,11 @@ const sessionStore = new MongoStore({
 
 // Item Routers Dependencies
 const electronicRouter = require('./routes/seller/electronic')
-const clothingRouter = require('./routes/seller/clothing')
-const healthRouter = require('./routes/seller/health')
 const storeRouter = require('./routes/buyer/store')
 
 // Item Review Routers Dependencies
 const electronicReviewRouter = require('./routes/buyer/electronicReview')
-const clothingReviewRouter = require('./routes/buyer/clothingReview')
-const healthReviewRouter = require('./routes/buyer/healthReview')
+
 
 // Login Router Dependencies
 const sellerAuthRoute = require('./routes/seller/sellerAuth')

@@ -14,8 +14,8 @@ The algo used dictates asymmetric or symmetric crypto and the hashing function f
 After hashing and signing the original data you want to send over, you need to send the following object to the receiver:
 
 ```javascript
-pacakgeOfDataToSend = {
-    ago: algo
+packageOfDataToSend = {
+    algo: algo
     originalData: originalData // data does not have signature & is not hashed
     signedAndEncryptedData: signedHashedData // data is hashed & has signature
 }
