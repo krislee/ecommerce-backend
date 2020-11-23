@@ -80,10 +80,10 @@ app.use('/auth/seller', sellerAuthRoute)
 app.use('/auth/buyer', buyerAuthRoute)
 
 // Seller Account Route
-app.use('/seller', [electronicRouter, clothingRouter, healthRouter, sellerProfile])
+app.use('/seller', [electronicRouter, sellerProfile])
 
 // Buyer Route
-app.use('/buyer', [storeRouter, electronicReviewRouter, clothingReviewRouter, healthReviewRouter, buyerProfile, cartRouter])
+app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, cartRouter])
 
 // app.use('/buyer/cart', cartRouter, cartRouter.addItemSession)
 
