@@ -76,7 +76,7 @@ app.use(session({
 //////// ROUTES AND ROUTER ////////
 
 // Login/Register Route
-app.use('/auth/seller', sellerAuthRoute) 
+app.use('/auth/seller', sellerAuthRoute)
 app.use('/auth/buyer', buyerAuthRoute)
 
 // Seller Account Route
