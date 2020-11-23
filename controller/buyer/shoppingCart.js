@@ -18,8 +18,6 @@ const loggedInAddItem = async(req, res, next) => {
 
                     // if the item exists then update quantity and total price in the cart
                     if(cartItem) {
-                        console.log('cartItem exists')
-
                         cartItem.Quantity += req.body.Quantity
                         cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
                     } else { // if the item does not exist in the cart, then add the item
@@ -52,7 +50,6 @@ const loggedInAddItem = async(req, res, next) => {
                 res.status(200).json(newCart)
             }
         }
-        next() // runs addItemSession() for guest user since the if(req.user) statement would not run
     }
     catch (error) {
         res.status(400).send(error)
@@ -72,7 +69,6 @@ const guestAddItem = async(req, res) => {
                 
                 // if item exists in the cart, update quantity and total price
                 if (cartItem) { 
-                    console.log(item.Price, 'itemPriceTwo');
                     cartItem.Quantity += req.body.Quantity
                     cartItem.TotalPrice = cartItem.Quantity * item.Price
                 } else { // if item does not exists, then add the item to the cart
@@ -99,6 +95,8 @@ const guestAddItem = async(req, res) => {
 
             res.status(200).json(req.session.cart);
         }
+
+        next() // runs loggedInAddItem() for logged in user since the if(!req.user) statement would not run
     }
     catch (error) {
         res.status(400).send(error)
@@ -142,11 +140,10 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
 }
 
 // Update item quantity on client's SHOPPING CART PAGE. The update button in shopping cart's page would have the item's id as the CSS id. Since we are updating the quantity of the item, then the cart already exists so in this route controller we do not need to check if a cart exists or make a new cart.
-const updateItemQuantity = async (req, res) => {
+const loggedInUpdateItemQuantity = async (req, res) => {
     try {
-        const item = await Electronic.findById(req.params.id)
-        
         if(req.user){
+            const item = await Electronic.findById(req.params.id)
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
             
             const cartItem = await cart.Items.find(i => i.Id == item.id)
@@ -156,7 +153,18 @@ const updateItemQuantity = async (req, res) => {
             await cart.save()
 
             res.status(200).json(cart)
-        } else {
+        }
+    }
+    catch (error) {
+        res.status(400).send(error)
+    }
+} 
+
+const guestUpdateItemQuantity = async(req, res) => {
+    try {
+        if(!req.user) {
+            const item = await Electronic.findById(req.params.id)
+
             const cartItem = req.session.cart.find(i => i.Id == item.id)
 
             cartItem.Quantity = req.body.Quantity
@@ -168,18 +176,31 @@ const updateItemQuantity = async (req, res) => {
     catch (error) {
         res.status(400).send(error)
     }
-} 
+}
 
-// Show all items in the cart
-const indexCart = async(req, res) => {
-    console.log('indexCart route used');
+// Delete item from shopping cart page. The delete button will have the CSS id as electronic document id.
+const loggedInDeleteItem = async (req, res) => {
     try {
-        console.log(req.user, 'user');
-        if(req.user) {
+        if(req.user){
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
+
+            const cartItemIndex = await cart.Items.findIndex(i => i.Id == req.params.id)
+            await cart.Items.splice(cartItemIndex, 1)
+
+            await cart.save()
+
             res.status(200).json(cart)
-        } else {
-            console.log(req.session.cart);
+        } 
+    } catch(error) {
+        res.status(400).send(error)
+    }
+}
+
+const guestDeleteItem = (req, res) => {
+    try {
+        if (!req.user) {
+            const cartItemIndex = req.session.cart.findIndex(i => i.Id == req.params.id)
+            req.session.cart.splice(cartItemIndex, 1)
             res.status(200).json(req.session.cart)
         }
     }
@@ -188,39 +209,48 @@ const indexCart = async(req, res) => {
     }
 }
 
-// Delete item from shopping cart page
-const deleteItem = async (req, res) => {
+// REMEMBER TO DELETE CART OBJECT FROM MONGO OR SESSION WHEN STRIPE PURCHASE IS MADE!!!!!
+
+
+// Show all items in the cart
+const loggedInIndexCart = async(req, res) => {
+    console.log('logged in indexCart route used');
+
     try {
-        const item = await Electronic.findById(req.params.id)
-        if(req.user){
+        console.log(req.user, 'user');
+        if(req.user) {
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
-
-            const cartItemIndex = await cart.Items.findIndex(i => i.Id == item.id)
-            await cart.Items.splice(cartItemIndex, 1)
-
-            await cart.save()
-
+            console.log(cart, "logged in cart")
             res.status(200).json(cart)
-        } else {
-            const cartItemIndex = req.session.cart.findIndex(i => i.Id == item.id)
-            req.session.cart.splice(cartItemIndex, 1)
-            res.status(200).json(req.session.cart)
         }
-    } catch(error) {
+    }
+    catch(error) {
         res.status(400).send(error)
     }
 }
 
+const guestIndexCart = (req, res) => {
+    console.log('guest indexCart route used');
 
+    try {
+        if(!req.user) {
+            console.log("guest cart")
+            res.status(200).json(req.session.cart)
+        }
+    }
+    catch(error) {
+        res.status(400).send(error)
+    }
+}
 
-// remember to delete cart object when purchase is made 
+module.exports = {loggedInIndexCart, guestIndexCart, loggedInAddItem, guestAddItem, addItemsFromGuestToLoggedIn, loggedInUpdateItemQuantity, guestUpdateItemQuantity, loggedInDeleteItem, guestDeleteItem}
 
-
+// Helpful resources:
 // https://stackoverflow.com/questions/55049421/add-items-to-cart-without-the-user-logged-in-react-js-and-redux
 // https://stackoverflow.com/questions/59174763/how-to-add-product-to-shopping-cart-with-nodejs-express-and-mongoose
 
-module.exports = {indexCart, loggedInAddItem, guestAddItem, addItemsFromGuestToLoggedIn, updateItemQuantity, deleteItem}
 
+////// LOCAL STORAGE NOTES //////
 // if using local storage when clicking add button in the item description page:
 // create const cartObj = []
 // hit the server: const item = await Electronic.findById(req.params.id); res.status(200).json(item)

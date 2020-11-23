@@ -1,16 +1,16 @@
 const express = require('express');
 const passport = require('passport');
-const {indexCart, loggedInAddItem, guestAddItem, updateItemQuantity, deleteItem} = require('../../controller/buyer/shoppingCart');
-
 const router = express.Router();
+const {loggedInIndexCart, guestIndexCart, loggedInAddItem, guestAddItem, loggedInUpdateItemQuantity, guestUpdateItemQuantity, loggedInDeleteItem, guestDeleteItem} = require('../../controller/buyer/shoppingCart');
+const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
-router.get('/electronic/cart', passportAuthenticate, indexCart)
+router.get('/electronic/cart', guestIndexCart, passportAuthenticate, loggedInIndexCart)
 
-router.post('/electronic/cart/:id', passportAuthenticate, loggedInAddItem, guestAddItem)
+router.post('/electronic/cart/:id', guestAddItem, passportAuthenticate, loggedInAddItem)
 
-router.put('/electronic/cart/:id', passportAuthenticate, updateItemQuantity)
+router.put('/electronic/cart/:id', guestUpdateItemQuantity, passportAuthenticate, loggedInUpdateItemQuantity)
 
-router.delete('/electronic/cart/:id', passportAuthenticate, deleteItem)
+router.delete('/electronic/cart/:id', guestDeleteItem, passportAuthenticate, loggedInDeleteItem)
 
 
 
