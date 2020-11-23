@@ -10,6 +10,8 @@ const loggedInAddItem = async(req, res, next) => {
             const item = await Electronic.findById(req.params.id)
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
 
+            console.log(cart, "logged in cart")
+
             // if cart exists
             if (await cart) {
                     
@@ -32,6 +34,9 @@ const loggedInAddItem = async(req, res, next) => {
                     }
                 
                 await cart.save()
+
+                console.log(cart, "updated logged in user's cart")
+
                 res.status(200).json(cart)
 
             } else { // create a new cart to hold the added item if cart does not exist
@@ -46,6 +51,8 @@ const loggedInAddItem = async(req, res, next) => {
                         TotalPrice: req.body.Quantity * item.Price
                     }]
                 })
+
+                console.log(newCart, "new cart created for logged in user")
 
                 res.status(200).json(newCart)
             }
@@ -62,6 +69,8 @@ const guestAddItem = async(req, res, next) => {
         // if user is not logged in, then there would be no req.user obj and the following would run
         if (!req.user) {
             const item = await Electronic.findById(req.params.id)
+
+            console.log(item, "guest trying to add item")
 
             // if a cart has been made for the guest user, then check if the item is already in the cart 
             if(req.session.cart) {
@@ -81,6 +90,9 @@ const guestAddItem = async(req, res, next) => {
                         TotalPrice: req.body.Quantity * item.Price
                     })
                 }
+
+                console.log(req.session.cart, "guest cart after adding item")
+
             } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
                 req.session.cart = 
                     [{
@@ -91,6 +103,8 @@ const guestAddItem = async(req, res, next) => {
                         Quantity: req.body.Quantity,
                         TotalPrice: req.body.Quantity * item.Price
                     }]
+                
+                console.log(req.session.cart, "guest cart made to add item")
             }
 
             res.status(200).json(req.session.cart);
@@ -131,6 +145,8 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             
             await cart.save()
 
+            console.log(cart, "adding items from guest to logged in cart")
+
             // then delete the cart from the session after adding all the items from cart
             delete sessionCart
         }
@@ -166,6 +182,8 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             // then delete the cart from the session after adding all the items from cart
             delete sessionCart
         }
+
+        console.log(newCart, "new cart for adding items from guest to logged in cart")
 
         res.status(200).json({successful: true})
     }
