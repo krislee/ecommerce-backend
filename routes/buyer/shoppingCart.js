@@ -4,7 +4,7 @@ const router = express.Router();
 const {loggedInIndexCart, guestIndexCart, loggedInAddItem, guestAddItem, loggedInUpdateItemQuantity, guestUpdateItemQuantity, loggedInDeleteItem, guestDeleteItem} = require('../../controller/buyer/shoppingCart');
 const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
-router.get('/electronic/cart', guestIndexCart, passportAuthenticate, loggedInIndexCart)
+router.get('/electronic/cart', passportAuthenticate, loggedInIndexCart, guestIndexCart)
 
 router.post('/electronic/cart/:id', guestAddItem, passportAuthenticate, loggedInAddItem)
 

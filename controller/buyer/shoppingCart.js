@@ -56,8 +56,10 @@ const loggedInAddItem = async(req, res, next) => {
 
                 res.status(200).json(newCart)
             }
+        } else {
+            guestAddItem()
         }
-        next();
+        // next();
     }
     catch (error) {
         res.status(400).send(error)
