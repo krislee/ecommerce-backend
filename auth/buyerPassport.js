@@ -27,7 +27,7 @@ const strategy = new JWTStrategy(options, async (payload, done) => {
             return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
         }
     } catch (err) {
-        console.log(err)
+        console.log(err, "error from passport authenticate")
         done(err, null)
     }
 })

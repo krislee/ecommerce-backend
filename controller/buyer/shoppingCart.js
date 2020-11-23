@@ -57,12 +57,12 @@ const loggedInAddItem = async(req, res, next) => {
 }
 
 // Guest user adds item to cart
-const guestAddItem = async(req, res) => {
+const guestAddItem = async(req, res, next) => {
     try {
-        const item = await Electronic.findById(req.params.id)
-
         // if user is not logged in, then there would be no req.user obj and the following would run
         if (!req.user) {
+            const item = await Electronic.findById(req.params.id)
+
             // if a cart has been made for the guest user, then check if the item is already in the cart 
             if(req.session.cart) {
                 const cartItem = req.session.cart.find(i => i.Id == item.id)
@@ -108,30 +108,64 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
     const sessionCart = req.session.cart
     const cart = await Cart.find({LoggedInBuyer: req.user._id})
 
-    if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
-        for (let i = 0; i < sessionCart.length; i++) {
-            // check if the logged in cart already contains the item that was in the session cart
-            const cartItem = cart.Items.find(j => j.Id == sessionCart[i].id)
+    if (cart) {
+        if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
+            for (let i = 0; i < sessionCart.length; i++) {
+                // check if the logged in cart already contains the item that was in the session cart
+                const cartItem = cart.Items.find(j => j.Id == sessionCart[i].id)
 
-            if (cartItem) {
-                cartItem.Quantity += sessionCart[i].Quantity
-                cartItem.TotalPrice += sessionCart.TotalPrice
-            } else {
-                cart.Items.push({
-                    Id: sessionCart[i].id,
-                    Name: sessionCart[i].Name,
-                    Brand: sessionCart[i].Brand,
-                    Image: sessionCart[i].Image,
-                    Quantity: sessionCart[i].Quantity,
-                    TotalPrice: sessionCart[i].TotalPrice
-                })
+                if (cartItem) {
+                    cartItem.Quantity += sessionCart[i].Quantity
+                    cartItem.TotalPrice += sessionCart.TotalPrice
+                } else {
+                    cart.Items.push({
+                        Id: sessionCart[i].id,
+                        Name: sessionCart[i].Name,
+                        Brand: sessionCart[i].Brand,
+                        Image: sessionCart[i].Image,
+                        Quantity: sessionCart[i].Quantity,
+                        TotalPrice: sessionCart[i].TotalPrice
+                    })
+                }
             }
-        }
-        
-        await cart.save()
+            
+            await cart.save()
 
-        // then delete the cart from the session after adding all the items from cart
-        delete sessionCart
+            // then delete the cart from the session after adding all the items from cart
+            delete sessionCart
+        }
+
+        res.status(200).json({successful: true})
+    } else {
+        const newCart = await Cart.create({
+            LoggedInBuyer: req.user._id
+        })
+
+        if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
+            for (let i = 0; i < sessionCart.length; i++) {
+                // check if the logged in cart already contains the item that was in the session cart
+                const cartItem = newCart.Items.find(j => j.Id == sessionCart[i].id)
+
+                if (cartItem) {
+                    cartItem.Quantity += sessionCart[i].Quantity
+                    cartItem.TotalPrice += sessionCart.TotalPrice
+                } else {
+                    cart.Items.push({
+                        Id: sessionCart[i].id,
+                        Name: sessionCart[i].Name,
+                        Brand: sessionCart[i].Brand,
+                        Image: sessionCart[i].Image,
+                        Quantity: sessionCart[i].Quantity,
+                        TotalPrice: sessionCart[i].TotalPrice
+                    })
+                }
+            }
+            
+            await cart.save()
+
+            // then delete the cart from the session after adding all the items from cart
+            delete sessionCart
+        }
 
         res.status(200).json({successful: true})
     }
