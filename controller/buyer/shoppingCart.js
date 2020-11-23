@@ -6,6 +6,7 @@ const Cart = require('../../model/buyer/cart')
 // Logged in user adds item to cart
 const loggedInAddItem = async(req, res, next) => {
     try {
+        console.log(req.user, 'requser');
         if (req.user) {
             const item = await Electronic.findById(req.params.id)
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
@@ -13,8 +14,7 @@ const loggedInAddItem = async(req, res, next) => {
             console.log(cart, "logged in cart")
 
             // if cart exists
-            if (await cart) {
-                    
+            if (await cart !== []) {
                 // check if the cart contains the item by seeing if the item is in the Items array
                     const cartItem = cart.Items.find(i => i.Id === item.id)
 
@@ -53,11 +53,9 @@ const loggedInAddItem = async(req, res, next) => {
                 })
 
                 console.log(newCart, "new cart created for logged in user")
-
+                // newCart.save();
                 res.status(200).json(newCart)
             }
-        } else {
-            guestAddItem()
         }
         // next();
     }
