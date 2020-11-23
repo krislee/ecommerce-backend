@@ -11,7 +11,6 @@ const cartSchema = new Schema({
         TotalPrice: Number
     }],
     LoggedInBuyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}],
-    GuestBuyer: Number
 })
 
 const Cart = model('cart', cartSchema)

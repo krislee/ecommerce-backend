@@ -1,12 +1,12 @@
 const express = require('express');
 const passport = require('passport');
-const {indexCart, addOrUpdateItem, updateItemQuantity, deleteItem} = require('../../controller/buyer/shoppingCart');
+const {indexCart, loggedInAddItem, guestAddItem, updateItemQuantity, deleteItem} = require('../../controller/buyer/shoppingCart');
 
 const router = express.Router();
 
 router.get('/electronic/cart', passportAuthenticate, indexCart)
 
-router.post('/electronic/cart/:id', passportAuthenticate, addOrUpdateItem)
+router.post('/electronic/cart/:id', passportAuthenticate, loggedInAddItem, guestAddItem)
 
 router.put('/electronic/cart/:id', passportAuthenticate, updateItemQuantity)
 

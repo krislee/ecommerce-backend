@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {BuyerUser} = require('../../model/buyer/buyerUser')
 const {SellerUser} = require('../../model/seller/sellerUser')
+const {addItemsFromGuestToLoggedIn} =  require('../../controller/buyer/shoppingCart');
 const { authSchema } = require('../../auth/validation')
 const bcrypt = require('bcrypt');
 const {issueJWT} = require('../../auth/issueJWT')
@@ -49,8 +50,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
 
     // Find user by unique username
     const existUser = await BuyerUser.findOne({username : req.body.username})
@@ -75,9 +75,12 @@ router.post('/login', async (req, res) => {
         } else {
             res.status(400).json({success: false, msg: 'Wrong password'})
         }
+
+        next() // run addItemsFromGuestToLoggedIn() so that if there were items in the cart when user was not logged in, we update the cart automatically when the user is logged back in
     } catch (err) {
         res.status(400).send(err)
     }
-})
+}, addItemsFromGuestToLoggedIn)
 
-module.exports = router;
+
+module.exports = router

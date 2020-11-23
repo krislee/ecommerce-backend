@@ -2,44 +2,41 @@ const {Electronic} = require('../../model/seller/electronic')
 const Cart = require('../../model/buyer/cart')
 
 // Add or update item from ITEM'S DESCRIPTION PAGE to shopping cart. The add button in description page would have the item's id as the CSS id.
-const addOrUpdateItem = async(req, res) => {
+
+// Logged in user adds item to cart
+const loggedInAddItem = async(req, res, next) => {
     try {
-        const item = await Electronic.findById(req.params.id)
-        console.log(item.Price, 'itemPriceOne');
-        console.log(req.user, 'req.user');
-        // console.log(req, 'req');
         if (req.user) {
+            const item = await Electronic.findById(req.params.id)
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
-            console.log('testcart')
+
             // if cart exists
-            if  (await cart) {
-                console.log('if cart exists');
+            if (await cart) {
+                    
                 // check if the cart contains the item by seeing if the item is in the Items array
-                const cartItem = cart.Items.find(i => i.Id === item.id)
-                console.log(item)
+                    const cartItem = cart.Items.find(i => i.Id === item.id)
 
-                // if the item exists then update quantity and total price in the cart
-                if(cartItem) {
-                    console.log('cartItem exists')
-                    cartItem.Quantity += req.body.Quantity
-                    cartItem.TotalPrice += (item.Price * req.body.Quantity) // get price from server and not from client side to ensure charge is not made up
-                } else {
-                    console.log('cartItem is created')
-                    cart.Items.push({
-                        Id: item.id,
-                        Name: item.Name,
-                        Brand: item.Brand,
-                        Image: item.Image,
-                        Quantity: req.body.Quantity,
-                        TotalPrice: req.body.Quantity * item.Price
-                    })
-                }
+                    // if the item exists then update quantity and total price in the cart
+                    if(cartItem) {
+                        console.log('cartItem exists')
 
+                        cartItem.Quantity += req.body.Quantity
+                        cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
+                    } else { // if the item does not exist in the cart, then add the item
+                        cart.Items.push({
+                            Id: item.id,
+                            Name: item.Name,
+                            Brand: item.Brand,
+                            Image: item.Image,
+                            Quantity: req.body.Quantity,
+                            TotalPrice: req.body.Quantity * item.Price
+                        })
+                    }
+                
                 await cart.save()
-
                 res.status(200).json(cart)
-            } else { // create a new cart to hold the items if cart does not exist
-                console.log('new cart is created')
+
+            } else { // create a new cart to hold the added item if cart does not exist
                 const newCart = await Cart.create({
                     LoggedInBuyer: req.user._id,
                     Items: [{
@@ -54,15 +51,31 @@ const addOrUpdateItem = async(req, res) => {
 
                 res.status(200).json(newCart)
             }
-        } else {
+        }
+        next() // runs addItemSession() for guest user since the if(req.user) statement would not run
+    }
+    catch (error) {
+        res.status(400).send(error)
+    }
+}
+
+// Guest user adds item to cart
+const guestAddItem = async(req, res) => {
+    try {
+        const item = await Electronic.findById(req.params.id)
+
+        // if user is not logged in, then there would be no req.user obj and the following would run
+        if (!req.user) {
+            // if a cart has been made for the guest user, then check if the item is already in the cart 
             if(req.session.cart) {
                 const cartItem = req.session.cart.find(i => i.Id == item.id)
-                console.log(cartItem, 'cartItem')
-                if (cartItem) {
+                
+                // if item exists in the cart, update quantity and total price
+                if (cartItem) { 
                     console.log(item.Price, 'itemPriceTwo');
                     cartItem.Quantity += req.body.Quantity
-                    cartItem.TotalPrice += (req.body.Quantity * item.Price)
-                } else {
+                    cartItem.TotalPrice = cartItem.Quantity * item.Price
+                } else { // if item does not exists, then add the item to the cart
                     req.session.cart.push({
                         Id: item.id,
                         Name: item.Name,
@@ -72,9 +85,7 @@ const addOrUpdateItem = async(req, res) => {
                         TotalPrice: req.body.Quantity * item.Price
                     })
                 }
-                console.log(req.session.cart, 'cartItems');
-                res.status(200).json(req.session.cart);
-            } else {
+            } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
                 req.session.cart = 
                     [{
                         Id: item.id,
@@ -84,14 +95,50 @@ const addOrUpdateItem = async(req, res) => {
                         Quantity: req.body.Quantity,
                         TotalPrice: req.body.Quantity * item.Price
                     }]
-                
-                res.status(200).json(req.session.cart);
             }
+
+            res.status(200).json(req.session.cart);
         }
     }
     catch (error) {
         res.status(400).send(error)
     }
+}
+
+// Add items from guest shopping cart to logged in shopping cart when guest logs in 
+const addItemsFromGuestToLoggedIn = async (req, res) => {
+    const sessionCart = req.session.cart
+    const cart = await Cart.find({LoggedInBuyer: req.user._id})
+
+    if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
+        for (let i = 0; i < sessionCart.length; i++) {
+            // check if the logged in cart already contains the item that was in the session cart
+            const cartItem = cart.Items.find(j => j.Id == sessionCart[i].id)
+
+            if (cartItem) {
+                cartItem.Quantity += sessionCart[i].Quantity
+                cartItem.TotalPrice += sessionCart.TotalPrice
+            } else {
+                cart.Items.push({
+                    Id: sessionCart[i].id,
+                    Name: sessionCart[i].Name,
+                    Brand: sessionCart[i].Brand,
+                    Image: sessionCart[i].Image,
+                    Quantity: sessionCart[i].Quantity,
+                    TotalPrice: sessionCart[i].TotalPrice
+                })
+            }
+        }
+        
+        await cart.save()
+
+        // then delete the cart from the session after adding all the items from cart
+        delete sessionCart
+
+        res.status(200).json({successful: true})
+    }
+
+    res.status(400).json({successful: false})
 }
 
 // Update item quantity on client's SHOPPING CART PAGE. The update button in shopping cart's page would have the item's id as the CSS id. Since we are updating the quantity of the item, then the cart already exists so in this route controller we do not need to check if a cart exists or make a new cart.
@@ -172,7 +219,7 @@ const deleteItem = async (req, res) => {
 // https://stackoverflow.com/questions/55049421/add-items-to-cart-without-the-user-logged-in-react-js-and-redux
 // https://stackoverflow.com/questions/59174763/how-to-add-product-to-shopping-cart-with-nodejs-express-and-mongoose
 
-module.exports = {indexCart, addOrUpdateItem, updateItemQuantity, deleteItem}
+module.exports = {indexCart, loggedInAddItem, guestAddItem, addItemsFromGuestToLoggedIn, updateItemQuantity, deleteItem}
 
 // if using local storage when clicking add button in the item description page:
 // create const cartObj = []
