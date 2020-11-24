@@ -38,6 +38,7 @@ const buyerProfile = require('./routes/buyer/buyerProfile')
 
 // Cart Dependencies
 const cartRouter = require('./routes/buyer/shoppingCart');
+const cartController = require('./controller/buyer/shoppingCart')
 
 //////// GLOBAL VARIABLES ////////
 const PORT = process.env.PORT
@@ -84,6 +85,8 @@ app.use('/seller', [electronicRouter, sellerProfile])
 
 // Buyer Route
 app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, cartRouter])
+
+app.use('/guest', cartController.guestAddItem)
 
 // app.use('/buyer/cart', cartRouter, cartRouter.addItemSession)
 
