@@ -58,6 +58,7 @@ const loggedInAddItem = async(req, res, next) => {
             }
         }
         // next();
+        res.status(200).send('hi');
     }
     catch (error) {
         res.status(400).send(error)
@@ -93,6 +94,7 @@ const guestAddItem = async(req, res, next) => {
                 }
 
                 console.log(req.session.cart, "guest cart after adding item")
+                res.status(200).json(req.session.cart);
 
             } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
                 req.session.cart = 
@@ -106,12 +108,11 @@ const guestAddItem = async(req, res, next) => {
                     }]
                 
                 console.log(req.session.cart, "guest cart made to add item")
+                res.status(200).json(req.session.cart);
             }
-
-            res.status(200).json(req.session.cart);
         }
 
-        // next() // runs loggedInAddItem() for logged in user since the if(!req.user) statement would not run
+        next() // runs loggedInAddItem() for logged in user since the if(!req.user) statement would not run
     }
     catch (error) {
         res.status(400).send(error)

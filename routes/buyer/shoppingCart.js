@@ -6,7 +6,7 @@ const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.get('/electronic/cart', passportAuthenticate, loggedInIndexCart, guestIndexCart)
 
-router.post('/electronic/cart/:id', guestAddItem, passportAuthenticate, loggedInAddItem)
+router.post('/electronic/cart/:id', passportAuthenticate, loggedInAddItem, guestAddItem)
 
 router.put('/electronic/cart/:id', guestUpdateItemQuantity, passportAuthenticate, loggedInUpdateItemQuantity)
 

@@ -20,12 +20,16 @@ const options = {
 const strategy = new JWTStrategy(options, async (payload, done) => { 
     try {
         const user = await User.findById(payload.sub)
+        console.log(req.user, 'req.user from buyer passport line 23');
         // Once user is found, attach it to the passport obj
         if(await user){
+            console.log(req.user, 'req.user from buyer passport line 26');
             return done(null, user)
         } else {
+            console.log(req.user, 'req.user from buyer passport line 29');
             return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
         }
+        console.log(req.user, 'req.user from buyer passport line 32');
     } catch (err) {
         console.log(err, "error from passport authenticate")
         done(err, null)
