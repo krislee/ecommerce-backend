@@ -83,10 +83,10 @@ app.use('/auth/buyer', buyerAuthRoute)
 // Seller Account Route
 app.use('/seller', [electronicRouter, sellerProfile])
 
+app.post('/guest', cartController.guestAddItem)
+
 // Buyer Route
 app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, cartRouter])
-
-app.use('/guest', cartController.guestAddItem)
 
 // app.use('/buyer/cart', cartRouter, cartRouter.addItemSession)
 
