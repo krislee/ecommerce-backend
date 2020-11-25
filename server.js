@@ -88,7 +88,7 @@ app.post('/guest', cartController.guestAddItem)
 // Buyer Route
 app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, cartRouter])
 
-// app.use('/buyer/cart', cartRouter, cartRouter.addItemSession)
+app.use('/guest/cart', cartRouter, cartRouter.addItemSession)
 
 // Passport is an express middleware that will append diff properties to the req object, so you can store data within the req obj and each of the middlewares after will have access to the modified req object
 
