@@ -51,4 +51,52 @@ const guestAddItem = async(req, res, next) => {
     }
 }
 
-module.exports = {guestAddItem}
+// Update item quantity on client's SHOPPING CART PAGE. The update button in shopping cart's page would have the item's id as the CSS id. Since we are updating the quantity of the item, then the cart already exists so in this route controller we do not need to check if a cart exists or make a new cart.
+const guestUpdateItemQuantity = async(req, res) => {
+    try {
+        if(!req.user) {
+            const item = await Electronic.findById(req.params.id)
+
+            const cartItem = req.session.cart.find(i => i.Id == item.id)
+
+            cartItem.Quantity = req.body.Quantity
+            cartItem.TotalPrice = (item.Price * req.body.Quantity)
+
+            res.status(200).json(req.session.cart)
+        }
+    }
+    catch (error) {
+        res.status(400).send(error)
+    }
+}
+
+// Delete item from shopping cart page. The delete button will have the CSS id as electronic document id.
+const guestDeleteItem = (req, res) => {
+    try {
+        if (!req.user) {
+            const cartItemIndex = req.session.cart.findIndex(i => i.Id == req.params.id)
+            req.session.cart.splice(cartItemIndex, 1)
+            res.status(200).json(req.session.cart)
+        }
+    }
+    catch(error) {
+        res.status(400).send(error)
+    }
+}
+
+// Show all items in the cart
+const guestIndexCart = (req, res) => {
+    console.log('guest indexCart route used');
+
+    try {
+        if(!req.user) {
+            console.log("guest cart")
+            res.status(200).json(req.session.cart)
+        }
+    }
+    catch(error) {
+        res.status(400).send(error)
+    }
+}
+
+module.exports = {guestAddItem, guestUpdateItemQuantity, guestDeleteItem, guestIndexCart}

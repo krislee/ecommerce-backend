@@ -16,13 +16,29 @@ router.post('/electronic/cart/:id', (req, res) => {
 
 router.post('/sync/cart', passportAuthenticate, addItemsFromGuestToLoggedIn) // in the frontend, run the log in route, then store the JWT AND fetch this post route to add items
 
+router.put('/electronic/cart/:id', (req, res) => {
+    if(!req.headers.authorization) {
+        res.redirect(307, `/guestbuyer/update/${req.params.id}`)
+    } else {
+        res.redirect(307, `/loginbuyer/update/${req.params.id}`)
+    }
+})
 
+router.delete('/electronic/cart/:id', (req, res) => {
+    if(!req.headers.authorization) {
+        res.redirect(307, `/guestbuyer/delete/${req.params.id}`)
+    } else {
+        res.redirect(307, `/loginbuyer/delete/${req.params.id}`)
+    }
+})
 
-// router.get('/electronic/cart', passportAuthenticate)
-
-// router.put('/electronic/cart/:id', passportAuthenticate)
-
-// router.delete('/electronic/cart/:id', passportAuthenticate)
+router.get('/electronic/cart', (req, res) => {
+    if(!req.headers.authorization) {
+        res.redirect(307, `/guestbuyer/cart/${req.params.id}`)
+    } else {
+        res.redirect(307, `/loginbuyer/cart/${req.params.id}`)
+    }
+})
 
 module.exports = router
 
