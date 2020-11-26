@@ -37,9 +37,9 @@ const sellerProfile = require('./routes/seller/sellerProfile')
 const buyerProfile = require('./routes/buyer/buyerProfile')
 
 // Cart Dependencies
-const cartRouter = require('./routes/buyer/shoppingCart');
-const cartController = require('./routes/buyer/guestShoppingCart')
-const cartController2 = require('./routes/buyer/loggedInCart')
+const shoppingCartRouter = require('./routes/buyer/shoppingCart');
+const loginCartRouter = require('./routes/buyer/loggedInCart')
+const guestCartRouter = require('./routes/buyer/guestCart')
 
 //////// GLOBAL VARIABLES ////////
 const PORT = process.env.PORT
@@ -89,15 +89,10 @@ app.use('/auth/buyer', buyerAuthRoute)
 app.use('/seller', [electronicRouter, sellerProfile])
 
 // Buyer Route
-app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, cartRouter])
+app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, shoppingCartRouter])
 
-app.use('/guest', cartController2)
-
-
-// Test Route
-// app.get('/', (req,res) => {
-//     res.send("Your server is working")
-// })
+app.use('/loginbuyer', loginCartRouter)
+app.use('/guestbuyer', guestCartRouter)
 
 
 // LISTEN TO PORT
