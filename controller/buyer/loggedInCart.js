@@ -161,23 +161,16 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
 const loggedInUpdateItemQuantity = async (req, res) => {
     try {
         if(req.user){
-            console.log(req.params.id, "req.params.id put request")
             const item = await Electronic.findById(req.params.id)
-            console.log(item, "item for logged in update")
-            const cart = await Cart.find({LoggedInBuyer: req.user._id})
-            console.log(cart, "cart for logged in update")
-            console.log(cart[0].Items, "cart.Items")
-            const cartItem = cart[0].Items.find(i => {
-                console.log(i.ItemId, "i.ItemId")
-                
-                return i.ItemId == item._id
-            })
-            console.log(cartItem, "match cartItem for logged in update")
+            const cart = await Cart.findOne({LoggedInBuyer: req.user._id}) 
+
+            const cartItem = cart.Items.find(i => {return i.ItemId == item._id})
+
             cartItem.Quantity = req.body.Quantity
             cartItem.TotalPrice = (item.Price * req.body.Quantity)
-
+            console.log(cartItem, "cart after logged in update")
             await cart.save()
-
+            console.log(cart, "updated cart after save!")
             res.status(200).json(cart)
         }
     }
