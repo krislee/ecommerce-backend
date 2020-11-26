@@ -5,10 +5,10 @@ const {guestAddItem, guestUpdateItemQuantity, guestDeleteItem, guestIndexCart} =
 
 router.post('/:id', guestAddItem)
 
-router.put('/update/:id', passportAuthenticate, guestUpdateItemQuantity)
+router.put('/update/:id', guestUpdateItemQuantity)
 
-router.delete('/delete/:id', passportAuthenticate, guestDeleteItem)
+router.delete('/delete/:id', guestDeleteItem)
 
-router.get('/cart/:id', passportAuthenticate, guestIndexCart)
+router.get('/cart/:id', guestIndexCart)
 
 module.exports = router
