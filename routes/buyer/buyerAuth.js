@@ -81,7 +81,5 @@ router.post('/login', async (req, res, next) => {
         res.status(400).send(err)
     }
 })
-// addItemsFromGuestToLoggedIn
-
 
 module.exports = router

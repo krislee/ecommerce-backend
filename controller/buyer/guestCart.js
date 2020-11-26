@@ -7,7 +7,7 @@ const guestAddItem = async(req, res, next) => {
 
         const item = await Electronic.findById(req.params.id)
         console.log(item, "item in guest route")
-        
+
         // if a cart has been made for the guest user, then check if the item is already in the cart 
         if(req.session.cart) {
             const cartItem = req.session.cart.find(i => i.Id == item.id)
@@ -18,7 +18,7 @@ const guestAddItem = async(req, res, next) => {
                 cartItem.TotalPrice = cartItem.Quantity * item.Price
             } else { // if item does not exists, then add the item to the cart
                 req.session.cart.push({
-                    Id: item.id,
+                    ItemId: item.id,
                     Name: item.Name,
                     Brand: item.Brand,
                     Image: item.Image,
@@ -33,7 +33,7 @@ const guestAddItem = async(req, res, next) => {
         } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
             req.session.cart = 
                 [{
-                    Id: item.id,
+                    ItemId: item.id,
                     Name: item.Name,
                     Image: item.Image,
                     Brand: item.Brand,

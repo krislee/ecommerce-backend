@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
 
-router.get('/electronic/cart', passportAuthenticate)
+const {addItemsFromGuestToLoggedIn} = require('../../controller/buyer/loggedInCart')
+
+const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.post('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
@@ -11,9 +14,15 @@ router.post('/electronic/cart/:id', (req, res) => {
     }
 });
 
-router.put('/electronic/cart/:id', passportAuthenticate)
+router.post('/sync/cart', passportAuthenticate, addItemsFromGuestToLoggedIn) // in the frontend, run the log in route, then store the JWT AND fetch this post route to add items
 
-router.delete('/electronic/cart/:id', passportAuthenticate)
+
+
+// router.get('/electronic/cart', passportAuthenticate)
+
+// router.put('/electronic/cart/:id', passportAuthenticate)
+
+// router.delete('/electronic/cart/:id', passportAuthenticate)
 
 module.exports = router
 
@@ -24,3 +33,8 @@ module.exports = router
 // https://stackoverflow.com/questions/19035373/how-do-i-redirect-in-expressjs-while-passing-some-context
 // https://stackoverflow.com/questions/59174763/how-to-add-product-to-shopping-cart-with-nodejs-express-and-mongoose
 // https://stackoverflow.com/questions/38810114/node-js-with-express-how-to-redirect-a-post-request
+
+// 5f96cb5123730104a225f9c3 - iphone 12
+// 5f95a796ab49fe1565254ccb - samsung galaxy s10
+// 5f96cb4a23730104a225f9c2 - lenovo legion 5
+// 5f96cb4423730104a225f9c1 - sony

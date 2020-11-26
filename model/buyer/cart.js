@@ -3,7 +3,7 @@ const Electronic = require('../seller/electronic')
 
 const cartSchema = new Schema({
     Items: [{
-        itemId: String,
+        ItemId: String,
         Name: String,
         Image: String,
         Brand: String,
