@@ -10,7 +10,7 @@ const guestAddItem = async(req, res, next) => {
 
         // if a cart has been made for the guest user, then check if the item is already in the cart 
         if(req.session.cart) {
-            const cartItem = req.session.cart.find(i => i.Id == item.id)
+            const cartItem = req.session.cart.find(i => i.ItemId == item.id)
             
             // if item exists in the cart, update quantity and total price
             if (cartItem) { 
