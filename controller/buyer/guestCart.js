@@ -27,7 +27,7 @@ const guestAddItem = async(req, res, next) => {
                 })
             }
 
-            console.log(req.session.cart, "guest cart after adding item")
+            console.log(req.session, "guest cart after adding item")
             res.status(200).json(req.session.cart);
 
         } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
@@ -41,7 +41,7 @@ const guestAddItem = async(req, res, next) => {
                     TotalPrice: req.body.Quantity * item.Price
                 }]
             
-            console.log(req.session.cart, "guest cart made to add item")
+            console.log(req.session, "guest cart made to add item")
             res.status(200).json(req.session.cart);
         }
 

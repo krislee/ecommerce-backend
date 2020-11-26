@@ -124,33 +124,27 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             console.log(req.session, "after deleting session")
         }
 
-        res.status(200).json({successful: "added items to old cart after syncing"})
+        res.status(200).json({successful: "added items to OLD cart after SYNCING"})
     } else {
         const newCart = await Cart.create({
             LoggedInBuyer: req.user._id
         })
 
-        if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
+        if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the newly created cart of a logged in user
             for (let i = 0; i < sessionCart.length; i++) {
-                // check if the logged in cart already contains the item that was in the session cart
-                const cartItem = newCart.Items.find(j => j.Id == sessionCart[i].id)
-
-                if (cartItem) {
-                    cartItem.Quantity += sessionCart[i].Quantity
-                    cartItem.TotalPrice += sessionCart.TotalPrice
-                } else {
-                    cart.Items.push({
-                        ItemId: sessionCart[i].id,
-                        Name: sessionCart[i].Name,
-                        Brand: sessionCart[i].Brand,
-                        Image: sessionCart[i].Image,
-                        Quantity: sessionCart[i].Quantity,
-                        TotalPrice: sessionCart[i].TotalPrice
-                    })
-                }
+                
+                newCart.Items.push({
+                    ItemId: sessionCart[i].ItemId,
+                    Name: sessionCart[i].Name,
+                    Brand: sessionCart[i].Brand,
+                    Image: sessionCart[i].Image,
+                    Quantity: sessionCart[i].Quantity,
+                    TotalPrice: sessionCart[i].TotalPrice
+                })
+            
             }
             
-            await cart.save()
+            await newCart.save()
 
             // then delete the cart from the session after adding all the items from cart
             delete req.session.cart
@@ -159,7 +153,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
 
         console.log(newCart, "new cart for adding items from guest to logged in cart")
 
-        res.status(200).json({successful: "created a new cart and synced items"})
+        res.status(200).json({successful: "created a NEW cart and SYNC items"})
     }
 }
 
