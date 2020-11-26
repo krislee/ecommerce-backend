@@ -65,6 +65,10 @@ const corsOptions = {
 // Put ternary to see if sites are allowed before making the server run in app.use()
 NODE_ENV === "development" ? app.use(cors()) : app.use(cors(corsOptions)); // If in development, allow all websites; if in production, allow websites in whitelist to make API calls to server
 
+// Passport is an express middleware that will append diff properties to the req object, so you can store data within the req obj and each of the middlewares after will have access to the modified req object
+// Need to initialize the passport object for every passport strategy on each request.
+app.use(passport.initialize())
+
 app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
 app.use(morgan("dev"));
 app.use(express.static("public"));
@@ -87,12 +91,7 @@ app.use('/seller', [electronicRouter, sellerProfile])
 // Buyer Route
 app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, cartRouter])
 
-app.use('/', cartController2)
-
-// Passport is an express middleware that will append diff properties to the req object, so you can store data within the req obj and each of the middlewares after will have access to the modified req object
-
-// Need to initialize the passport object for every passport strategy on each request.
-app.use(passport.initialize())
+app.use('/guest', cartController2)
 
 
 // Test Route

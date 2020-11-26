@@ -5,6 +5,7 @@ const Cart = require('../../model/buyer/cart')
 
 // Logged in user adds item to cart
 const loggedInAddItem = async(req, res, next) => {
+ 
     try {
         console.log(req.user, 'requser');
         if (req.user) {
@@ -123,7 +124,7 @@ const guestAddItem = async(req, res, next) => {
 // Add items from guest shopping cart to logged in shopping cart when guest logs in 
 const addItemsFromGuestToLoggedIn = async (req, res) => {
     const sessionCart = req.session.cart
-    const cart = await Cart.find({LoggedInBuyer: req.user._id})
+    const cart = await Cart.find({LoggedInBuyer: req.param.id})
 
     if (cart) {
         if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user

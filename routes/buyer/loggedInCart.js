@@ -21,32 +21,39 @@ const loggedInAddItem = async(req, res, next) => {
     try {
         console.log(req.user, 'requser');
         if (req.user) {
-            const item = await Electronic.findById(req.params.id)
-            const cart = await Cart.find({LoggedInBuyer: req.user._id})
+            console.log(1)
 
-            console.log(req.params.id)
-            console.log(item, "item")
+            const item = await Electronic.findById(req.params.id)
+            console.log(item, 'finding item')
+
+            const cart = await Cart.find({LoggedInBuyer: req.user._id})
             console.log(cart, "logged in cart")
 
             // if cart exists
-            if (cart.length > 0) {
+            if (cart) {
                 // check if the cart contains the item by seeing if the item is in the Items array
-                    const cartItem = cart.Items.find(i => i.Id === item.id)
-
-                    // if the item exists then update quantity and total price in the cart
-                    if(cartItem) {
-                        cartItem.Quantity += req.body.Quantity
-                        cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
-                    } else { // if the item does not exist in the cart, then add the item
-                        cart.Items.push({
-                            Id: item.id,
-                            Name: item.Name,
-                            Brand: item.Brand,
-                            Image: item.Image,
-                            Quantity: req.body.Quantity,
-                            TotalPrice: req.body.Quantity * item.Price
-                        })
-                    }
+                console.log(cart[0].Items, "item")
+                const cartItem = cart[0].Items.find((i) => {
+                    console.log(i, "i")
+                    return i.itemId === item._id
+                })
+                console.log(cartItem, "cart has more than 1 item")
+                // if the item exists then update quantity and total price in the cart
+                if(cartItem) {
+                    console.log("if in cartItem")
+                    cartItem.Quantity += req.body.Quantity
+                    cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
+                } else { // if the item does not exist in the cart, then add the item
+                    console.log(cart[0].Items, "else cart[0].Items")
+                    cart[0].Items.push({
+                        itemId: item._id,
+                        Name: item.Name,
+                        Brand: item.Brand,
+                        Image: item.Image,
+                        Quantity: req.body.Quantity,
+                        TotalPrice: req.body.Quantity * item.Price
+                    })
+                }
                 
                 await cart.save()
 
@@ -55,13 +62,12 @@ const loggedInAddItem = async(req, res, next) => {
                 res.status(200).json(cart)
 
             } else { // create a new cart to hold the added item if cart does not exist
-                console.log("blah blah")
-                console.log(item, "item inside")
-                console.log(typeof ("string"))
+                console.log("hi")
+                console.log(item._id, "item._id")
                 const newCart = await Cart.create({
                     LoggedInBuyer: req.user._id,
                     Items: [{
-                        Id: item.id,
+                        itemId: item._id,
                         Name: item.Name,
                         Image: item.Image,
                         Brand: item.Brand,
@@ -75,14 +81,14 @@ const loggedInAddItem = async(req, res, next) => {
                 res.status(200).json(newCart)
             }
         }
-        // next();
-        res.send("loggedincart")
     }
     catch (error) {
         res.status(400).send(error)
     }
 }
 
-router.post('/', passportAuthenticate, loggedInAddItem)
+router.post('/:id', passportAuthenticate, loggedInAddItem)
 
 module.exports = router
+// 5f95a796ab49fe1565254ccb 
+// 5f96cb5123730104a225f9c3

@@ -10,15 +10,6 @@ const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.get('/electronic/cart', passportAuthenticate, loggedInIndexCart, guestIndexCart)
 
-// router.post('/electronic/cart/:id', passportAuthenticate, (req, res) => {
-//     res.redirect(307, '/loggedIn/cart/')
-// })
-
-// router.post('/electronic/cart/:id', passportAuthenticate, (req, res) => {
-//     console.log(req.user)
-//     if(res.status(401)) {console.log(req.user)}
-// })
-
 router.post('/electronic/cart/:id', async (req, res, next) => {
     if(!req.headers.authorization) {
         // res.send("guest")
@@ -70,10 +61,12 @@ router.post('/electronic/cart/:id', async (req, res, next) => {
             console.log(error, "error of guest")
             res.status(400).send(error)
         }
-    } else {
-        console.log("else")
-        res.redirect(307, '/guest/cart')
-    }
+    } 
+    console.log("else")
+    res.redirect(307, `/guest/${req.params.id}`)
+    // res.redirect('/profile/')
+    // app.use('/profile')
+    // router.get('/')
 });
 
 router.put('/electronic/cart/:id', guestUpdateItemQuantity, passportAuthenticate, loggedInUpdateItemQuantity)
@@ -93,5 +86,13 @@ router.delete('/electronic/cart/:id', guestDeleteItem, passportAuthenticate, log
 //     })
 // })
 
+// router.post('/electronic/cart/:id', passportAuthenticate, (req, res) => {
+//     res.redirect(307, '/loggedIn/cart/')
+// })
+
+// router.post('/electronic/cart/:id', passportAuthenticate, (req, res) => {
+//     console.log(req.user)
+//     if(res.status(401)) {console.log(req.user)}
+// })
 
 module.exports = router
