@@ -69,7 +69,7 @@ const loggedInAddItem = async(req, res, next) => {
 const guestAddItem = async(req, res, next) => {
     try {
         // if user is not logged in, then there would be no req.user obj and the following would run
-        if (!req.user) {
+        
             const item = await Electronic.findById(req.params.id)
 
             console.log(item, "guest trying to add item")
@@ -110,11 +110,12 @@ const guestAddItem = async(req, res, next) => {
                 console.log(req.session.cart, "guest cart made to add item")
                 res.status(200).json(req.session.cart);
             }
-        }
+        
 
-        next() // runs loggedInAddItem() for logged in user since the if(!req.user) statement would not run
+       // next() // runs loggedInAddItem() for logged in user since the if(!req.user) statement would not run
     }
     catch (error) {
+        console.log(error, "error of guest")
         res.status(400).send(error)
     }
 }

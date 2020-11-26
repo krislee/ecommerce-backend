@@ -1,14 +1,20 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
+
+const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 // Guest user adds item to cart
 const guestAddItem = async(req, res, next) => {
+    console.log("guestadditem")
     try {
         // if user is not logged in, then there would be no req.user obj and the following would run
         if (!req.user) {
             const item = await Electronic.findById(req.params.id)
 
-            console.log(item, "guest trying to add item")
+            const itemA= await Electronic.findById(req.query.cart)
+
+            console.log(itemA, "guest trying to add item")
 
             // if a cart has been made for the guest user, then check if the item is already in the cart 
             if(req.session.cart) {
@@ -55,6 +61,6 @@ const guestAddItem = async(req, res, next) => {
     }
 }
 
-router.post('/', guestAddItem)
+router.post('/', passportAuthenticate, guestAddItem)
 
 module.exports = router

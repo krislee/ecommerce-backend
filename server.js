@@ -87,8 +87,7 @@ app.use('/seller', [electronicRouter, sellerProfile])
 // Buyer Route
 app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, cartRouter])
 
-app.use('/loggedin/cart', cartController2)
-app.use('/guest/cart', cartController)
+app.use('/', cartController2)
 
 // Passport is an express middleware that will append diff properties to the req object, so you can store data within the req obj and each of the middlewares after will have access to the modified req object
 
@@ -97,9 +96,9 @@ app.use(passport.initialize())
 
 
 // Test Route
-app.get('/', (req,res) => {
-    res.send("Your server is working")
-})
+// app.get('/', (req,res) => {
+//     res.send("Your server is working")
+// })
 
 
 // LISTEN TO PORT

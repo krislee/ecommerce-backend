@@ -1,11 +1,15 @@
 const {Electronic} = require('../../model/seller/electronic')
 const Cart = require('../../model/buyer/cart');
 const router = require('express').Router();
+const passport = require('passport');
 
-const authCheck = (req, res, next) => {
+const passportAuthenticate = passport.authenticate('jwt', {session: false})
+
+const authCheck = (err, req, res, next) => {
+    console.log(err)
     if(!req.user) {
         console.log("hi")
-        res.redirect(307, '/guest/cart')
+        res.redirect(307, '/guest/cart/')
     } else {
         next()
     }
@@ -20,10 +24,12 @@ const loggedInAddItem = async(req, res, next) => {
             const item = await Electronic.findById(req.params.id)
             const cart = await Cart.find({LoggedInBuyer: req.user._id})
 
+            console.log(req.params.id)
+            console.log(item, "item")
             console.log(cart, "logged in cart")
 
             // if cart exists
-            if (await cart !== []) {
+            if (cart.length > 0) {
                 // check if the cart contains the item by seeing if the item is in the Items array
                     const cartItem = cart.Items.find(i => i.Id === item.id)
 
@@ -49,6 +55,9 @@ const loggedInAddItem = async(req, res, next) => {
                 res.status(200).json(cart)
 
             } else { // create a new cart to hold the added item if cart does not exist
+                console.log("blah blah")
+                console.log(item, "item inside")
+                console.log(typeof ("string"))
                 const newCart = await Cart.create({
                     LoggedInBuyer: req.user._id,
                     Items: [{
@@ -67,13 +76,13 @@ const loggedInAddItem = async(req, res, next) => {
             }
         }
         // next();
-        res.status(200).send('hi');
+        res.send("loggedincart")
     }
     catch (error) {
         res.status(400).send(error)
     }
 }
 
-router.post('/', authCheck, loggedInAddItem)
+router.post('/', passportAuthenticate, loggedInAddItem)
 
 module.exports = router

@@ -26,9 +26,12 @@ const strategy = new JWTStrategy(options, async (payload, done) => {
         const buyer = await BuyerUser.findById(payload.sub)
         console.log(buyer, 'buyer from passport')
         if(await buyer) return done(null, buyer)
+        
         console.log('random password')
+
         return done(null, false) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
     } catch (err) {
+        console.log(123)
         console.log(err, 'error from password')
         done(err, null)
     }
