@@ -168,7 +168,7 @@ const loggedInUpdateItemQuantity = async (req, res) => {
 
             cartItem.Quantity = req.body.Quantity
             cartItem.TotalPrice = (item.Price * req.body.Quantity)
-            console.log(cartItem, "cart after logged in update")
+
             await cart.save()
             console.log(cart, "updated cart after save!")
             res.status(200).json(cart)
@@ -183,13 +183,13 @@ const loggedInUpdateItemQuantity = async (req, res) => {
 const loggedInDeleteItem = async (req, res) => {
     try {
         if(req.user){
-            const cart = await Cart.find({LoggedInBuyer: req.user._id})
-
-            const cartItemIndex = await cart.Items.findIndex(i => i.Id == req.params.id)
-            await cart.Items.splice(cartItemIndex, 1)
-
+            const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
+            console.log(cart, "find logged in cart for delete")
+            const cartItemIndex = await cart.Items.findIndex(i => {return i.ItemId == req.params.id})
+            console.log(cartItemIndex, "find delete index login")
+            cart.Items.splice(cartItemIndex, 1)
             await cart.save()
-
+            console.log(cart, "logged in cart after deleting")
             res.status(200).json(cart)
         } 
     } catch(error) {
