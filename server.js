@@ -91,6 +91,7 @@ app.use('/seller', [electronicRouter, sellerProfile])
 // Buyer Route
 app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, shoppingCartRouter])
 
+// Buyer Cart Re-routing from shoppingCartRouter
 app.use('/loginbuyer', loginCartRouter)
 app.use('/guestbuyer', guestCartRouter)
 

@@ -9,6 +9,6 @@ router.put('/update/:id', guestUpdateItemQuantity)
 
 router.delete('/delete/:id', guestDeleteItem)
 
-router.get('/cart/:id', guestIndexCart)
+router.get('/cart', guestIndexCart)
 
 module.exports = router

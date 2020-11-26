@@ -204,7 +204,7 @@ const loggedInIndexCart = async(req, res) => {
     try {
         console.log(req.user, 'user');
         if(req.user) {
-            const cart = await Cart.find({LoggedInBuyer: req.user._id})
+            const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
             console.log(cart, "logged in cart")
             res.status(200).json(cart)
         }

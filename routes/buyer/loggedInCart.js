@@ -10,6 +10,6 @@ router.put('/update/:id', passportAuthenticate, loggedInUpdateItemQuantity)
 
 router.delete('/delete/:id', passportAuthenticate, loggedInDeleteItem)
 
-router.get('/cart/:id', passportAuthenticate, loggedInIndexCart)
+router.get('/cart', passportAuthenticate, loggedInIndexCart)
 
 module.exports = router

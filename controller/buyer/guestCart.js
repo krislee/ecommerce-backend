@@ -76,11 +76,12 @@ const guestUpdateItemQuantity = async(req, res) => {
 // Delete item from shopping cart page. The delete button will have the CSS id as electronic document id.
 const guestDeleteItem = (req, res) => {
     try {
-        if (!req.user) {
-            const cartItemIndex = req.session.cart.findIndex(i => i.Id == req.params.id)
-            req.session.cart.splice(cartItemIndex, 1)
-            res.status(200).json(req.session.cart)
-        }
+
+        const cartItemIndex = req.session.cart.findIndex(i => i.ItemId == req.params.id)
+        req.session.cart.splice(cartItemIndex, 1)
+        console.log(req.session.cart, "guest cart after delete")
+        res.status(200).json(req.session.cart)
+        
     }
     catch(error) {
         res.status(400).send(error)
@@ -92,10 +93,9 @@ const guestIndexCart = (req, res) => {
     console.log('guest indexCart route used');
 
     try {
-        if(!req.user) {
-            console.log("guest cart")
+            console.log(req.session.cart, "guest cart")
             res.status(200).json(req.session.cart)
-        }
+        
     }
     catch(error) {
         res.status(400).send(error)
