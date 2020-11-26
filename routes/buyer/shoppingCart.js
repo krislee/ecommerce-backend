@@ -34,9 +34,9 @@ router.delete('/electronic/cart/:id', (req, res) => {
 
 router.get('/electronic/cart', (req, res) => {
     if(!req.headers.authorization) {
-        res.redirect(307, `/guestbuyer/cart/${req.params.id}`)
+        res.redirect(`/guestbuyer/cart/${req.params.id}`)
     } else {
-        res.redirect(307, `/loginbuyer/cart/${req.params.id}`)
+        res.redirect(`/loginbuyer/cart/${req.params.id}`)
     }
 })
 
