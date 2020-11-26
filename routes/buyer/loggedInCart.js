@@ -35,14 +35,24 @@ const loggedInAddItem = async(req, res, next) => {
                 console.log(cart[0].Items, "item")
                 const cartItem = cart[0].Items.find((i) => {
                     console.log(i, "i")
-                    return Number(i.itemId) === Number(item._id)
+
+                    console.log(i.itemId, "itemid")
+                    console.log(item._id, "item._id")
+
+                    console.log(parseInt(i.itemId) == parseInt(item._id), "boolean")
+                    return parseInt(i.itemId) === parseInt(item._id)
                 })
                 console.log(cartItem, "cart has more than 1 item")
                 // if the item exists then update quantity and total price in the cart
                 if(cartItem) {
                     console.log("if in cartItem")
                     cartItem.Quantity += req.body.Quantity
+                    console.log(cartItem.Quantity, "quantity")
                     cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
+                    console.log(cartItem.TotalPrice, "price")
+                    await cart.save()
+                    console.log(cart, "cart after saving")
+                    res.status(200).json(cart)
                 } else { // if the item does not exist in the cart, then add the item
                     console.log(cart[0].Items, "else cart[0].Items")
                     cart[0].Items.push({
