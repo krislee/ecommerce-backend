@@ -30,12 +30,12 @@ const loggedInAddItem = async(req, res, next) => {
             console.log(cart, "logged in cart")
 
             // if cart exists
-            if (cart) {
+            if (cart.length != 0) {
                 // check if the cart contains the item by seeing if the item is in the Items array
                 console.log(cart[0].Items, "item")
                 const cartItem = cart[0].Items.find((i) => {
                     console.log(i, "i")
-                    return i.itemId === item._id
+                    return Number(i.itemId) === Number(item._id)
                 })
                 console.log(cartItem, "cart has more than 1 item")
                 // if the item exists then update quantity and total price in the cart
