@@ -33,7 +33,6 @@ router.delete('/electronic/cart/:id', (req, res) => {
 })
 
 router.get('/cart', (req, res) => {
-    console.log("cart get request")
     if(!req.headers.authorization) {
         res.redirect(`/guestbuyer/cart`)
     } else {

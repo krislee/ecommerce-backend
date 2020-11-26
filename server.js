@@ -70,8 +70,11 @@ NODE_ENV === "development" ? app.use(cors()) : app.use(cors(corsOptions)); // If
 app.use(passport.initialize())
 
 app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
+
 app.use(morgan("dev"));
+
 app.use(express.static("public"));
+
 app.use(session({
   secret: process.env.SESSION_SECRET, 
   resave: false,
