@@ -80,9 +80,8 @@ const guestDeleteItem = (req, res) => {
         const cartItemIndex = req.session.cart.findIndex(i => i.ItemId == req.params.id)
         req.session.cart.splice(cartItemIndex, 1)
         console.log(req.session.cart, "guest cart after delete")
+        if(req.session.cart.length === 0) delete req.session.cart
         res.status(200).json(req.session.cart)
-        if(req.session.cart.length < 0) delete req.session.cart
-        
     }
     catch(error) {
         res.status(400).send(error)
