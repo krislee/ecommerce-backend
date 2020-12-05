@@ -1,0 +1,8 @@
+- Card Validation  
+    - Stripe does not check if the card entered exists
+- Card Refund
+- Card Fraud
+- Create customer
+- Email receipt
+- Save card and recollect CVC
+- Idempatency key to prevent charging more than once
