@@ -9,7 +9,8 @@ const bcrypt = require('bcrypt');
 const index = async (req, res) => {
     try {
         if (req.user.buyer){
-
+            console.log(req.user, "req.user from buyer profile")
+            console.log(req.buyer, "req.buyer from buyer profile")
             // Find the buyer user document in the db
             const buyerProfile = await BuyerUser.findOne({_id: req.user._id})
 
