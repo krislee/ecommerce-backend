@@ -17,14 +17,16 @@ When a customer registers or logs in to his/her account, ``jwt.sign()`` from the
 5. Combine base64url-encoded hashed header (from step 3), base64url-encoded hashed payload (from step 2), and signature (from step 4) to create JWT
 
 ## Verify JWT
-The ``passport`` JWT strategy uses the ``jsonwebtoken`` library ``jwt.verify()`` to verify the JWT, and then calls the callback function: ``new JWTStrategy(options, callback)``. The payload object is passed from ``jwt.verify()`` to the callback function. Using ``payload.sub``, the user mongo document is found and stored in the ``req`` object. The ``req`` object is accessible to next middleware functions.
+The ``passport`` JWT strategy uses the ``jsonwebtoken`` library ``jwt.verify()`` to verify the JWT, and then calls the callback function: ``new JWTStrategy(options, callback)``. The payload object is passed from ``jwt.verify()`` to the callback function. Using ``payload.sub``, the user mongo document is found and stored in the ``req.user`` object. The ``req.user`` object is accessible to next middleware functions.
 
 <ins> Behind the Scenes of ``jwt.verify()``:</ins>
 1. Breakdown JWT into a base64url-encoded header, base64url-encoded payload, and digital signature
 2. Load the base64url-encoded header and base64url-encoded payload
 3. ``sha256`` hashes the base64url-encoded header and base64url-encoded payload (manual hashing the base64url-encoded header and payload)
-4. Load the public key and JWT signature. The public key is used to decrypt the signature, returning a hashed, base64url-encoded header and hashed, base64url-encoded payload.
-5. Compare the hashed, base64url-encoded header and hashed, base64url-encoded payload (from step 3) to the decrypted hashed, base64url-encoded header and hashed, base64url-encoded payload (returned from step 4). A boolean is returned.
+4. Load the public key and JWT signature. The public key is used to decrypt the signature, returning a hashed, base64url-encoded header and hashed, base64url-encoded payload if the public key is correct.
+5. Compare the hashed, base64url-encoded header and hashed, base64url-encoded payload (from step 3) to the decrypted hashed, base64url-encoded header and hashed, base64url-encoded payload (returned from step 4). If there is a match, then payload is returned to ``passport`` callback. If there is a mismatch, then an error and undefined payload is returned to ``passport`` callback. 
+
+In the case of using ``passport``, if there is a mismatch, then it will return ``Unauthorized``.
 
 By using the public key to decrypt the JWT, you will know if 
 1. the JWT was issued from the expected sender since the public key can only decrypt a private key that corresponds to the public key  
