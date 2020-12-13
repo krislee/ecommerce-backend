@@ -39,7 +39,7 @@ const loggedInAddItem = async(req, res, next) => {
                         TotalPrice: req.body.Quantity * item.Price
                     })
                 }
-                
+
                 await cart.save()
                 res.status(200).json(cart)
 
@@ -56,6 +56,7 @@ const loggedInAddItem = async(req, res, next) => {
                         TotalPrice: req.body.Quantity * item.Price
                     }]
                 })
+   
                 console.log(newCart, "new cart successfully made for logged in user")
                 res.status(200).json(newCart)
             }
@@ -113,7 +114,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                     console.log(cart.Items, "cart.Items after pushing in else")
                 }
             }
-            
+           
             await cart.save()
 
             console.log(cart, "adding items from guest to logged in cart")
@@ -143,7 +144,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                 })
             
             }
-            
+
             await newCart.save()
 
             // then delete the cart from the session after adding all the items from cart
@@ -163,12 +164,13 @@ const loggedInUpdateItemQuantity = async (req, res) => {
         if(req.user){
             const item = await Electronic.findById(req.params.id)
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id}) 
-
+            
             const cartItem = cart.Items.find(i => {return i.ItemId == item._id})
 
             cartItem.Quantity = req.body.Quantity
             cartItem.TotalPrice = (item.Price * req.body.Quantity)
-
+            
+    
             await cart.save()
             console.log(cart, "updated cart after save!")
             res.status(200).json(cart)
@@ -205,8 +207,15 @@ const loggedInIndexCart = async(req, res) => {
         console.log(req.user, 'user');
         if(req.user) {
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
+            let totalCartPrice = 0
+            for (let i=0; i < cart.Items.length; i++) {
+                totalCartPrice += cart.Items[i].TotalPrice
+            }
             console.log(cart, "logged in cart")
-            res.status(200).json(cart)
+            res.status(200).json({
+                cart: cart,
+                totalCartPrice: totalCartPrice
+            })
         }
     }
     catch(error) {

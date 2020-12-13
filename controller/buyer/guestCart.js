@@ -94,7 +94,14 @@ const guestIndexCart = (req, res) => {
 
     try {
             console.log(req.session.cart, "guest cart")
-            res.status(200).json(req.session.cart)
+            let totalCartPrice = 0
+            for (let i=0; i < req.session.cart.length; i++) {
+                totalCartPrice += req.session.cart[i].TotalPrice
+            }
+            res.status(200).json({
+                cart: req.session.cart,
+                totalCartPrice: totalCartPrice
+            })
         
     }
     catch(error) {

@@ -27,7 +27,6 @@ const storeRouter = require('./routes/buyer/store')
 // Item Review Routers Dependencies
 const electronicReviewRouter = require('./routes/buyer/electronicReview')
 
-
 // Login Router Dependencies
 const sellerAuthRoute = require('./routes/seller/sellerAuth')
 const buyerAuthRoute = require('./routes/buyer/buyerAuth')
@@ -40,6 +39,9 @@ const buyerProfile = require('./routes/buyer/buyerProfile')
 const shoppingCartRouter = require('./routes/buyer/shoppingCart');
 const loginCartRouter = require('./routes/buyer/loggedInCart')
 const guestCartRouter = require('./routes/buyer/guestCart')
+
+// Stripe Dependencies
+const stripeRouter = require('./routes/buyer/stripe')
 
 //////// GLOBAL VARIABLES ////////
 const PORT = process.env.PORT
@@ -98,6 +100,8 @@ app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, shoppingCa
 app.use('/loginbuyer', loginCartRouter)
 app.use('/guestbuyer', guestCartRouter)
 
+// Stripe Route
+app.use('/create-payment-intent', stripeRouter)
 
 // LISTEN TO PORT
 app.listen(PORT, () => {

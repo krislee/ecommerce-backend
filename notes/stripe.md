@@ -45,3 +45,13 @@ Confirm payment intent --> status changes to requires_payment_method (if payment
 if(last_payment_error) {}
 
 confirmation_method: manual ???
+
+<ins>TODO</ins>
+
+During Payment:
+- Save cc in case you captured only a partial payment, and need to capture the other partial payment
+- Save cc so user do not need to enter cc info when checking out
+
+After Payment:
+- Refunds 
+- Receipt
