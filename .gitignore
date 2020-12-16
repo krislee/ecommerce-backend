@@ -2,4 +2,3 @@
 /node_modules
 id_rsa_priv.pem
 generateKeypair.js
-/notes
