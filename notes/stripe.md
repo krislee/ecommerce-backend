@@ -99,3 +99,11 @@ After Payment:
 
 
 How does stripe check if sufficient funds on card? Or if it is the right card details?
+
+Network Errors i.e. timeout
+To get a definitive answer, they should retry such requests with the same idempotency keys and the same parameters until they’re able to receive a result from the server. Sending the same idempotency with different parameters produces an error indicating that the new request didn’t match the original.
+
+Content error i.e. sending wrong API key (401 error) or wrong params (400 error)
+the safest strategy where 4xx errors are concerned is to always generate a new idempotency key when modifying the original request to get a successful result
+
+Server error i.e. problem with Stripe server (5xx error)
