@@ -45,11 +45,13 @@ Use Payment Intents API to make a payment
 
 Once the ``PaymentIntent`` is created, the ``client_secret`` attribute value of ``PaymentIntent`` is passsed to the client. The ``client_secret`` represents the ``PaymentIntent`` object.
 
+Client creates a payment method, entering payment information.
+
 <br><br>
 
-2. ### Confirm a ``PaymentIntent``:
+2. ### Confirm a ``PaymentIntent`` (normally automatic and simultaneous when customer's payment information is sent):
     - Confirming a ``PaymentIntent`` abstracts the 3 charging card steps:
-        1. 🕵️ Authentication - Card information is sent to the card issuer for verification. Some cards may require the cardholder to strongly authenticate the purchase through protocols like 3D Secure.
+        1. 🕵️ Authentication - Card information is sent to the card issuer for verification. Some cards may require the cardholder to strongly authenticate the purchase through protocols like 3D Secure, so this causes the status of the ``PaymentIntent`` to be ``requires_action``
 
         2. 💁 Authorization - Funds from the customer's account are put on hold but not transferred to the merchant.
 
@@ -57,6 +59,7 @@ Once the ``PaymentIntent`` is created, the ``client_secret`` attribute value of 
 
         - You can split Authorization and Capture steps to place a hold on a customer's card and capture later after a certain event. Set ``capture_method`` attribute in ``PaymentIntent`` to ``manual``. Note that funds must be captured within 7 days of authorizing the card or the PaymentIntent reverts back to a status of ``requires_payment_method``. If you want to charge a customer more than 7 days after collecting their card details, then save the card.
 
+    [Status of ``PaymentIntent``](https://stripe.com/docs/payments/intents#intent-statuses)
 <br><br>
 
 Server monitors webhooks to detect when the payment completes successfully or fails.
@@ -68,7 +71,7 @@ A webhook is an event, such as the payout of funds to your bank account, that tr
 ### When to use Webhook?
 Use webhook in asynchronous events, meaning the events happen at a later time and not directly in response to your code's execution. 
 
-Examples:
+Stripe events usually involves:
 - Payment Intents API
 - Subscriptions
 - Notifications of payouts
