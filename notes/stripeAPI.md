@@ -49,7 +49,7 @@ Client creates a payment method, entering payment information.
 
 <br><br>
 
-2. ### Confirm a ``PaymentIntent`` (normally automatic and simultaneous when customer's payment information is sent):
+2. ### Confirm a ``PaymentIntent`` (normally automatic and simultaneous when customer's payment information is sent): ``stripe.confirmCardPayment('client_secret')
     - Confirming a ``PaymentIntent`` abstracts the 3 charging card steps:
         1. 🕵️ Authentication - Card information is sent to the card issuer for verification. Some cards may require the cardholder to strongly authenticate the purchase through protocols like 3D Secure, so this causes the status of the ``PaymentIntent`` to be ``requires_action``
 
@@ -65,8 +65,11 @@ Client creates a payment method, entering payment information.
 Server monitors webhooks to detect when the payment completes successfully or fails.
 
 ## [Webhooks](https://stripe.com/docs/webhooks)
+
 ### What is a Webhook?
-A webhook is an event, such as the payout of funds to your bank account, that triggers a URL aka endpoint, creating a reaction, such as an order can now be fulfilled. A webhook is similar to an API but does not involve requests. In Stripe, the event is stored in an ``Event`` object.
+A webhook is an event, such as the payout of funds to your bank account, that triggers a URL aka endpoint, creating a reaction, such as an order can now be fulfilled.  In Stripe, the event with all the details of the event is stored in an ``event`` object. Stripe sends the ``event`` object in JSON format to the endpoint. The endpoint has a function that receives the JSON ``event`` object and executes a reaction, which includes first parsing the JSON ``event`` object into an ``event`` object, then depending on the type of the event, it has some code reaction, then finally return a 200 status which confirms receipt of the ``event`` object.
+
+(A webhook is similar to an API but does not involve requests).
 
 ### When to use Webhook?
 Use webhook in asynchronous events, meaning the events happen at a later time and not directly in response to your code's execution. 
@@ -82,3 +85,10 @@ Stripe events usually involves:
 - Logging an accounting entry when a transfer is paid
 - Indicating that an order can be fulfilled (i.e., boxed and shipped)
 
+
+# To-Do
+[] Make a webhook for the event ``payment_intent.succeeded``. The webhook endpoint will create an order in the database(?) or in Stripe dashboard??? and mark the order status as received. Order statuses: received, processing, shipped. The webhook endpoint will also capture the funds. Update order status on webhooks instead of in the client side because "it is possible for customers to leave the page after payment is complete but before the fulfillment process initiates".
+
+For any important post-payment actions (such as shipping packages, sending email receipts) we recommend setting up a webhook
+
+[] Make a webhook for the event ``payment_intent.requires_capture`` for waitlist items.
