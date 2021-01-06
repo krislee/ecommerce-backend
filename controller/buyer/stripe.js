@@ -37,6 +37,10 @@ const calculateOrderAmount = (req, res) => {
 const createPaymentIntent = async(req, res) => {
   if(req.user) {
     console.log("user is logged in, create payment intent")
+
+    // id of logged in customer's cart will be the idempotent key
+    const loggedInCart = LoggedInCart.findOne({LoggedInBuyer: req.user._id})
+
     // Create a Customer obj to store details on the customer (name, email, shipping address, etc.)
     // Customer obj used to store customer's card info in the payment intent
     const customer = await stripe.customers.create();
@@ -48,7 +52,10 @@ const createPaymentIntent = async(req, res) => {
       customer: customer.id,
       setup_future_usage: 'off_session',
       amount: calculateOrderAmount(),
-      currency: "usd"
+      currency: "usd",
+
+    }, {
+      idempotencyKey: loggedInCart._id
     });
 
     res.status(200).json({
@@ -56,10 +63,15 @@ const createPaymentIntent = async(req, res) => {
     });
   } else {
     console.log("user not logged in, create payment intent")
-    // if user is not logged in, do not create a payment intent with customer
+
+    console.log(req.sessionID, "guest cart's id")
+
+    // if user is not logged in, do not create a payment intent with customer property
     const paymentIntent = await stripe.paymentIntents.create({
       amount: calculateOrderAmount(),
       currency: "usd"
+    }, {
+      idempotencyKey: req.sessionID // use the guest cart's ID (which is from express-session)
     });
 
     res.status(200).json({

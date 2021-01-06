@@ -94,6 +94,7 @@ const guestIndexCart = (req, res) => {
 
     try {
             console.log(req.session.cart, "guest cart")
+            
             let totalCartPrice = 0
             for (let i=0; i < req.session.cart.length; i++) {
                 totalCartPrice += req.session.cart[i].TotalPrice
