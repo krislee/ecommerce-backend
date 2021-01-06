@@ -9,6 +9,7 @@ const electronicsSchema = new Schema ({
     Price: {type: Number, required: true},
     Rating: Number,
     // Review: [{type: Schema.Types.ObjectId, ref: "reviewElectronic"}],
+    Quantity: Number,
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]
 })
 
@@ -16,7 +17,8 @@ const electronicsSchema = new Schema ({
 
 electronicsSchema.pre('deleteMany', { document: false, query: true }, async function(next) {
     try {
-
+        console.log(this.model, "this.model for deleting electronic reviews when deleting seller")
+        
         // Finds all the electronic documents that matches the query: {Seller: idOfSeller}. In other words, finding all the electronic items the seller made.
         const docs = await this.model.find(this.getFilter()) // this.getFilter() returns {Seller: idOfSeller}
 

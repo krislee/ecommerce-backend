@@ -102,6 +102,7 @@ app.use('/guestbuyer', guestCartRouter)
 
 // Stripe Route
 app.use('/create-payment-intent', stripeRouter)
+app.use('/getpublickey', stripeRouter)
 
 // LISTEN TO PORT
 app.listen(PORT, () => {

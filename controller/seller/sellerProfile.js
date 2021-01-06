@@ -123,6 +123,9 @@ const destroy = async (req, res) => {
     try {
         if (req.user.seller){
             await SellerUser.findById(req.user.id, function(err, seller) { // after finding the seller document by id, the document is passed to the seller param of the callback function 
+                
+                console.log(seller, "seller from deleting seller")
+                console.log(seller.electronicItems, "seller.electronicItems")
 
                 // ???? WILL UPDATE THIS COMMENT
                 const queryElectronicItems = Electronic.find({_id: {$in: seller.electronicItems}})

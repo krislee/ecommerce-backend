@@ -3,7 +3,9 @@ Building an integration with the Payment Intents API involves two actions: creat
 
 # Payment Methods API
 ### What is Payment Methods API?
-Use Payment Methods API to add payment methods
+Use Payment Methods API to add payment methods.
+
+The Payment Method object can be used with PaymentIntents to collect payments or saved to Customer objects to store instrument details for future payments.
 
 # Setup Intents API
 ### What is Setup Intents API?
@@ -49,7 +51,7 @@ Client creates a payment method, entering payment information.
 
 <br><br>
 
-2. ### Confirm a ``PaymentIntent`` (normally automatic and simultaneous when customer's payment information is sent): ``stripe.confirmCardPayment('client_secret')
+2. ### Confirm a ``PaymentIntent`` on client side (normally automatic and simultaneous when customer's payment information is sent): ``stripe.confirmCardPayment('client_secret')
     - Confirming a ``PaymentIntent`` abstracts the 3 charging card steps:
         1. 🕵️ Authentication - Card information is sent to the card issuer for verification. Some cards may require the cardholder to strongly authenticate the purchase through protocols like 3D Secure, so this causes the status of the ``PaymentIntent`` to be ``requires_action``
 
@@ -64,9 +66,9 @@ Client creates a payment method, entering payment information.
 
 Server monitors webhooks to detect when the payment completes successfully or fails.
 
-## [Webhooks](https://stripe.com/docs/webhooks)
+## [Webhooks](https://stripe.com/docs/payments/handling-payment-events)
 
-### What is a Webhook?
+### [What is a Webhook?](https://stripe.com/docs/webhooks)
 A webhook is an event, such as the payout of funds to your bank account, that triggers a URL aka endpoint, creating a reaction, such as an order can now be fulfilled.  In Stripe, the event with all the details of the event is stored in an ``event`` object. Stripe sends the ``event`` object in JSON format to the endpoint. The endpoint has a function that receives the JSON ``event`` object and executes a reaction, which includes first parsing the JSON ``event`` object into an ``event`` object, then depending on the type of the event, it has some code reaction, then finally return a 200 status which confirms receipt of the ``event`` object.
 
 (A webhook is similar to an API but does not involve requests).

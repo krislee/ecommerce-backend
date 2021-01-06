@@ -1,6 +1,5 @@
 const {Electronic} = require('../../model/seller/electronic')
 const Cart = require('../../model/buyer/cart')
-const { session } = require('passport')
 
 // Add or update item from ITEM'S DESCRIPTION PAGE to shopping cart. The add button in description page would have the item's id as the CSS id.
 
