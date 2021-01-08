@@ -55,19 +55,16 @@ const customer = async (req, res) => { // need to passportAuthenticate this cont
 // Click Checkout and create only ONE payment intent for each unpaid cart
 const createPaymentIntent = async(req, res) => {
 
-  // const existingPaymentIntent = cachePaymentIntents[req.headers['Idempotency-Key']]
   const existingPaymentIntent = await CachePaymentIntent.findOne({Idempotency: req.headers['Idempotency-Key']})
   console.log("existingPaymentIntent: ", existingPaymentIntent)
 
-  // If payment intent has already been created, update the payment intent to ensure the amount is the most current. Also, update the payment intent to include customer obj if payment intent was created without a customer object & user is logged in.
+  // If payment intent has already been created, update the payment intent's amount parameter to ensure the amount is the most current.
   // If payment intent has not been created, create a new payment intent with the customer id if user is logged in
   if (existingPaymentIntent) {
 
     // Retreive the payment intent Id to update the payment intent
     const {paymentIntentId} = req.body
     console.log("paymentIntentId from req.body: ", paymentIntentId)
-
-    // Update payment intent's amount 
 
     if (req.user) {
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId) 
