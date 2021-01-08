@@ -30,6 +30,9 @@ const buyerUserSchema = new Schema({
     buyer: {
         type: Boolean,
         required: true
+    },
+    customer: {
+        type: String
     }
 })
 
