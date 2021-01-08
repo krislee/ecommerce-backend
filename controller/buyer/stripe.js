@@ -65,11 +65,20 @@ const createPaymentIntent = async(req, res) => {
     // Retreive the payment intent Id to update the payment intent
     const {paymentIntentId} = req.body
     console.log("paymentIntentId from req.body: ", paymentIntentId)
+    
+    // Guest has already made a payment intent by clicking checking out but then stopped checkout to log in for the very first time. Therefore, payment intent needs to be updated to also include the customer obj.
+    const {newCustomer, customerId} = customer()
 
-    // Update the payment intent's amount
-    await stripe.paymentIntents.update(paymentIntentId, {
-      amount: calculateOrderAmount()
-    })
+    if(newCustomer) {
+      await stripe.paymentIntents.update(paymentIntentId, {
+        amount: calculateOrderAmount(),
+        customer: customerId
+      })
+    } else {
+      await stripe.paymentIntents.update(paymentIntentId, {
+        amount: calculateOrderAmount()
+      })
+    }
   
   } else {
     if(req.user) {
@@ -99,13 +108,27 @@ const createPaymentIntent = async(req, res) => {
           idempotencyKey: loggedInCart._id
         });
       } else {
-        paymentIntent = await stripe.paymentIntents.create({
+        // If customer object has already been created once for the logged in user, then when the logged in user checks out the user will just be charged on the saved card. 
+        // First, lookup the payment methods available for the customer
+        // Depending on which payment method is selected by the customer, # in data[#] will be for it. 0 for # will be the default payment method.
+        const paymentMethods = await stripe.paymentMethods.list({
+          customer: customerId,
+          type: "card"
+        });
+  
+        // Charge the customer and payment method immediately by setting confirm: true 
+        const paymentIntent = await stripe.paymentIntents.create({
           amount: calculateOrderAmount(),
-          currency: "usd"
+          currency: "usd",
+          customer: customerId,
+          payment_method: paymentMethods.data[0].id,
+          off_session: true, // have to test false as well with different cards
+          confirm: true
         }, {
           idempotencyKey: loggedInCart._id
-        })
+        });
       }
+
       // store the created payment intent's id & the idempotent key in CachePaymentIntent database
       await CachePaymentIntent.create({
         Customer: customerId,
@@ -150,22 +173,6 @@ const createPaymentIntent = async(req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // When you're ready to charge the card again, create a new PaymentIntent with the Customer ID, the PaymentMethod ID of the card you want to charge, and set the off_session and confirm flags to true.
 const chargeCustomer = async (req, res, customerId) => {
   if(req.user) {
@@ -181,7 +188,7 @@ const chargeCustomer = async (req, res, customerId) => {
       currency: "usd",
       customer: customerId,
       payment_method: paymentMethods.data[0].id,
-      off_session: true,
+      off_session: true, // have to test false as well with different cards
       confirm: true
     });
   
