@@ -199,7 +199,7 @@ const chargeCustomer = async (req, res, customerId) => {
 }
 
 
-module.exports = {publicKey, createPaymentIntent, chargeCustomer}
+module.exports = {createPaymentIntent}
 
 // payment intent succeed webhook: make an order, delete cart, email receipt
 // payment intent process webhook (happens when payment methods have delayed notification.): pending order and then if the payment intent status turns to succeed or requires payment method (the event is payment_intent.payment_failed), then do certain actions
