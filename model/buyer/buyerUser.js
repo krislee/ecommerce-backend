@@ -31,8 +31,14 @@ const buyerUserSchema = new Schema({
         type: Boolean,
         required: true
     },
-    customer: {
+    customer: { // Stripe customer object id
         type: String
+    },
+    name: {
+        type: String,
+        required: true,
+        min: 8,
+        max: 255
     }
 })
 

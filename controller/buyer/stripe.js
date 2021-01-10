@@ -52,6 +52,17 @@ const customer = async (req, res) => { // need to passportAuthenticate this cont
   }
 }
 
+const getCustomerDetails = async(req, res) => {
+  if(req.user) {
+    const loggedInUser = await LoggedInUser.findById(req.user._id)
+    const customer = await(stripe.customers.retrieve(loggedInUser.customer))
+    res.send(200).json({
+      shippingDetails: customer.shipping,
+      defaultPayment: customer.default_source
+    })
+  }
+}
+
 // Click Checkout and create only ONE payment intent for each unpaid cart
 const createPaymentIntent = async(req, res) => {
   try {
@@ -69,17 +80,25 @@ const createPaymentIntent = async(req, res) => {
       // Guest has already made a payment intent by clicking checking out but then stopped checkout to log in for the very first time. Therefore, payment intent needs to be updated to also include the customer obj.
       const {newCustomer, customerId} = customer()
 
+      let updatedPaymentIntent
+
       if(newCustomer) {
-        await stripe.paymentIntents.update(paymentIntentId, {
+        updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
           amount: calculateOrderAmount(),
           customer: customerId
         })
       } else {
-        await stripe.paymentIntents.update(paymentIntentId, {
+        updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
           amount: calculateOrderAmount()
         })
       }
-    
+      
+      res.status(200).json({
+        publicKey: process.env.STRIPE_PUBLIC,
+        // paymentIntentId: updatedPaymentIntent.id,
+        clientSecret: updatedPaymentIntent.client_secret
+      });
+
     } else {
       if(req.user) {
         console.log("user is logged in, create payment intent")
@@ -91,13 +110,13 @@ const createPaymentIntent = async(req, res) => {
         const {newCustomer, customerId} = customer()
         console.log("customer obj's id: ", customerId)
         console.log("newCustomer: ", newCustomer)
-
-        // Create a PaymentIntent with the order amount, currency,
-        // Also, include customer's id and off_session for setup_future_usage to store customer's card info so that
-        // card details is auto attached in a PaymentMethod obj to customer obj after PaymentIntent succeeds
-        // We only need to attach the card details to the customer object for future purchases ONCE
+       
         let paymentIntent
 
+        // Create a PaymentIntent with the order amount and currency params
+        // For first-time purchsing customers, include also the customer's id and off_session for setup_future_usage params to store customer's card info so that
+        // card details are auto attached in a PaymentMethod obj to customer obj after PaymentIntent succeeds
+        // We only need to attach the card details to the customer object for future purchases ONCE
         if(newCustomer) {
           paymentIntent = await stripe.paymentIntents.create({
             customer: customerId,
@@ -115,13 +134,15 @@ const createPaymentIntent = async(req, res) => {
             customer: customerId,
             type: "card"
           });
-    
-          // Charge the customer and payment method immediately by setting confirm: true 
+          
+          // or: const customer = await stripe.customers.retrieve(customerId)
+        
+          // You can charge the customer immediately by confirming payment intent immediately by setting confirm: true. But we will confirm payment intent on client side, so do not set confirm: true.
           paymentIntent = await stripe.paymentIntents.create({
             amount: calculateOrderAmount(),
             currency: "usd",
             customer: customerId,
-            payment_method: paymentMethods.data[0].id,
+            payment_method: paymentMethods.data[0].id, // customer.default_source
             off_session: true, 
           }, {
             idempotencyKey: loggedInCart._id
@@ -140,7 +161,9 @@ const createPaymentIntent = async(req, res) => {
         res.status(200).json({
           publicKey: process.env.STRIPE_PUBLIC,
           paymentIntentId: paymentIntent.id,
-          clientSecret: paymentIntent.client_secret
+          clientSecret: paymentIntent.client_secret,
+          returningCustomer: !newCustomer,
+          customer: true
         });
       } else {
         console.log("user not logged in, create payment intent")
@@ -151,11 +174,12 @@ const createPaymentIntent = async(req, res) => {
         const paymentIntent = await stripe.paymentIntents.create({
           amount: calculateOrderAmount(),
           currency: "usd"
-        }
-        // , {
-        //   idempotencyKey: req.sessionID // use the guest cart's ID (which is from express-session)
-        // }
-        );
+        }, {
+          idempotencyKey: req.sessionID // use the guest cart's ID (which is from express-session)
+        });
+
+        console.log("creating payment intent for guest user ", paymentIntent)
+
         await CachePaymentIntent.create({
           Idempotency: req.headers['Idempotency-Key'],
           PaymentIntentId: req.sessionID
@@ -164,7 +188,9 @@ const createPaymentIntent = async(req, res) => {
         res.status(200).json({
           publicKey: process.env.STRIPE_PUBLIC,
           paymentIntentId: paymentIntent.id,
-          clientSecret: paymentIntent.client_secret
+          clientSecret: paymentIntent.client_secret,
+          returningCustomer: false,
+          customer: false
         });
       }
     }
@@ -172,33 +198,33 @@ const createPaymentIntent = async(req, res) => {
   catch(error) {
     console.log("error: ", error)
 
-    if(error.code == "authentication_required") {
-      res.send({
-        error: "authentication_required",
-        paymentMethod: error.raw.payment_method.id,
-        clientSecret: error.raw.payment_intent.client_secret,
-        publicKey: process.env.STRIPE_PUBLIC,
-        amount: calculateOrderAmount(),
-        card: {
-          brand: error.raw.payment_method.card.brand,
-          last4: error.raw.payment_method.card.last4
-        }
-      })
-    } else if (error.code) {
-      res.send({
-        error: error.code,
-        clientSecret: error.raw.payment_intent.client_secret,
-        publicKey: process.env.STRIPE_PUBLIC,
-      })
-    } else {
-      console.log("Unknown error occurred")
-    }
+  //   if(error.code == "authentication_required") {
+  //     res.send({
+  //       error: "authentication_required",
+  //       paymentMethod: error.raw.payment_method.id,
+  //       clientSecret: error.raw.payment_intent.client_secret,
+  //       publicKey: process.env.STRIPE_PUBLIC,
+  //       amount: calculateOrderAmount(),
+  //       card: {
+  //         brand: error.raw.payment_method.card.brand,
+  //         last4: error.raw.payment_method.card.last4
+  //       }
+  //     })
+  //   } else if (error.code) {
+  //     res.send({
+  //       error: error.code,
+  //       clientSecret: error.raw.payment_intent.client_secret,
+  //       publicKey: process.env.STRIPE_PUBLIC,
+  //     })
+  //   } else {
+  //     console.log("Unknown error occurred")
+  //   }
   }
 }
 
 module.exports = {createPaymentIntent}
 
-// payment intent succeed webhook: make an order, delete cart, email receipt
+// payment intent succeed webhook: make an order, delete cart, update customer obj to include shipping details and default payment for customer (whether first time logged in or not), email receipt
 // payment intent process webhook (happens when payment methods have delayed notification.): pending order and then if the payment intent status turns to succeed or requires payment method (the event is payment_intent.payment_failed), then do certain actions
 // FghzRFaNnXzeqqYtaIWI-EsvklyguAkx
 // add the statement_descriptor to payment intent with Date.now()
