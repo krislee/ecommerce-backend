@@ -7,7 +7,7 @@ const mongoose = require('mongoose')
 const session = require('express-session')
 
 // after making sessions, you then need a persistent storage/memory to store the sessions in especially when you may be storing a lot of information about the client as the client is moving throughout the browser => the best storage is a database to store the sessions, or information
-// by default, express-session middleware has its own implementation of a session store which is using memory local to your application and not the database - so we need a session store, which connects the espress-session to the database
+// by default, express-session middleware has its own implementation of a session store which is using memory local to your application and not the database - so we need a session store, which connects the express-session to the database
 // you have a lot of options for session store, in this case we are using connect-mongo, allowing you to connect to mongoDB to store the sessions in the mongodb that you already have running in your app when we connect to the database (in line 17 is where we connect to the database)
 // then you need to tell express-session middleware that you want to use mongoDB as the storage, which will be in store options in express-session middleware
 const MongoStore = require('connect-mongo')(session) // used for session store

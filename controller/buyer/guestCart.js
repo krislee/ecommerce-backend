@@ -4,11 +4,12 @@ const {Electronic} = require('../../model/seller/electronic')
 const guestAddItem = async(req, res, next) => {
     try {
         console.log("guestadditem")
-
+        
         const item = await Electronic.findById(req.params.id)
-        console.log(item, "item in guest route")
-
+        // console.log(item, "item in guest route")
+        console.log("req.session: ", req.session)
         // if a cart has been made for the guest user, then check if the item is already in the cart 
+        // if (req.sessionID)
         if(req.session.cart) {
             const cartItem = req.session.cart.find(i => i.ItemId == item.id)
             
@@ -27,7 +28,7 @@ const guestAddItem = async(req, res, next) => {
                 })
             }
 
-            console.log(req.session, "guest cart after adding item")
+            console.log("added item to guest cart:", req.session)
             res.status(200).json(req.session.cart);
 
         } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
@@ -41,7 +42,7 @@ const guestAddItem = async(req, res, next) => {
                     TotalPrice: req.body.Quantity * item.Price
                 }]
             
-            console.log(req.session, "guest cart made to add item")
+            console.log("guest cart is made to add item: ", req.session)
             res.status(200).json(req.session.cart);
         }
 
@@ -56,7 +57,7 @@ const guestUpdateItemQuantity = async(req, res) => {
     try {
        
         const item = await Electronic.findById(req.params.id)
-
+        console.log("update guest cart item: ", item)
         const cartItem = req.session.cart.find(i => {
             console.log(i.ItemId, "guest i.ItemId")
             return i.ItemId == item.id
@@ -91,7 +92,7 @@ const guestDeleteItem = (req, res) => {
 // Show all items in the cart
 const guestIndexCart = (req, res) => {
     console.log('guest indexCart route used');
-
+    console.log('guestIndexCart', req.session)
     try {
             console.log(req.session.cart, "guest cart")
             
@@ -106,6 +107,7 @@ const guestIndexCart = (req, res) => {
         
     }
     catch(error) {
+        console.log("error", error)
         res.status(400).send(error)
     }
 }

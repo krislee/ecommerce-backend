@@ -57,6 +57,7 @@ const getCustomerDetails = async(req, res) => {
     const loggedInUser = await LoggedInUser.findById(req.user._id)
     const customer = await(stripe.customers.retrieve(loggedInUser.customer))
     res.send(200).json({
+      customerId: customer.id,
       shippingDetails: customer.shipping,
       defaultPayment: customer.default_source
     })
@@ -222,7 +223,7 @@ const createPaymentIntent = async(req, res) => {
   }
 }
 
-module.exports = {createPaymentIntent}
+module.exports = {createPaymentIntent, getCustomerDetails}
 
 // payment intent succeed webhook: make an order, delete cart, update customer obj to include shipping details and default payment for customer (whether first time logged in or not), email receipt
 // payment intent process webhook (happens when payment methods have delayed notification.): pending order and then if the payment intent status turns to succeed or requires payment method (the event is payment_intent.payment_failed), then do certain actions

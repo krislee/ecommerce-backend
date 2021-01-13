@@ -31,7 +31,7 @@ const electronicShow = async(req, res) => {
 
          // Get all the reviews documents of that one electronic item
          const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id})
-         console.log(electronicReview, "all electronic reviews")
+        //  console.log(electronicReview, "all electronic reviews")
 
          res.status(200).json({
              electronicItem: oneElectronic,

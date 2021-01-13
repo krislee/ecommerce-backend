@@ -8,7 +8,7 @@ const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.post('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
-        res.redirect(307, `/guestbuyer/${req.params.id}`)
+        res.redirect(307, `/guest/buyer/post/${req.params.id}`)
     } else {
         res.redirect(307, `/loginbuyer/${req.params.id}`)
     }
@@ -18,7 +18,7 @@ router.post('/sync/cart', passportAuthenticate, addItemsFromGuestToLoggedIn) // 
 
 router.put('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
-        res.redirect(307, `/guestbuyer/update/${req.params.id}`)
+        res.redirect(307, `/guest/buyer/update/${req.params.id}`)
     } else {
         res.redirect(307, `/loginbuyer/update/${req.params.id}`)
     }
@@ -26,7 +26,7 @@ router.put('/electronic/cart/:id', (req, res) => {
 
 router.delete('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
-        res.redirect(307, `/guestbuyer/delete/${req.params.id}`)
+        res.redirect(307, `/guest/buyer/delete/${req.params.id}`)
     } else {
         res.redirect(307, `/loginbuyer/delete/${req.params.id}`)
     }
@@ -34,7 +34,7 @@ router.delete('/electronic/cart/:id', (req, res) => {
 
 router.get('/cart', (req, res) => {
     if(!req.headers.authorization) {
-        res.redirect(`/guestbuyer/cart`)
+        res.redirect(`/guest/buyer/cart`)
     } else {
         res.redirect(`/loginbuyer/cart`)
     }
