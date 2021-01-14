@@ -67,6 +67,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET
 
 const corsOptions = {
   origin: 'http://localhost:3000', 
+  // origin: true, 
   credentials: true,
 };
 
@@ -103,20 +104,33 @@ app.use(session({
   saveUninitialized: false,
   store: sessionStore,
   cookie: {
-    maxAge: 1000*60*60*24*7, 
+    maxAge: 1000*60*60*24*30, 
     secure: false, 
     httpOnly:false, 
-    // sameSite: 'none',
-    path: '/guest/buyer/post'
+    sameSite: 'none',
+    // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
   }
 }))
 
 app.use(function(req, res, next) {
 
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-  // res.header("Access-Control-Allow-Origin", "http://localhost:3000/" );
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-   Type, Accept, Authorization");
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000" );
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie");
+
+  // res.set({
+  //   'Access-Control-Allow-Credentials': true,
+  //   'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE',
+  //   "Access-Control-Allow-Origin":  "http://localhost:3000", "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-   Type, Accept, Authorization"
+  // })
+  // res.set('Access-Control-Expose-Headers', 'Access-Control-Allow-Credentials, Access-Control-Allow-Origin')
+
+  
+  // res.append('Access-Control-Allow-Origin', 'http://localhost:3000');
+  // res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  // res.append('Access-Control-Allow-Headers', 'Content-Type');
+
   next();
 });
 
