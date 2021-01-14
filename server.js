@@ -124,7 +124,7 @@ app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   res.setHeader("Access-Control-Allow-Origin", "https://affectionate-nightingale-c0410a.netlify.app");
   // res.setHeader("Access-Control-Allow-Origin", "https://affectionate-nightingale-c0410a.netlify.app");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie, X-Forwarded-Proto");
   // console.log("res 2:", res)
 
   // res.set({
