@@ -97,7 +97,7 @@ app.use(passport.initialize())
 // app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
 // app.use(express.urlencoded({extended: true}))
 app.use(morgan("dev"));
-
+app.set("trust proxy", 1)
 // app.use(cookieParser('cookie_secret'))
 app.use(session({
   // Creates a new secret key
