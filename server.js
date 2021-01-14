@@ -101,14 +101,14 @@ app.use(morgan("dev"));
 app.use(session({
   secret: process.env.SESSION_SECRET, 
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: sessionStore,
   cookie: {
     maxAge: 1000*60*60*24*30, 
     secure: false, 
     httpOnly:false, 
     // sameSite: 'none',
-    path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
+    // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
   }
 }))
 
