@@ -3,6 +3,7 @@ const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 const Buyer = require('../../model/buyer/buyerUser')
 
 // SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
+
 const index = async (req, res) => {
     try {
         if (req.user.buyer){

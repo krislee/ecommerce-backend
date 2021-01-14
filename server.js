@@ -99,12 +99,16 @@ app.use(morgan("dev"));
 
 // app.use(cookieParser('cookie_secret'))
 app.use(session({
-  secret: process.env.SESSION_SECRET, 
+  // Creates a new secret key
+  secret: process.env.SESSION_SECRET,
+  // Like saveUnitialized except only when sessions get updated (ex. with different properties), false means the session will not change unless it is being changed
   resave: false,
+  // When hitting route, a new document would show up (when it is true) even when there is not a property
   saveUninitialized: false,
   store: sessionStore,
   cookie: {
     maxAge: 1000*60*60*24*30, 
+    // secure if true is only for https
     secure: false, 
     httpOnly:false, 
     // sameSite: 'none',
