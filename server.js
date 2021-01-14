@@ -66,8 +66,9 @@ const SESSION_SECRET = process.env.SESSION_SECRET
 // };
 
 const corsOptions = {
-  origin: 'http://localhost:3000', 
+  // origin: 'http://localhost:3000', 
   // origin: true, 
+  origin: 'https://affectionate-nightingale-c0410a.netlify.app/',
   credentials: true,
 };
 
