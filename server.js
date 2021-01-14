@@ -107,11 +107,12 @@ app.use(session({
   // When hitting route, a new document would show up (when it is true) even when there is not a property
   saveUninitialized: false,
   store: sessionStore,
+  proxy: true,
   cookie: {
     maxAge: 1000*60*60*24*30, 
     // secure if true is only for https
     secure: true, 
-    httpOnly:false, 
+    httpOnly:false,
     // sameSite: 'none',
     // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
   }
