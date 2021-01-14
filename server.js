@@ -110,7 +110,7 @@ app.use(session({
   cookie: {
     maxAge: 1000*60*60*24*30, 
     // secure if true is only for https
-    secure: false, 
+    secure: true, 
     httpOnly:false, 
     // sameSite: 'none',
     // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
@@ -122,6 +122,7 @@ app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   res.setHeader("Access-Control-Allow-Origin", "https://affectionate-nightingale-c0410a.netlify.app");
+  // res.setHeader("Access-Control-Allow-Origin", "https://affectionate-nightingale-c0410a.netlify.app");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie");
   // console.log("res 2:", res)
 
