@@ -93,31 +93,32 @@ app.use(cors(corsOptions))
 // Need to initialize the passport object for every passport strategy on each request.
 app.use(passport.initialize())
 
-app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
-app.use(express.urlencoded({extended: true}))
+// app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
+// app.use(express.urlencoded({extended: true}))
 app.use(morgan("dev"));
 
-app.use(cookieParser('cookie_secret'))
+// app.use(cookieParser('cookie_secret'))
 app.use(session({
   secret: process.env.SESSION_SECRET, 
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   store: sessionStore,
   cookie: {
     maxAge: 1000*60*60*24*30, 
     secure: false, 
     httpOnly:false, 
-    sameSite: 'none',
-    // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
+    // sameSite: 'none',
+    path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
   }
 }))
 
 app.use(function(req, res, next) {
-
+  // console.log("res:", res)
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000" );
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie");
+  // console.log("res 2:", res)
 
   // res.set({
   //   'Access-Control-Allow-Credentials': true,
@@ -134,6 +135,8 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
+app.use(express.urlencoded({extended: true}))
 //////// ROUTES AND ROUTER ////////
 
 // Login/Register Route
@@ -162,4 +165,9 @@ app.listen(PORT, () => {
 
 // https://stackoverflow.com/questions/44894789/node-js-express-session-creating-new-session-id-every-time-i-refresh-or-access-t
 
+// https://medium.com/zero-equals-false/using-cors-in-express-cac7e29b005b
+
+// https://medium.com/acmvit/handling-cookies-with-axios-872790241a9b
+
 // https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
+

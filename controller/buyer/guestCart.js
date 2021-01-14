@@ -9,6 +9,7 @@ const guestAddItem = async(req, res, next) => {
         // console.log(item, "item in guest route")
         console.log("req.session: ", req.session)
         console.log("session id: ", req.sessionID)
+        // console.log("cookies: ", req.signedCookies.cookies)
         // if a cart has been made for the guest user, then check if the item is already in the cart 
         // if (req.sessionID)
         if(req.session.cart) {
