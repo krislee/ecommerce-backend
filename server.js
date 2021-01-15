@@ -68,7 +68,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET
 const corsOptions = {
   // origin: 'http://localhost:3000', 
   // origin: true, 
-  origin: 'https://affectionate-nightingale-c0410a.netlify.app',
+  origin: ['https://elecommerce.netlify.app', 'https://heuristic-heyrovsky-931d8c.netlify.app'],
   credentials: true,
 };
 
@@ -114,7 +114,7 @@ app.use(session({
     secure: true, 
     httpOnly:false,
     // sameSite: 'none',
-    sameSite: false
+    // sameSite: false
     // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
   }
 }))
@@ -123,7 +123,7 @@ app.use(function(req, res, next) {
   // console.log("res:", res)
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-  res.setHeader("Access-Control-Allow-Origin", "https://affectionate-nightingale-c0410a.netlify.app");
+  res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app, https://heuristic-heyrovsky-931d8c.netlify.app");
   // res.setHeader("Access-Control-Allow-Origin", "https://affectionate-nightingale-c0410a.netlify.app");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie, X-Forwarded-Proto");
   // console.log("res 2:", res)
