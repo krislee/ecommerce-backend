@@ -113,7 +113,7 @@ app.use(session({
     // secure if true is only for https
     secure: true, 
     // httpOnly:false,
-    // sameSite: 'none',
+    sameSite: 'none',
     // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
   }
 }))
