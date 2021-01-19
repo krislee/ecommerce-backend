@@ -7,7 +7,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const connection = require('./db/connection')
-const cookieParser = require('cookie-parser')
+
 // Passport-related Dependencies
 const passport = require('passport')
 require('./auth/passport')(passport)
@@ -44,27 +44,8 @@ const guestCartRouter = require('./routes/buyer/guestCart')
 // Stripe Dependencies
 const stripeRouter = require('./routes/buyer/stripe')
 
-//////// GLOBAL VARIABLES ////////
-const PORT = process.env.PORT
-const NODE_ENV = process.env.NODE_ENV
-const SESSION_SECRET = process.env.SESSION_SECRET
 
 //////// CORS ////////
-// const whitelist = ["http://localhost:3000/"]; 
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (whitelist.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       callback(
-//         new Error("Not allowed by CORS, domain needs to be added to whitelist"), false
-//       );
-//     }
-//   },
-//   credentials: true
-//   // exposedHeaders: ["set-cookie"],
-// };
-
 const corsOptions = {
   // origin: 'http://localhost:3000', 
   // origin: true, 
@@ -72,23 +53,9 @@ const corsOptions = {
   credentials: true,
 };
 
-// const allowlist = ['http://localhost:3000']
-// const corsOptionsDelegate = function (req, callback) {
-//   let corsOptions;
-//   if (allowlist.indexOf(req.header('Origin')) !== -1) {
-//     corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
-//   } else {
-//     corsOptions = { origin: false } // disable CORS for this request
-//   }
-//   callback(null, corsOptions) // callback expects two parameters: error and options
-// }
-
 //////// MIDDLEWARES ////////
 
-// Put ternary to see if sites are allowed before making the server run in app.use()
-// NODE_ENV === "development" ? app.use(cors()) : app.use(cors(corsOptions)); // If in development, allow all websites; if in production, allow websites in whitelist to make API calls to server
 app.use(cors(corsOptions))
-// app.use(cors(corsOptionsDelegate))
 
 // Passport is an express middleware that will append diff properties to the req object, so you can store data within the req obj and each of the middlewares after will have access to the modified req object
 // Need to initialize the passport object for every passport strategy on each request.
@@ -97,8 +64,8 @@ app.use(passport.initialize())
 // app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
 // app.use(express.urlencoded({extended: true}))
 app.use(morgan("dev"));
+
 app.set("trust proxy", 1)
-// app.use(cookieParser('cookie_secret'))
 app.use(session({
   // Creates a new secret key
   secret: process.env.SESSION_SECRET,
@@ -113,7 +80,7 @@ app.use(session({
     // secure if true is only for https
     secure: true, 
     httpOnly:false,
-    // sameSite: 'none',
+    sameSite: 'none'
     // sameSite: false
     // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
   }
@@ -124,22 +91,8 @@ app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app");
-  // res.setHeader("Access-Control-Allow-Origin", "https://affectionate-nightingale-c0410a.netlify.app");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie, X-Forwarded-Proto");
   // console.log("res 2:", res)
-
-  // res.set({
-  //   'Access-Control-Allow-Credentials': true,
-  //   'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE',
-  //   "Access-Control-Allow-Origin":  "http://localhost:3000", "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-   Type, Accept, Authorization"
-  // })
-  // res.set('Access-Control-Expose-Headers', 'Access-Control-Allow-Credentials, Access-Control-Allow-Origin')
-
-  
-  // res.append('Access-Control-Allow-Origin', 'http://localhost:3000');
-  // res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  // res.append('Access-Control-Allow-Headers', 'Content-Type');
-
   next();
 });
 
@@ -167,8 +120,8 @@ app.use('/create-payment-intent', stripeRouter)
 app.use('/getCustomer', stripeRouter)
 
 // LISTEN TO PORT
-app.listen(PORT, () => {
-    console.log(`Listening to ${PORT}`)
+app.listen(process.env.PORT, () => {
+    console.log(`Listening to ${process.env.PORT}`)
 })
 
 // https://stackoverflow.com/questions/44894789/node-js-express-session-creating-new-session-id-every-time-i-refresh-or-access-t
