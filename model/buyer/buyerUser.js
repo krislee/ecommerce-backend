@@ -41,7 +41,15 @@ const buyerUserSchema = new Schema({
         max: 255
     },
     address: {
-        type: [String],
+        type: [{
+            line1: String,
+            line2: String,
+            city: String,
+            state: String,
+            postalCode: Number,
+            country: String,
+            defaultAddress: {type: Boolean, default: false}
+        }],
         min: 8,
         max: 255
     }

@@ -63,27 +63,6 @@ const getCustomerDetails = async(req, res) => {
   }
 }
 
-const addUserShipping = async(req, res) => {
-  const {line1, line2, city, state, postalCode, country} = req.body
-  if (req.user) {
-    const loggedInUser = await LoggedInUser.findById(req.user._id)
-    loggedInUser.address.push(`${line1}, ${line2}, ${city}, ${state}, ${postalCode}, ${country}`)
-    res.status(200).json({
-      address: addAddressToLoggedInUser,
-
-    })
-  }
-}
-
-// Each edit button has the id of the shippinh address object, so find that particular address for the user and update that address
-const updateUserShipping = async(req, res) => {
-  const {line1, line2, city, state, postalCode, country} = req.body
-  if(req.user) {
-    const loggedInUser = await LoggedInUser.findById(req.user._id)
-    const updateShippingAddress = await loggedInUser.findOneAndUpdate({_id: req.params.id}, {address: `${line1}, ${line2}, ${city}, ${state}, ${postalCode}, ${country}`})
-  }
-}
-
 // Click Checkout leads to either create only ONE payment intent for each unpaid cart or updating existing payment intent
 const createPaymentIntent = async(req, res) => {
   try {
@@ -247,9 +226,15 @@ const createPaymentIntent = async(req, res) => {
   }
 }
 
-module.exports = {createPaymentIntent, getCustomerDetails, addUserShipping, updateUserShipping}
+module.exports = {createPaymentIntent, getCustomerDetails}
 
-// payment intent succeed webhook: make an order, delete cart, update customer obj to include/update shipping details (check if the customer.shipping obj == undefined - which would be if first time buying or if not undefined check if the entered shipping address !== stored shipping address and update, also get the buyerUser model and add address to the model if it does not contain), include/update default payment for customer (check if customer.invoice_settings[default_payment_method] !== undefined, if undefined add the payment method ID, if not undefined check if == to the entered payment method, and update if needed), email receipt, update quantity of selled items
+/* payment intent succeed webhook: 
+- make an order
+- delete cart
+- add/update customer obj:
+  - Retrieve customer obj by taking the id from paymentIntent.customer
+  - Do customer.metadata[default_shipping][address] = paymentIntent.shipping[address]
+- include/update default payment for customer (check if customer.invoice_settings[default_payment_method] !== undefined, if undefined add the payment method ID, if not undefined check if == to the entered payment method, and update if needed), email receipt, update quantity of selled items */
 
 // payment intent process webhook (happens when payment methods have delayed notification.): pending order and then if the payment intent status turns to succeed or requires payment method (the event is payment_intent.payment_failed), then do certain actions
 

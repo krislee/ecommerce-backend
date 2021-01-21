@@ -2,7 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const {index, update, destroy} = require('../../controller/buyer/buyerProfile');
-const {updateUserShipping, addUserShipping} = require('../../controller/buyer/stripe')
+const {updateUserShipping, addUserShipping, indexUserShipping, showUserShipping} = require('../../controller/buyer/shippingAddress')
 
 passportAuthenticate = passport.authenticate('jwt', {session: false})
 
@@ -18,5 +18,8 @@ router.put('/address/:id', passportAuthenticate, updateUserShipping)
 
 router.post('/address', passportAuthenticate, addUserShipping)
 
+router.get('/address', passportAuthenticate, indexUserShipping)
+
+router.get('/address/:id', passportAuthenticate, showUserShipping)
 
 module.exports = router
