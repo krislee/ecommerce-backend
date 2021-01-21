@@ -39,6 +39,11 @@ const buyerUserSchema = new Schema({
         required: true,
         min: 8,
         max: 255
+    },
+    address: {
+        type: [String],
+        min: 8,
+        max: 255
     }
 })
 

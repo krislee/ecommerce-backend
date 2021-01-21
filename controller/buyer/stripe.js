@@ -28,8 +28,7 @@ const calculateOrderAmount = (req, res) => {
 }
 
 // Click Checkout and create customer ONCE. Only need one customer object to be made for any future payments. 
-// Customer obj stores details on the customer (name, email, shipping address, etc.)
-// Customer obj used to store customer's card info in the payment intent
+// Customer obj stores details on the customer (name, email, shipping address, etc.) and the customer's card info in the payment intent
 const customer = async (req, res) => { // need to passportAuthenticate this controller
   if (req.user) {
     const loggedInUser = await LoggedInUser.findById(req.user._id)
@@ -64,7 +63,28 @@ const getCustomerDetails = async(req, res) => {
   }
 }
 
-// Click Checkout and create only ONE payment intent for each unpaid cart
+const addUserShipping = async(req, res) => {
+  const {line1, line2, city, state, postalCode, country} = req.body
+  if (req.user) {
+    const loggedInUser = await LoggedInUser.findById(req.user._id)
+    loggedInUser.address.push(`${line1}, ${line2}, ${city}, ${state}, ${postalCode}, ${country}`)
+    res.status(200).json({
+      address: addAddressToLoggedInUser,
+
+    })
+  }
+}
+
+// Each edit button has the id of the shippinh address object, so find that particular address for the user and update that address
+const updateUserShipping = async(req, res) => {
+  const {line1, line2, city, state, postalCode, country} = req.body
+  if(req.user) {
+    const loggedInUser = await LoggedInUser.findById(req.user._id)
+    const updateShippingAddress = await loggedInUser.findOneAndUpdate({_id: req.params.id}, {address: `${line1}, ${line2}, ${city}, ${state}, ${postalCode}, ${country}`})
+  }
+}
+
+// Click Checkout leads to either create only ONE payment intent for each unpaid cart or updating existing payment intent
 const createPaymentIntent = async(req, res) => {
   try {
     // If payment intent has already been created, update the payment intent's amount parameter to ensure the amount is the most current.
@@ -74,7 +94,7 @@ const createPaymentIntent = async(req, res) => {
 
     if (existingPaymentIntent) {
 
-      // Retreive the payment intent Id to update the payment intent
+      // Retrieve the payment intent ID to update the payment intent
       const {paymentIntentId} = req.body
       console.log("paymentIntentId from req.body: ", paymentIntentId)
       
@@ -115,7 +135,7 @@ const createPaymentIntent = async(req, res) => {
         let paymentIntent
 
         // Create a PaymentIntent with the order amount and currency params
-        // For first-time purchsing customers, include also the customer's id and off_session for setup_future_usage params to store customer's card info so that
+        // For first-time purchasing customers, include also the customer's id and off_session for setup_future_usage params to store customer's card info so that
         // card details are auto attached in a PaymentMethod obj to customer obj after PaymentIntent succeeds
         // We only need to attach the card details to the customer object for future purchases ONCE
         if(newCustomer) {
@@ -129,21 +149,25 @@ const createPaymentIntent = async(req, res) => {
           });
         } else {
           // If customer object has already been created once for the logged in user, then when the logged in user checks out the user will just be charged on the saved card. 
-          // First, lookup the payment methods available for the customer
-          // Depending on which payment method is selected by the customer, # in data[#] will be for it. 0 for # will be the default payment method.
-          const paymentMethods = await stripe.paymentMethods.list({
-            customer: customerId,
-            type: "card"
-          });
+
+          // One way:
+            // First, lookup the payment methods available for the customer
+            // Depending on which payment method is selected by the customer, # in data[#] will be for it. 0 for # will be the default payment method.
+            // const paymentMethods = await stripe.paymentMethods.list({
+            //   customer: customerId,
+            //   type: "card"
+            // });
           
-          // or: const customer = await stripe.customers.retrieve(customerId)
+          // 2nd way: 
+          const customer = await stripe.customers.retrieve(customerId)
+
         
           // You can charge the customer immediately by confirming payment intent immediately by setting confirm: true. But we will confirm payment intent on client side, so do not set confirm: true.
           paymentIntent = await stripe.paymentIntents.create({
             amount: calculateOrderAmount(),
             currency: "usd",
             customer: customerId,
-            payment_method: paymentMethods.data[0].id, // customer.default_source
+            payment_method: customer.invoice_settings[default_payment_method], // paymentMethods.data[0].id
             off_session: true, 
           }, {
             idempotencyKey: loggedInCart._id
@@ -223,9 +247,10 @@ const createPaymentIntent = async(req, res) => {
   }
 }
 
-module.exports = {createPaymentIntent, getCustomerDetails}
+module.exports = {createPaymentIntent, getCustomerDetails, addUserShipping, updateUserShipping}
 
-// payment intent succeed webhook: make an order, delete cart, update customer obj to include shipping details and default payment for customer (whether first time logged in or not), email receipt
+// payment intent succeed webhook: make an order, delete cart, update customer obj to include/update shipping details (check if the customer.shipping obj == undefined - which would be if first time buying or if not undefined check if the entered shipping address !== stored shipping address and update, also get the buyerUser model and add address to the model if it does not contain), include/update default payment for customer (check if customer.invoice_settings[default_payment_method] !== undefined, if undefined add the payment method ID, if not undefined check if == to the entered payment method, and update if needed), email receipt, update quantity of selled items
+
 // payment intent process webhook (happens when payment methods have delayed notification.): pending order and then if the payment intent status turns to succeed or requires payment method (the event is payment_intent.payment_failed), then do certain actions
-// FghzRFaNnXzeqqYtaIWI-EsvklyguAkx
+
 // add the statement_descriptor to payment intent with Date.now()
