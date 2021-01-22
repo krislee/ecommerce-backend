@@ -136,6 +136,8 @@ const checkoutShipping = async(req, res) => {
 
             const lastUsedAddress = await Address.find({LastUsed: true, Buyer: req.user._id})
 
+            console.log("last used address: ", lastUsedAddress)
+
             res.status(200).json({
                 address: defaultAddress ? defaultAddress : lastUsedAddress
             })

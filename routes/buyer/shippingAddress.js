@@ -9,7 +9,7 @@ router.get('/address', passportAuthenticate, indexShipping)
 
 router.get('/saved/address/:id', passportAuthenticate, savedShipping)
 
-router.get('/address/:id', passportAuthenticate, checkoutShipping)
+router.get('/lastUsed/address', passportAuthenticate, checkoutShipping)
 
 router.post('/address', passportAuthenticate, addShipping)
 

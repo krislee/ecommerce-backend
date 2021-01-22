@@ -4,6 +4,14 @@ const LoggedInCart = require('../../model/buyer/cart')
 const LoggedInUser = require('../../model/buyer/buyerUser')
 const CachePaymentIntent = require('../../model/buyer/cachePaymentIntent')
 
+const indexPaymentMethods = async(req, res) => {
+  const loggedInUser = await LoggedInUser.findById(req.user._id)
+
+  const paymentMethods = await stripe.paymentMethods.list({
+    customer: loggedInUser.customer // customer 
+    type: 'card',
+  });
+}
 // Helper function calculates cart total price
 const calculateOrderAmount = (req, res) => {
   // let totalCartPrice = 0
@@ -33,7 +41,9 @@ const customer = async (req, res) => { // need to passportAuthenticate this cont
   if (req.user) {
     const loggedInUser = await LoggedInUser.findById(req.user._id)
 
-    // Check if the logged in user already has a customer object made. If there has not been any record of a customer object, then make a customer and add it to the database. 
+    // Check if the logged in user already has a customer object made. 
+    // If there has not been any record of a customer object, then make a customer and add it to customer field of a BuyerUser document. 
+    // If customer has already been made, then retrieve the customer id from the customer field of BuyerUser document.
     if(!loggedInUser.customer) {
       const customer = await stripe.customers.create(); 
       console.log("customer: ", customer)
@@ -48,18 +58,6 @@ const customer = async (req, res) => { // need to passportAuthenticate this cont
       console.log(loggedInUser.customer)
       return {newCustomer: false, customerId: loggedInUser.customer}
     }
-  }
-}
-
-const getCustomerDetails = async(req, res) => {
-  if(req.user) {
-    const loggedInUser = await LoggedInUser.findById(req.user._id)
-    const customer = await(stripe.customers.retrieve(loggedInUser.customer))
-    res.send(200).json({
-      customerId: customer.id,
-      shippingDetails: customer.shipping,
-      defaultPayment: customer.default_source
-    })
   }
 }
 
@@ -231,9 +229,6 @@ module.exports = {createPaymentIntent, getCustomerDetails}
 /* payment intent succeed webhook: 
 - make an order
 - delete cart
-- add/update customer obj:
-  - Retrieve customer obj by taking the id from paymentIntent.customer
-  - Do customer.metadata[default_shipping][address] = paymentIntent.shipping[address]
 - include/update default payment for customer (check if customer.invoice_settings[default_payment_method] !== undefined, if undefined add the payment method ID, if not undefined check if == to the entered payment method, and update if needed), email receipt, update quantity of selled items */
 
 // payment intent process webhook (happens when payment methods have delayed notification.): pending order and then if the payment intent status turns to succeed or requires payment method (the event is payment_intent.payment_failed), then do certain actions
