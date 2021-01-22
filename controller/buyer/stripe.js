@@ -231,7 +231,7 @@ const createPaymentIntent = async(req, res) => {
   }
 }
 
-module.exports = {createPaymentIntent, getCustomerDetails}
+module.exports = {createPaymentIntent}
 
 /* payment intent succeed webhook: 
 - make an order

@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const {BuyerUser} = require('../../model/buyer/buyerUser')
 const {SellerUser} = require('../../model/seller/sellerUser')
-const {addItemsFromGuestToLoggedIn} =  require('../../controller/buyer/shoppingCart');
 const { authSchema } = require('../../auth/validation')
 const bcrypt = require('bcrypt');
 const {issueJWT} = require('../../auth/issueJWT')

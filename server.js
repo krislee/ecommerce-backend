@@ -49,7 +49,7 @@ const stripeRouter = require('./routes/buyer/stripe')
 const corsOptions = {
   // origin: 'http://localhost:3000', 
   // origin: true, 
-  origin: 'https://elecommerce.netlify.app/',
+  origin: 'https://elecommerce.netlify.app',
   credentials: true,
 };
 
@@ -90,7 +90,7 @@ app.use(function(req, res, next) {
   // console.log("res:", res)
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-  res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app/");
+  res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie, X-Forwarded-Proto");
   // console.log("res 2:", res)
   next();
