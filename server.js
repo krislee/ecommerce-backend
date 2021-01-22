@@ -128,7 +128,7 @@ app.use('/guest/buyer', guestCartRouter)
 
 // Stripe Route
 app.use('/create-payment-intent', stripeRouter)
-app.use('/getCustomer', stripeRouter)
+app.use('/webhook', stripeRouter)
 
 // LISTEN TO PORT
 app.listen(process.env.PORT, () => {

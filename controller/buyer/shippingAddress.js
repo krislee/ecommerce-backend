@@ -128,21 +128,39 @@ const savedShipping = async(req, res) => {
     }
 }
 
-// Get either the default or last used shipping address
+// Get either the default or last used shipping address or first saved shipping address (the latter will be used if there is no default nor any shipping addresses used because no orders made yet AND there is a shipping address made). If there are neither of the previous ones, send back null so that a shipping form will be made.
 const checkoutShipping = async(req, res) => {
     try {
         if(req.user.buyer) {
             const defaultAddress = await Address.find({DefaultAddress: true, Buyer: req.user._id})
 
             console.log("defaultShipping: ", defaultShipping)
-
+            
             const lastUsedAddress = await Address.find({LastUsed: true, Buyer: req.user._id})
 
             console.log("last used address: ", lastUsedAddress)
 
-            res.status(200).json({
-                address: defaultAddress ? defaultAddress : lastUsedAddress
-            })
+            const buyerAddresses = await Address.find({Buyer:req.user._id})
+            const firstCreatedAddress = buyerAddresses[buyerAddresses.length - 1]
+
+            if(defaultAddress) {
+                res.status(200).json({
+                    address: defaultAddress 
+                })
+            } else if (lastUsedAddress) {
+                res.status(200).json({
+                    address: defaultAddress 
+                })
+            } else if(firstCreatedAddress) {
+                res.status(200).json({
+                    address: firstCreatedAddress
+                })
+            } else {
+                res.status(200).json({
+                    address: null
+                })
+            }
+            
         } else {
             res.status(400).json({msg: "You are not authorized to view buyer's last used address"})
         }

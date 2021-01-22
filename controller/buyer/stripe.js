@@ -52,7 +52,7 @@ const customer = async (req, res) => { // need to passportAuthenticate this cont
     // If there has not been any record of a customer object, then make a customer and add it to customer field of a BuyerUser document. 
     // If customer has already been made, then retrieve the customer id from the customer field of BuyerUser document.
     if(!loggedInUser.customer) {
-      const customer = await stripe.customers.create(); 
+      const customer = await stripe.customers.create({metadata: {last_used_payment: null}}); 
       console.log("customer: ", customer)
 
       await LoggedInUser.findOneAndUpdate({_id: req.user._id}, {customer: customer.id}, {new: true})

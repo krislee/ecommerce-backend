@@ -5,14 +5,39 @@ const LoggedInUser = require('../../model/buyer/buyerUser')
 const CachePaymentIntent = require('../../model/buyer/cachePaymentIntent')
 
 const indexPaymentMethods = async(req, res) => {
-    const loggedInUser = await LoggedInUser.findById(req.user._id)
+    try {
+        if(req.user.buyer) {
+            const loggedInUser = await LoggedInUser.findById(req.user._id)
   
-    const paymentMethods = await stripe.paymentMethods.list({
-      customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
-      type: 'card',
-    });
-  
+            const paymentMethods = await stripe.paymentMethods.list({
+                customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
+                type: 'card',
+            });
+            
+            const allPaymentMethods = []
+
+            // Loop through all the payment method objects and send back only the id, brand, last4 digits, exp. date, and billing details for each payment method obj instead of just sending paymentMethods.data
+            for(let i=0; i < paymentMethods.data.length; i++) {
+                const paymentMethod = {
+                    paymentMethodID: paymentMethods[data][i][id],
+                    brand: paymentMethods[data][i][card][brand],
+                    last4: paymentMethods[data][i][card][last4],
+                    expDate: `${paymentMethods[data][i][card][exp_month]}/${paymentMethods[data][i][card][exp_year]}`,
+                    billingDetails: {
+                        address: paymentMethods[data][i][billing_details][address],
+                        name: paymentMethods[data][i][billing_details][name]
+                    }
+                }
+                allPaymentMethods.push(paymentMethod)
+
+            }
     
+            res.status(200).json({paymentMethods: allPaymentMethods})
+        }
+    } catch(error) {
+        console.log("error", error)
+        res.status(400).json({msg: "Error"})
+    }
 }
 
 // Load the default or last used payment method for logged in user
@@ -27,7 +52,7 @@ const checkoutPaymentMethod = async(req, res) => {
             // Get the default payment method stored in Stripe customer. The value is null if no default is stored.
             const defaultPaymentMethod = await customer.invoice_settings.default_payment_method
 
-            console.log("default payment method: ", defaultPaymentMethod)
+            console.log("default payment method ID: ", defaultPaymentMethod)
 
             // If there is no default payment method, get the last used payment method that is also stored in Stripe customer object
             let lastUsedPaymentMethod
@@ -35,29 +60,53 @@ const checkoutPaymentMethod = async(req, res) => {
                 lastUsedPaymentMethod = await customer.metadata.last_used_payment
             }
 
+            console.log("last used payment method ID: ", lastUsedPaymentMethod)
+
             // Get the Stripe payment method object if there is a default or last used payment method ID. If there is no default or last used payment method, then check if there are any saved payment methods user created but have not made any purchases yet. If there are no saved payment methods, then send back null for no any record of payment methods for the Stripe customer object.
             let paymentMethod
             if(defaultPaymentMethod) {
                 paymentMethod = await stripe.paymentMethods.retrieve(defaultPaymentMethod)
+
+                console.log("default payment method obj: ", paymentMethod)
+
             } else if(lastUsedPaymentMethod) {
                 paymentMethod = await stripe.paymentMethods.retrieve(lastUsedPaymentMethod)
+
+                console.log("last used payment method obj: ", paymentMethod)
+
             } else {
                 const allPaymentMethods = await stripe.paymentMethods.list({
                     customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
                     type: 'card',
                 });
 
-                
+                console.log("list of customer's payment methods: ", allPaymentMethods)
 
                 // If there are payment methods saved under the customer, then load in the first created payment method on the client side.
                 if(allPaymentMethods.data !== []) {
-                    allPaymentMethods.data[allPaymentMethods.data.length - 1]
+                    //  Get the first saved payment method
+                    paymentMethod = allPaymentMethods.data[allPaymentMethods.data.length - 1]
+
+                    console.log("first saved payment method obj: ", paymentMethod)
+
+                } else {
+                    // If there are no default payment method, last used payment method, or saved payment methods, send back null
+                    res.status(200).json({
+                        paymentMethodID: null
+                    })
                 }
             }
 
-            // Send the payment method's ID, brand, last 4, and expiration date
+            // Send the payment method's ID, brand, last 4, expiration date, and billing details
             res.status(200).json({
                 paymentMethodID: paymentMethod.id,
+                brand: paymentMethod[card][brand],
+                last4: paymentMethod[card][last4],
+                expDate: `${paymentMethod[card][exp_month]}/${paymentMethod[card][exp_year]}`,
+                billingDetails: {
+                    address: paymentMethod[billing_details][address],
+                    name: paymentMethod[billing_details][name]
+                }
 
             })
         }

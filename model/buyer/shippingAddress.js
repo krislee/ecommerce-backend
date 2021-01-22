@@ -1,7 +1,8 @@
 const {Schema, model} = require('mongoose')
 
 const buyerShippingAddressSchema = new Schema({
-    Address: {type: String, max: 255},
+    Name: {type: String, min: 8, max: 255, required: true},
+    Address: {type: String, max: 255, required: true},
     DefaultAddress: {type: Boolean, default: false},
     LastUsed: {type: Boolean, default: false},
     Buyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}]
