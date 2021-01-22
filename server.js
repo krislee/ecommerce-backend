@@ -72,7 +72,7 @@ app.use(session({
   // Like saveUnitialized except only when sessions get updated (ex. with different properties), false means the session will not change unless it is being changed
   resave: false,
   // When hitting route, a new document would show up (when it is true) even when there is not a property
-  saveUninitialized: false,
+  saveUninitialized: true,
   store: sessionStore,
   proxy: true,
   cookie: {
