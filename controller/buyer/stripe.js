@@ -8,10 +8,17 @@ const indexPaymentMethods = async(req, res) => {
   const loggedInUser = await LoggedInUser.findById(req.user._id)
 
   const paymentMethods = await stripe.paymentMethods.list({
-    customer: loggedInUser.customer // customer 
+    customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
     type: 'card',
   });
+
+  
 }
+
+const defaultPaymentMethod = async(req, res) => {
+  const loggedInUser = await LoggedInUser.findById(req.user._id)
+}
+
 // Helper function calculates cart total price
 const calculateOrderAmount = (req, res) => {
   // let totalCartPrice = 0
@@ -229,7 +236,8 @@ module.exports = {createPaymentIntent, getCustomerDetails}
 /* payment intent succeed webhook: 
 - make an order
 - delete cart
-- include/update default payment for customer (check if customer.invoice_settings[default_payment_method] !== undefined, if undefined add the payment method ID, if not undefined check if == to the entered payment method, and update if needed), email receipt, update quantity of selled items */
+- email receipt 
+- update quantity of selled items */
 
 // payment intent process webhook (happens when payment methods have delayed notification.): pending order and then if the payment intent status turns to succeed or requires payment method (the event is payment_intent.payment_failed), then do certain actions
 

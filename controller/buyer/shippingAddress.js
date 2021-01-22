@@ -77,11 +77,13 @@ const updateDefaultShipping = async(req, res) => {
 
 const updateLastUsedShipping = async(req, res) => {
     try {
-        const lastUsedAddress = await Address.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, req.body, {new: true})
+        if (req.user.buyer) {
+            const lastUsedAddress = await Address.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, req.body, {new: true})
 
-        console.log("last used address for checkout: ", lastUsedAddress)
+            console.log("last used address for checkout: ", lastUsedAddress)
 
-        res.status(200).json("address: ", lastUsedAddress)
+            res.status(200).json("address: ", lastUsedAddress)
+        }
     } catch(error) {
         res.status(400).json({msg: error});
     }

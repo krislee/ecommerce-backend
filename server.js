@@ -96,7 +96,18 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
+// app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
+app.use(
+  express.json({
+    // We need the raw body to verify webhook signatures.
+    // Let's compute it only when hitting the Stripe webhook endpoint.
+      verify: function(req, res, buf) {
+          if (req.originalUrl.startsWith("/webhook")) {
+              req.rawBody = buf.toString();
+          }
+      }
+  })
+);
 app.use(express.urlencoded({extended: true}))
 //////// ROUTES AND ROUTER ////////
 
