@@ -171,7 +171,7 @@ const createPaymentIntent = async(req, res) => {
           publicKey: process.env.STRIPE_PUBLIC,
           paymentIntentId: paymentIntent.id,
           clientSecret: paymentIntent.client_secret,
-          returningCustomer: !newCustomer,
+          returningCustomer: newCustomer ? !newCustomer : newCustomer,
           customer: true
         });
       } else {

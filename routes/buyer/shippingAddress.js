@@ -9,15 +9,18 @@ router.get('/address', passportAuthenticate, indexShipping)
 
 router.get('/saved/address/:id', passportAuthenticate, savedShipping)
 
-router.get('/lastUsed/address', passportAuthenticate, checkoutShipping)
+router.get('checkout/address', passportAuthenticate, checkoutShipping)
+
 
 router.post('/address', passportAuthenticate, addShipping)
+
 
 router.put('/address/:id', passportAuthenticate, updateShipping)
 
 router.put('default/address/:id', passportAuthenticate, updateDefaultShipping)
 
 router.put('lastUsed/address/:id', passportAuthenticate, updateLastUsedShipping)
+
 
 router.delete('/address/:id', passportAuthenticate, deleteShipping)
 

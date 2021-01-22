@@ -142,3 +142,4 @@ const defaultPaymentMethod = async(req, res) => {
 
 
 
+module.exports = {indexPaymentMethods, defaultPaymentMethod}

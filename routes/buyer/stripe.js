@@ -2,10 +2,13 @@ const router = require('express').Router();
 const passport = require('passport');
 const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
-const {createPaymentIntent, getCustomerDetails} = require('../../controller/buyer/stripe')
+const {createPaymentIntent} = require('../../controller/buyer/stripe')
 
+const {indexPaymentMethods, defaultPaymentMethod} = require('../../controller/buyer/stripe2')
 router.post('/', createPaymentIntent)
 
+router.get('/index/payment', indexPaymentMethods)
+router.get('/checkout/payment', defaultPaymentMethod)
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
 router.post("/events", async (req, res) => {
