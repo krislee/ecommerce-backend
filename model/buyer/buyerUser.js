@@ -39,11 +39,7 @@ const buyerUserSchema = new Schema({
         required: true,
         min: 8,
         max: 255
-    },
-    shipping: [{
-        address: {type: String, max: 255},
-        defaultAddress: {type: Boolean, default: false}
-    }]
+    }
 })
 
 
@@ -54,6 +50,8 @@ buyerUserSchema.pre('deleteOne', { document: true, query: true}, async function(
         // Delete all electronic review documents that referenced to the removed buyer
         await this.model('reviewElectronic').deleteMany({Buyer: this._id})
 
+        // Delete all address documents that referenced to the removed buyer
+        await this.model('BuyerShippingAddress').deleteMany({Buyer: this._id})
         // Continue running the deleteOne function in the delete buyer profile route
         next()
     }

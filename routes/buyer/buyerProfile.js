@@ -14,12 +14,5 @@ router.put('/profile', passportAuthenticate, update);
 router.delete('/profile', passportAuthenticate, destroy);
 
 
-router.put('/address/:id', passportAuthenticate, updateUserShipping)
-
-router.post('/address', passportAuthenticate, addUserShipping)
-
-router.get('/address', passportAuthenticate, indexUserShipping)
-
-router.get('/address/:id', passportAuthenticate, showUserShipping)
 
 module.exports = router
