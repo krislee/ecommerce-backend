@@ -47,9 +47,9 @@ const stripeRouter = require('./routes/buyer/stripe')
 
 //////// CORS ////////
 const corsOptions = {
-  // origin: 'http://localhost:3000', 
+  origin: 'http://localhost:3001', 
   // origin: true, 
-  origin: 'https://elecommerce.netlify.app',
+  // origin: 'https://elecommerce.netlify.app',
   credentials: true,
 };
 
@@ -90,25 +90,25 @@ app.use(function(req, res, next) {
   // console.log("res:", res)
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-  res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app");
-  // res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  // res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3001");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie, X-Forwarded-Proto");
   // console.log("res 2:", res)
   next();
 });
 
-app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
-// app.use(
-//   express.json({
-//     // We need the raw body to verify webhook signatures.
-//     // Let's compute it only when hitting the Stripe webhook endpoint.
-//       verify: function(req, res, buf) {
-//           if (req.originalUrl.startsWith("/webhook")) {
-//               req.rawBody = buf.toString();
-//           }
-//       }
-//   })
-// );
+// app.use(express.json()); // Turns JSON from post/put/patch requests and converts them into req.body object
+app.use(
+  express.json({
+    // We need the raw body to verify webhook signatures.
+    // Let's compute it only when hitting the Stripe webhook endpoint.
+      verify: function(req, res, buf) {
+          if (req.originalUrl.startsWith("/webhook")) {
+              req.rawBody = buf.toString();
+          }
+      }
+  })
+);
 app.use(express.urlencoded({extended: true}))
 //////// ROUTES AND ROUTER ////////
 

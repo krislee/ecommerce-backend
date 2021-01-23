@@ -40,7 +40,86 @@ const indexPaymentMethods = async(req, res) => {
     }
 }
 
-// Load the default or last used payment method for logged in user
+// Update payment method when Save button is clicked on Payment Method component. The Save button has the payment method ID
+const updatePaymentMethod = async() => {
+    try {
+        const {billingDetails, expMonth, expYear, name} = req.body
+        const updatedPaymentMethod = await stripe.paymentMethods.update(req.params.id, {
+            billing_details: {
+                address: {
+                    line1: billingDetails.line1,
+                    line2: billingDetails.line2,
+                    city: billingDetails.city,
+                    state: billingDetails.state,
+                    postal_code: billingDetails.postal_code,
+                    country: billingDetails.country
+                },
+                name: billingDetails.name
+            }, 
+            metadata: {
+                cardholder_name: name
+            },
+            card: {
+                exp_month: expMonth,
+                exp_year: expYear
+            }
+        })
+    } catch(error) {
+        console.log("error", error)
+        res.status(400).json({msg: "Error"})
+    }
+}
+
+// Create a setup intent 
+const createPaymentMethod = async() => {
+    try {
+        // Get the user's info, which contains customer's ID
+        const loggedInUser = await LoggedInUser.findById(req.user._id)
+        // Get Stripe customer
+        const customer = await stripe.customers.retrieve(loggedInUser.customer)
+
+
+    } catch(error) {
+        console.log("error", error)
+        res.status(400).json({msg: "Error"})
+    }
+}
+
+// Delete setup intent
+const deletePaymentMethod = async() => {
+    try {
+
+    } catch(error) {
+        console.log("error", error)
+        res.status(400).json({msg: "Error"})
+    }
+}
+
+// Client's default payment method box clicked and checked will run defaultPaymentMethod() in the payment method component 
+const defaultPaymentMethod = async(req, res) => {
+    try {
+        if(req.user.buyer) {
+            // Get the user's info, which contains customer's ID
+            const loggedInUser = await LoggedInUser.findById(req.user._id)
+            
+            // Update the Stripe customer object to include the default payment method
+            const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
+                invoice_settings: {
+                    default_payment_method: req.query.pm
+                }
+            });
+
+            console.log("updated customer: ", updatedCustomer)
+
+            res.status(200).json({success: true})
+        }
+    } catch(error){
+        console.log(" default Payment method error", error)
+        res.status(400).json({msg: "Error"})
+    }
+}
+
+// Return the default or last used payment method or the first created list of payment methods or null for logged in user
 const checkoutPaymentMethod = async(req, res) => {
     try {
         if(req.user.buyer) {
@@ -57,7 +136,7 @@ const checkoutPaymentMethod = async(req, res) => {
             // If there is no default payment method, get the last used payment method that is also stored in Stripe customer object
             let lastUsedPaymentMethod
             if (!defaultPaymentMethod) {
-                lastUsedPaymentMethod = await customer.metadata.last_used_payment
+                lastUsedPaymentMethod = await customer.metadata.last_used_payment // metadata.last_used_payment's default value is null, or is updated with the used payment method ID in the payment_intent.succeed event
             }
 
             console.log("last used payment method ID: ", lastUsedPaymentMethod)
@@ -90,25 +169,12 @@ const checkoutPaymentMethod = async(req, res) => {
                     console.log("first saved payment method obj: ", paymentMethod)
 
                 } else {
-                    // If there are no default payment method, last used payment method, or saved payment methods, send back null
-                    res.status(200).json({
-                        paymentMethodID: null
-                    })
+                    paymentMethod = null
                 }
             }
 
-            // Send the payment method's ID, brand, last 4, expiration date, and billing details
-            res.status(200).json({
-                paymentMethodID: paymentMethod.id,
-                brand: paymentMethod[card][brand],
-                last4: paymentMethod[card][last4],
-                expDate: `${paymentMethod[card][exp_month]}/${paymentMethod[card][exp_year]}`,
-                billingDetails: {
-                    address: paymentMethod[billing_details][address],
-                    name: paymentMethod[billing_details][name]
-                }
+            return paymentMethod
 
-            })
         }
     } catch(error){
         console.log("error", error)
@@ -116,30 +182,30 @@ const checkoutPaymentMethod = async(req, res) => {
     }
 }
 
-// Client's default payment method box clicked and checked will run defaultPaymentMethod()
-const defaultPaymentMethod = async(req, res) => {
-    try {
-        if(req.user.buyer) {
-            // Get the user's info, which contains customer's ID
-            const loggedInUser = await LoggedInUser.findById(req.user._id)
-            
-            // Update the Stripe customer object to include the default payment method
-            const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
-                invoice_settings: {
-                    default_payment_method: req.query.pm
-                }
-            });
-
-            console.log("updated customer: ", updatedCustomer)
-
-            res.status(200).json({success: true})
-        }
-    } catch(error){
-        console.log(" default Payment method error", error)
-        res.status(400).json({msg: "Error"})
+// Send to client the default or last used payment method or the first created list of payment methods or null for logged in user by calling the checkoutPaymentMethod helper with its return value as sendCheckoutPaymentMethod argument
+const sendCheckoutPaymentMethod = (paymentMethod) => {
+    if(!paymentMethod) {
+        // If there are no default payment method, last used payment method, or saved payment methods, send back null
+        res.status(200).json({
+            paymentMethodID: null
+        })
     }
+    // Send the payment method's ID, brand, last 4, expiration date, and billing details
+    res.status(200).json({
+        paymentMethodID: paymentMethod.id,
+        brand: paymentMethod[card][brand],
+        last4: paymentMethod[card][last4],
+        expDate: `${paymentMethod[card][exp_month]}/${paymentMethod[card][exp_year]}`,
+        billingDetails: {
+            address: paymentMethod[billing_details][address],
+            name: paymentMethod[billing_details][name]
+        }
+
+    })
 }
 
 
 
-module.exports = {indexPaymentMethods, defaultPaymentMethod}
+
+
+module.exports = {indexPaymentMethods, defaultPaymentMethod, checkoutPaymentMethod, sendCheckoutPaymentMethod}
