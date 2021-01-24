@@ -15,7 +15,7 @@ function issueJWT(user){
         sub: user._id, // user ID
         iat: Date.now(), // JWT issued at date
     }
-    console.log(18, "payload: ", payload)
+    // console.log(18, "payload: ", payload)
 
     ////// EXPIRATION OF TOKEN //////
 
@@ -23,7 +23,7 @@ function issueJWT(user){
     const expiresIn = '60d'
     
     // console.log(26, JSON.parse(process.env.SESSION_SECRET).replace(/\\n/g, '\n'))
-    console.log(26, "process.env.PRIV_KEY", process.env.PRIV_KEY)
+    // console.log(26, "process.env.PRIV_KEY", process.env.PRIV_KEY)
     // console.log(27, "new line: ", process.env.PRIV_KEY.replace(/\n/g, '\n'))
     // console.log(28, "new line: ", process.env.PRIV_KEY.replace(/\\n/g, '\n'))
   
