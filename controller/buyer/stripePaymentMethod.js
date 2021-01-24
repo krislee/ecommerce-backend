@@ -2,7 +2,7 @@ require("dotenv").config()
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
 const LoggedInUser = require('../../model/buyer/buyerUser')
 
-// Get all payment methods attached to the Stripe customer for Payment Method component and saved cards modal
+// Get all payment methods attached to the Stripe customer for Payment Method component and saved cards modal during checkout
 const indexPaymentMethods = async(req, res) => {
     try {
         if(req.user.buyer) {
@@ -13,6 +13,10 @@ const indexPaymentMethods = async(req, res) => {
                 type: 'card',
             });
             
+            // Get the default payment method ID to display it in Payment Method component
+            const customer = await stripe.customers.retrieve(loggedInUser.customer)
+            defaultPaymentMethodID = customer.invoice_settings.default_payment_method
+
             const allPaymentMethods = []
 
             // Loop through all the payment method objects and send back only the id, brand, last4 digits, exp. date, and billing details for each payment method obj instead of just sending paymentMethods.data
@@ -28,10 +32,15 @@ const indexPaymentMethods = async(req, res) => {
                     },
                     recollectCVV: paymentMethod[metadata][recollect_cvv] ? true : false
                 }
+                if (paymentMethod.paymentMethodID === defaultPaymentMethodID) {
+                    paymentMethod.default = true
+                } else {
+                    paymentMethod.default = false
+                }
                 allPaymentMethods.push(paymentMethod)
 
             }
-    
+
             res.status(200).json({paymentMethods: allPaymentMethods})
         }
     } catch(error) {
@@ -40,7 +49,7 @@ const indexPaymentMethods = async(req, res) => {
     }
 }
 
-// Show one payment method attached to the Stripe customer when Select button is clicked in saved cards modal
+// Show one payment method attached to the Stripe customer when Select button is clicked in saved cards modal during checkout
 const showPaymentMethod = async(req, res) => {
     try {
         if(req.user.buyer) {
@@ -251,53 +260,58 @@ const createPaymentMethod = async(req, res) => {
 const checkoutPaymentMethod = async(req, res) => {
     try {
         if(req.user.buyer) {
+
+            let paymentMethod
+
             // Get the logged in user's info, which contains customer's ID
             const loggedInUser = await LoggedInUser.findById(req.user._id)
             // Get the Stripe customer
             const customer = await stripe.customers.retrieve(loggedInUser.customer)
 
-            // Get the default payment method stored in Stripe customer. The value is null if no default is stored.
-            const defaultPaymentMethod = await customer.invoice_settings.default_payment_method
+            if(customer) {
+                // Get the default payment method stored in Stripe customer. The value is null if no default is stored.
+                const defaultPaymentMethod = await customer.invoice_settings.default_payment_method
 
-            console.log("default payment method ID: ", defaultPaymentMethod)
+                console.log("default payment method ID: ", defaultPaymentMethod)
 
-            // If there is no default payment method, get the last used, saved payment method that is also stored in Stripe customer object
-            
-            if (!defaultPaymentMethod) {
-                const lastUsedPaymentMethodID = await customer.metadata.last_used_payment // metadata.last_used_payment's default value is null, or is updated with the used payment method ID in the payment_intent.succeed event webhook
+                if(defaultPaymentMethod) {
+                    paymentMethod = await stripe.paymentMethods.retrieve(defaultPaymentMethod)
 
-                // Check if the last used payment method is saved to the customer because if the last used payment method was not saved to the customer, then we cannot display it to the customer:
-                const allPaymentMethods = await stripe.paymentMethods.list({
-                    customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
-                    type: 'card',
-                });
+                    console.log("default payment method obj: ", paymentMethod)
+
+                } 
+
+                // If there is no default payment method, get the last used, saved payment method that is also stored in Stripe customer object
                 
-                let lastUsedSavedPaymentMethodID = ""
-                if(allPaymentMethods.data !== []) {
-                    for(let i=0; i<allPaymentMethods.data.length; i++) {
-                        if (allPaymentMethods.data[i].id === lastUsedPaymentMethodID) {
-                            lastUsedSavedPaymentMethodID = lastUsedPaymentMethodID
+                if (!defaultPaymentMethod) {
+                    const lastUsedPaymentMethodID = await customer.metadata.last_used_payment // metadata.last_used_payment's default value is null, or is updated with the used payment method ID in the payment_intent.succeed event webhook
+
+                    // Check if the last used payment method is saved to the customer because if the last used payment method was not saved to the customer, then we cannot display it to the customer:
+                    const allPaymentMethods = await stripe.paymentMethods.list({
+                        customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
+                        type: 'card',
+                    });
+                    
+                    let lastUsedSavedPaymentMethodID = ""
+                    if(allPaymentMethods.data !== []) {
+                        for(let i=0; i<allPaymentMethods.data.length; i++) {
+                            if (allPaymentMethods.data[i].id === lastUsedPaymentMethodID) {
+                                lastUsedSavedPaymentMethodID = lastUsedPaymentMethodID
+                            }
                         }
                     }
+
+                    console.log(304, "lastUsedSavedPaymentMethodID: ", lastUsedSavedPaymentMethodID)
+
+                    if(lastUsedSavedPaymentMethodID) {
+                        paymentMethod = await stripe.paymentMethods.retrieve(lastUsedSavedPaymentMethodID)
+    
+                        console.log("last used payment method obj: ", paymentMethod)
+                    }
                 }
-                    
-            }
-
-            console.log(275, "lastUsedSavedPaymentMethodID: ", lastUsedSavedPaymentMethodID)
-
-            // Get the Stripe payment method object if there is a default or last used payment method ID. If there is no default or last used payment method, then check if there are any saved payment methods user created but have not made any purchases yet. If there are no saved payment methods, then send back null for no any record of payment methods for the Stripe customer object.
-            let paymentMethod
-            if(defaultPaymentMethod) {
-                paymentMethod = await stripe.paymentMethods.retrieve(defaultPaymentMethod)
-
-                console.log("default payment method obj: ", paymentMethod)
-
-            } else if(lastUsedSavedPaymentMethodID) {
-                paymentMethod = await stripe.paymentMethods.retrieve(lastUsedSavedPaymentMethodID)
-
-                console.log("last used payment method obj: ", paymentMethod)
 
             } else {
+                // If there is no default or last used, saved payment method, then check if there are any saved payment methods user created but have not made any purchases yet. If there are no saved payment methods, then send back null for no any record of payment methods for the Stripe customer object.
                 const allPaymentMethods = await stripe.paymentMethods.list({
                     customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
                     type: 'card',
