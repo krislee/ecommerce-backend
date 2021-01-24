@@ -26,7 +26,7 @@ function issueJWT(user){
     console.log(26, "process.env.PRIV_KEY", process.env.PRIV_KEY)
     console.log(27, "new line: ", process.env.PRIV_KEY.replace(/\n/g, '\n'))
     console.log(28, "new line: ", process.env.PRIV_KEY.replace(/\\n/g, '\n'))
-    
+    console.log(29, JSON.parse(proccess.env.PRIV_KEY))
     // console.log(30, JSON.parse(process.env.PRIV_KEY))
     // console.log(25, "JSON.parse(process.env.PRIV_KEY): ", JSON.parse(process.env.PRIV_KEY))
     ////// CREATE TOKEN //////
