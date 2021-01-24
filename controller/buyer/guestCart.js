@@ -7,8 +7,8 @@ const guestAddItem = async(req, res, next) => {
         
         const item = await Electronic.findById(req.params.id)
         // console.log(item, "item in guest route")
-        console.log("req.session: ", req.session)
-        console.log("session id: ", req.sessionID)
+        console.log(10, "req.session: ", req.session)
+        console.log(11, "session id: ", req.sessionID)
 
         // if a cart has been made for the guest user, then check if the item is already in the cart 
         if(req.session.cart) {
@@ -33,7 +33,7 @@ const guestAddItem = async(req, res, next) => {
                 })
             }
             req.session.save()
-            console.log("added item to guest cart:", req.session)
+            console.log(36, "added item to guest cart:", req.session)
             res.status(200).json(req.session.cart);
 
         } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
