@@ -151,7 +151,7 @@ const createLoggedInPaymentIntent = async() => {
 }
 
 const createGuestPaymentIntent = async() => {
-    console.log(161, "user not logged in, create payment intent")
+    console.log(154, "user not logged in, create payment intent")
                 
     const idempotencyKey = uuidv4() // Randomly create an idempotency key value, which is used to avoid creating a duplicate payment intent
 
@@ -163,7 +163,7 @@ const createGuestPaymentIntent = async() => {
         idempotencyKey: idempotencyKey
     });
 
-    console.log(173, "creating payment intent for guest user ", paymentIntent)
+    console.log(166, "creating payment intent for guest user ", paymentIntent)
 
     // Store the idempotency key in CachePaymentIntent database. When the client sends the idempotency key back, we will check our database to see if we already made a payment intent that is associated with the idempotency key value.
     const cache = await CachePaymentIntent.create({

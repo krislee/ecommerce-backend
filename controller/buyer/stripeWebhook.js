@@ -40,17 +40,42 @@ const webhook = async (req, res) => {
         // The payment was complete
         console.log("💰 Payment succeeded with payment method " + data.object.payment_method);
 
-        // If there is an Authorization header, then user is logged in. So include the last used payment method for logged in user. The last used payment method ID is stored in the data[object][payment_method] property of the event. 
+        // If there is an Authorization header, then user is logged in. 
         if(req.headers.authorization) {
             if (req.user.buyer) {
                 const loggedInUser = await LoggedInUser.findById(req.user._id)
+
+                // Include the last used payment method for logged in user. The last used payment method ID is stored in the data[object][payment_method] property of the event. 
+                const paymentMethodID = data.object.payment_method
                 const customer = await stripe.customers.update(loggedInUser.customer, {
-                    metadata: {last_used_payment: data.object[payment_method]}
+                    metadata: {last_used_payment: paymentMethodID}
                 })
+
+                // Check if the payment method object that was just used to pay had to recollect CVV because user updated the payment method in payment method component. If CVV was recollected, then change it back to false since the updated payment method succeeded in making the payment.
+                const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodID)
+                if(paymentMethod.metadata.recollect_cvv){
+                    const updatedPaymentMethod = await stripe.paymentMethods.update(paymentMethodID, {
+                        metadata: {recollect_cvv: false}
+                    })
+                }
+
+            console.log("last used address for checkout: ", lastUsedAddress)
             }
         }
+
+        // Fulfill any orders and store order ID, e-mail receipts, delete cart, update quantity of items
+
+
+
+        //////////////////////////////////
+        // Delete the saved idempotency associated with the payment intent in CachePaymentIntent for the guest(?) since the payment intent is successful???
+        console.log("before clearing cookies: ", req.cookies)
+        if(req.cookies){
+            res.clearCookie('idempotency')
+        }
+        console.log("after clearing cookies: ", req.cookies)
+
         
-        // Fulfill any orders and store order ID, e-mail receipts, delete cart, delete idempotency from CachePaymentIntent database, update quantity of items
 
     } else if (eventType === "payment_intent.payment_failed") {
 
