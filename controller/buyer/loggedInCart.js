@@ -72,7 +72,8 @@ const loggedInAddItem = async(req, res, next) => {
 const addItemsFromGuestToLoggedIn = async (req, res) => {
     const sessionCart = req.session.cart
     console.log(74, "req session: ", req.session)
-    console.log(75, sessionCart, "sessionCart after logging in")
+    console.log(75, "req sessionID: ", req.sessionID)
+    console.log(76, sessionCart, "sessionCart after logging in")
     // console.log(req.user, "req.user after logging in")
 
     const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
