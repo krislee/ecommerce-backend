@@ -3,7 +3,8 @@ const {BuyerUser} = require('../../model/buyer/buyerUser')
 const {SellerUser} = require('../../model/seller/sellerUser')
 const { authSchema } = require('../../auth/validation')
 const bcrypt = require('bcrypt');
-const {issueJWT} = require('../../auth/issueJWT')
+const {issueJWT} = require('../../auth/issueJWT');
+const { exist } = require('@hapi/joi');
 
 
 router.post('/register', async (req, res) => {
@@ -53,7 +54,7 @@ router.post('/login', async (req, res, next) => {
 
     // Find user by unique username
     const existUser = await BuyerUser.findOne({username : req.body.username})
-
+    console.log(57, "exist user", existUser)
     if (!existUser){
         return res.status(400).json({success: false, msg: 'Cannot find user'})
     }
@@ -61,10 +62,10 @@ router.post('/login', async (req, res, next) => {
     try {
         // Unsalts the salted-hashed password in db to get the hashed database password and hashes the provided password and compares them
         if (await bcrypt.compare(req.body.password, existUser.password)){
-
+            console.log(65)
             //  Create JWT token for successfully logged in user
             const loginToken = await issueJWT(existUser)
-
+            console.log(68, "login token", loginToken)
             res.status(200).json({
                 success: true,
                 user: existUser,

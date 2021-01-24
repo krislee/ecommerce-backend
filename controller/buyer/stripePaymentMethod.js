@@ -168,6 +168,8 @@ const defaultPaymentMethod = async(req, res) => {
 
             console.log("updated customer: ", updatedCustomer)
 
+            // indexPaymentMethods(req, res)
+            
             res.status(200).json({paymentMethodID: req.query.pm})
         }
     } catch(error){

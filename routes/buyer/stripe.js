@@ -19,7 +19,7 @@ router.get('/show/payment/:id', passportAuthenticate, showPaymentMethod)
 router.get('/checkout/payment', passportAuthenticate, sendCheckoutPaymentMethod)
 
 router.get('/default/payment', passportAuthenticate, defaultPaymentMethod) // fetch(/default/payment?pm=pm_id)
-router.delete('/default/payment', passportAuthenticate, removeDefaultPaymentMethod)
+router.delete('/default/payment', passportAuthenticate, removeDefaultPaymentMethod) //maybe unncessary route
 
 router.post('/payment', passportAuthenticate, createPaymentMethod) //(include req.body: fingerprint and paymentMethodID)
 

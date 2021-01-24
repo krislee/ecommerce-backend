@@ -32,11 +32,11 @@ const calculateOrderAmount = (req, res) => {
 // Click Checkout and create customer ONCE by customer() helper if user is logged in. Only need one customer object to be made for any future payments. 
 // Customer obj stores details on the customer (name, email, shipping address, etc.) and the customer's card info in the payment intent
 const customer = async (req, res) => { // need to passportAuthenticate this controller
-    console.log(34)
+    console.log(35)
     if(req.headers.authorization) {
         if (req.user.buyer) {
             const loggedInUser = await LoggedInUser.findById(req.user._id)
-            console.log(37)
+            console.log(39)
         // Check if the logged in user already has a customer object made. 
         // If there has not been any record of a customer object, then make a customer and add it to customer field of a BuyerUser document. 
         // If customer has already been made, then retrieve the customer id from the customer field of BuyerUser document.
@@ -66,7 +66,7 @@ const updateExistingPaymentIntent = async(req, res) => {
     // Retrieve the payment intent ID from CachePaymentIntent document to update the payment intent
     const paymentIntentId = existingPaymentIntent.PaymentIntentId
 
-    console.log(62, "paymentIntentId from existing payment intent: ", paymentIntentId)
+    console.log(69, "paymentIntentId from existing payment intent: ", paymentIntentId)
 
     // Guest has already made a payment intent by clicking checking out but then stopped checkout to log in for the very first time. Therefore, payment intent needs to be updated to also include the customer obj.
     const {newCustomer, customerId} = customer(req, res)
@@ -101,37 +101,21 @@ const createLoggedInPaymentIntent = async(req, res) => {
         // Need to run the customer helper to obtain a Stripe customer obj ID which will be included to make a payment intent for logged in users (do not need to run customer helper for guest because we do not need to make a payment intent that includes customer param). Customer param is needed to save Stripe Payment Method obj ID. 
         const {newCustomer, customerId} = customer()
         
-        console.log(96, "customer obj's id: ", customerId)
-        console.log(97, "newCustomer: ", newCustomer)
-        
-        let paymentIntent
+        console.log(104, "customer obj's id: ", customerId)
+        console.log(105, "newCustomer: ", newCustomer)
 
         // Create a PaymentIntent with the order amount and currency params
-        // For first-time purchasing customers, include also the customer's id (Off_session for setup_future_usage params stores customer's card info so that card details are automatically attached in a PaymentMethod obj to customer obj after PaymentIntent succeeds. We only need to attach the card details to the customer object for future purchases ONCE)
-
-        // Retrieve the payment method ID, which will either be the default payment method, last used and saved payment method, or the first created payment method. 
-        const paymentMethod = checkoutPaymentMethod()
-
-        if(newCustomer && !paymentMethod) {
-            paymentIntent = await stripe.paymentIntents.create({
-                customer: customerId,
-                amount: calculateOrderAmount(),
-                currency: "usd"
-            }, {
-                idempotencyKey: loggedInCart._id
-            });
-        } else {
-        
-            // You can charge the customer immediately by confirming payment intent immediately by setting confirm: true. But we will confirm payment intent on client side when user clicks pay, so do not set confirm: true (default is confirm: false)
-            paymentIntent = await stripe.paymentIntents.create({
-                amount: calculateOrderAmount(),
-                currency: "usd",
-                customer: customerId,
-                payment_method: paymentMethod.id
-            }, {
-                idempotencyKey: loggedInCart._id
-            });
-        }
+        // For first-time purchasing customers, include also the customer's id 
+        // (Off_session value for setup_future_usage params will automatically attach card details in a PaymentMethod obj to customer obj after PaymentIntent succeeds. But we would not include setup_future_usage param since we want to manually save the card to the Stripe customer obj when user clicks 'Save card' button. We only need to attach the card details to the customer object for future purchases ONCE)
+        // (You can charge the customer immediately by confirming payment intent immediately by setting confirm: true. But we will confirm payment intent on client side when user clicks pay, so do not set confirm: true (default is confirm: false))
+       
+        const paymentIntent = await stripe.paymentIntents.create({
+            customer: customerId,
+            amount: calculateOrderAmount(),
+            currency: "usd"
+        }, {
+            idempotencyKey: loggedInCart._id
+        });
         
         console.log("creating payment intent for logged in user ", paymentIntent)
 
@@ -155,7 +139,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
 }
 
 const createGuestPaymentIntent = async(req, res) => {
-    console.log(154, "user not logged in, create payment intent")
+    console.log(142, "user not logged in, create payment intent")
                 
     const idempotencyKey = uuidv4() // Randomly create an idempotency key value, which is used to avoid creating a duplicate payment intent
 
@@ -167,7 +151,7 @@ const createGuestPaymentIntent = async(req, res) => {
         idempotencyKey: idempotencyKey
     });
 
-    console.log(166, "creating payment intent for guest user ", paymentIntent)
+    console.log(154, "creating payment intent for guest user ", paymentIntent)
 
     // Store the idempotency key in CachePaymentIntent database. When the client sends the idempotency key back, we will check our database to see if we already made a payment intent that is associated with the idempotency key value.
     const cache = await CachePaymentIntent.create({
@@ -175,7 +159,7 @@ const createGuestPaymentIntent = async(req, res) => {
         PaymentIntentId: paymentIntent.id
     })
 
-    console.log(181, "cache payment intent: ", cache)
+    console.log(162, "cache payment intent: ", cache)
 
     res.status(200).json({
         publicKey: process.env.STRIPE_PUBLIC,
