@@ -124,7 +124,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             console.log(req.session, "after deleting session")
         }
 
-        res.status(200).json({successful: "added items to OLD cart after SYNCING"})
+        res.status(200).json({successful: "added items to OLD cart after SYNCING", cart: cart})
     } else {
         const newCart = await Cart.create({
             LoggedInBuyer: req.user._id
