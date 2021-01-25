@@ -38,7 +38,9 @@ const webhook = async (req, res) => {
     }
 
     
-    // Listen to the events
+    // Listen to the events:
+
+    // Customer’s payment succeeded
     if (eventType === "payment_intent.succeeded") {
         
         // The payment was complete
@@ -114,13 +116,22 @@ const webhook = async (req, res) => {
         }
         console.log("after clearing cookies: ", req.cookies)
 
-        
-
-    } else if (eventType === "payment_intent.payment_failed") {
+    } 
+    // Customer’s payment was declined by card network or otherwise expired
+    else if (eventType === "payment_intent.payment_failed") { 
 
         // The payment failed to go through due to decline or authentication request 
         const error = data.object.last_payment_error.message;
         console.log("❌ Payment failed with error: " + error);
+
+        console.log("status: ", data.object.status)
+
+        // Prompt user to provide another payment method and attaching it to the already made payment intent by sending back to the payment intent's client secret
+        res.send({
+            error: err.code,
+            clientSecret: err.raw.payment_intent.client_secret,
+            publicKey: process.env.STRIPE_PUBLISHABLE_KEY,
+        });
 
     } else if (eventType === "payment_method.attached") {
 
