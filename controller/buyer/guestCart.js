@@ -16,8 +16,8 @@ const guestAddItem = async(req, res, next) => {
             
             // if item exists in the cart, update quantity and total price
             if (cartItem) { 
-                console.log(cartItem.Quantity, req.body.Quantity)
-                console.log(typeof cartItem.Quantity)
+                console.log(19, "cart item quantity: ", cartItem.Quantity, "req.body.quantity: ", req.body.Quantity)
+
                 // cartItem.Quantity += req.body.Quantity
                 cartItem.Quantity = Number(cartItem.Quantity)
                 cartItem.Quantity += req.body.Quantity
@@ -47,7 +47,7 @@ const guestAddItem = async(req, res, next) => {
                     TotalPrice: req.body.Quantity * item.Price
                 }]
             req.session.save()
-            console.log("guest cart is made to add item: ", req.session)
+            console.log(50, "guest cart is made to add item: ", req.session)
             res.status(200).json(req.session.cart);
         }
 

@@ -20,11 +20,11 @@ const options = {
 const strategy = new JWTStrategy(options, async (payload, done) => { 
     try {
         const seller = await SellerUser.findById(payload.sub)
-        console.log(seller, 'seller from passport')
+        // console.log(seller, 'seller from passport')
         if(await seller) return done(null, seller)
 
         const buyer = await BuyerUser.findById(payload.sub)
-        console.log(buyer, 'buyer from passport')
+        // console.log(buyer, 'buyer from passport')
         if(await buyer) return done(null, buyer)
         
         console.log('random password')

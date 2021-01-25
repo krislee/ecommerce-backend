@@ -87,22 +87,30 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                 // check if the logged in cart already contains the item that was in the session cart
 
                 const cartItem = cart.Items.find((j) => {
-                    console.log(sessionCart[i].ItemId, "guest adding in loop")
+
+                    console.log(91, "guest adding in loop", sessionCart[i].ItemId)
+
                     return j.ItemId == sessionCart[i].ItemId
                 })
 
-                console.log(cartItem, "cart item in the addItemsFromGuestToLoggedIn")
+                console.log(96, "cart item in the addItemsFromGuestToLoggedIn: ", cartItem)
 
                 if (cartItem) {
-                    console.log("if in the addItemsFromGuestToLoggedIn")
+                    console.log(99, "if in the addItemsFromGuestToLoggedIn")
+
                     cartItem.Quantity += sessionCart[i].Quantity
-                    console.log(cartItem.Quantity, "quantity in addItemsFromGuestToLoggedIn ")
-                    console.log(cartItem.TotalPrice, "cart total price")
+
+                    console.log(103, "quantity in addItemsFromGuestToLoggedIn: ", cartItem.Quantity)
+                    console.log(104, "cart total price: ", cartItem.TotalPrice)
+
                     cartItem.TotalPrice += sessionCart[i].TotalPrice
-                    console.log(cartItem.TotalPrice, "price in addItemsFromGuestToLoggedIn ")
+
+                    console.log(107, "price in addItemsFromGuestToLoggedIn: ", cartItem.TotalPrice)
                 } else {
-                    console.log("else in the addItemsFromGuestToLoggedIn")
-                    console.log(sessionCart[i].ItemId, "guest adding in else")
+
+                    console.log(111, "else in the addItemsFromGuestToLoggedIn")
+                    console.log(112, "guest adding in else: ", sessionCart[i].ItemId )
+
                     cart.Items.push({
                         ItemId: sessionCart[i].ItemId,
                         Name: sessionCart[i].Name,
@@ -111,18 +119,19 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                         Quantity: sessionCart[i].Quantity,
                         TotalPrice: sessionCart[i].TotalPrice
                     })
-                    console.log(cart.Items, "cart.Items after pushing in else")
+
+                    console.log(114, "cart.Items after pushing in else: ", cart.Items)
                 }
             }
            
             await cart.save()
 
-            console.log(cart, "adding items from guest to logged in cart")
+            console.log(120, "adding items from guest to logged in cart: ", cart)
 
             // then delete the cart from the session after adding all the items from cart
             delete req.session.cart;
 
-            console.log(req.session, "after deleting session")
+            console.log(125, "after deleting session: ", req.session)
         }
 
         res.status(200).json({successful: "added items to OLD cart after SYNCING", cart: cart})
@@ -149,10 +158,11 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
 
             // then delete the cart from the session after adding all the items from cart
             delete req.session.cart
-            console.log(req.session, "after deleting session")
+
+            console.log(162, "after deleting session: ", req.session)
         }
 
-        console.log(newCart, "new cart for adding items from guest to logged in cart")
+        console.log(155, "new cart for adding items from guest to logged in cart: ", newCart)
 
         res.status(200).json({successful: "created a NEW cart and SYNC items"})
     }
