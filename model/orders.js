@@ -1,5 +1,4 @@
 const {Schema, model} = require('mongoose')
-const { v4: uuidv4 } = require('uuid');
 
 const orderSchema = new Schema({
     Items: [{
@@ -10,8 +9,8 @@ const orderSchema = new Schema({
         Quantity: Number,
         TotalPrice: Number
     }],
-    Buyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}],
-    OrderNumber: uuidv4()
+    LoggedInBuyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}],
+    OrderNumber: String
 })
 
 const Order = model('order', orderSchema)

@@ -1,6 +1,8 @@
 require('dotenv').config()
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
-const Cart = require('../../model/buyer/cart');
+const { v4: uuidv4 } = require('uuid');
+const Cart = require('../../model/buyer/cart')
+const Order = require('../../model/orders')
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
 
@@ -42,7 +44,7 @@ const webhook = async (req, res) => {
         console.log("💰 Payment succeeded with payment method " + data.object.payment_method);
 
         // If there is a Stripe customer ID, then it indicates user is logged in since we create a Stripe customer (just once) when creating a payment intent for logged in users.
-        if(data.object.customer) {
+        if(data.object.customer) {  
 
             // Include the last used payment method for logged in user. The last used payment method ID is stored in the data[object][payment_method] property of the event. 
             const paymentMethodID = data.object.payment_method
@@ -60,19 +62,37 @@ const webhook = async (req, res) => {
             }
             console.log("update recollect_cvv payment method after successful payment: ", paymentMethod)
 
-            // Delete logged in user's cart
+            // Fulfill order by retrieving the items from the Cart document before deleting the cart later. 
+            const order = Order.create({
+                LoggedInBuyer: data.object.customer,
+                OrderNumber: uuidv4() // generate random order ID number using uuid 
+            })
+            const cart = Cart.findOne({LoggedInBuyer: data.object.customer})
+            for(let i=0; i < cart.Items.length; i++){
+                order.Items.push(cart.Items[[i]])
+            }
+            console.log("logged in order: ", order)
+
+            // Since there is a new cart for each order, delete cart after fulfilling order.
             const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: data.object.customer})
             console.log("logged in cart deleted: ", deletedCart)
             
         } else {
-            // Delete guest's cart
+            // Fulfill order by retrieving the items from the Cart document before deleting the cart later. 
+            const order = Order.create({OrderNumber: uuidv4()})
+            for(let i=0; i < req.session.cart.length; i++) {
+                order.Items.push(req.session.cart[i])
+            }
+            console.log("guest order: ", order)
+
+            // Since there is a new cart for each order, delete guest's cart after fulfilling order.
             console.log("req.session before deleting: ", req.session)
             delete req.session.cart
             console.log("delete req.session after successful payment: ", req.session)
         }
         
         
-        // update quantity of items
+        // Update quantity of items
         
 
         // Email receipts
