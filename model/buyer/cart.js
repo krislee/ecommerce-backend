@@ -1,5 +1,4 @@
 const {Schema, model} = require('mongoose')
-const Electronic = require('../seller/electronic')
 
 const cartSchema = new Schema({
     Items: [{

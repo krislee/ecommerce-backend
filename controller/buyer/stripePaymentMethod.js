@@ -32,11 +32,18 @@ const indexPaymentMethods = async(req, res) => {
                     },
                     recollectCVV: paymentMethod[metadata][recollect_cvv] ? true : false
                 }
+                // Add the default property to the paymentMethod obj above
                 if (paymentMethod.paymentMethodID === defaultPaymentMethodID) {
-                    paymentMethod.default = true
+                    paymentMethod.default = true 
                 } else {
                     paymentMethod.default = false
                 }
+
+                // Check if this function is being called through clicking saved cards. If it is, then do not send back the already displayed payment method, so do not push into allPaymentMethods
+                if(req.query.save) {
+                    if(req.params.id === paymentMethod.paymentMethodID) return
+                }
+                
                 allPaymentMethods.push(paymentMethod)
 
             }
