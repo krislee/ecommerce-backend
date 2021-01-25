@@ -14,7 +14,8 @@ router.post('/electronic/cart/:id', (req, res) => {
     }
 });
 
-router.post('/sync/cart', passportAuthenticate, addItemsFromGuestToLoggedIn) // in the frontend, run the log in route, then store the JWT AND fetch this post route to add items
+// router.post('/sync/cart', passportAuthenticate, addItemsFromGuestToLoggedIn) // in the frontend, run the log in route, then store the JWT AND fetch this post route to add items
+router.post('/sync/cart',  addItemsFromGuestToLoggedIn)
 
 router.put('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
