@@ -53,7 +53,7 @@ const guestAddItem = async(req, res, next) => {
 
     }
     catch (error) {
-        console.log("error: ", error)
+        console.log(56, "error: ", error)
         res.status(400).send(error)
     }
 }
@@ -64,20 +64,24 @@ const guestUpdateItemQuantity = async(req, res) => {
        
         const item = await Electronic.findById(req.params.id)
         // console.log("update guest cart item: ", item)
-        console.log("req.session: ", req.session)
+        console.log(67, "req.session: ", req.session)
+
         const cartItem = req.session.cart.find(i => {
-            console.log(i.ItemId, "guest i.ItemId")
+            console.log(70, "guest i.ItemId", i.ItemId)
+
             return i.ItemId == item.id
         })
-        console.log(cartItem, "guest update cart")
+        console.log(74,  "cart item we want to update", cartItem)
+
         cartItem.Quantity = req.body.Quantity
         cartItem.TotalPrice = (item.Price * req.body.Quantity)
-        console.log(cartItem, "after updating guest cart")
+
+        console.log(79, "after updating guest cart", cartItem)
         res.status(200).json(req.session.cart)
         
     }
     catch (error) {
-        console.log("error: ", error)
+        console.log(84, "error: ", error)
         res.status(400).send(error)
     }
 }
@@ -88,8 +92,11 @@ const guestDeleteItem = (req, res) => {
 
         const cartItemIndex = req.session.cart.findIndex(i => i.ItemId == req.params.id)
         req.session.cart.splice(cartItemIndex, 1)
-        console.log(req.session.cart, "guest cart after delete")
+
+        console.log(96, "guest cart after deleting item: ", req.session.cart)
+
         if(req.session.cart.length === 0) delete req.session.cart
+
         res.status(200).json(req.session.cart)
     }
     catch(error) {
@@ -99,21 +106,25 @@ const guestDeleteItem = (req, res) => {
 
 // Show all items in the cart
 const guestIndexCart = (req, res) => {
-    console.log('guest indexCart route used');
-    console.log("session ID :", req.sessionID)
-    console.log('guestIndexCart', req.session)
+    console.log(109, 'guest indexCart route used');
+    console.log(110, "session ID: ", req.sessionID)
+    console.log(111, 'session object: ', req.session)
+
     try {
-            console.log(req.session.cart, "guest cart")
-            
-            let totalCartPrice = 0
-            for (let i=0; i < req.session.cart.length; i++) {
-                totalCartPrice += req.session.cart[i].TotalPrice
+            console.log(114, "guest cart", req.session.cart)
+
+            if(req.session.cart){
+                let totalCartPrice = 0
+                for (let i=0; i < req.session.cart.length; i++) {
+                    totalCartPrice += req.session.cart[i].TotalPrice
+                }
+                res.status(200).json({
+                    cart: req.session.cart,
+                    totalCartPrice: totalCartPrice
+                })
+            } else {
+                res.status(200).json({message: 'No items in cart'})
             }
-            res.status(200).json({
-                cart: req.session.cart,
-                totalCartPrice: totalCartPrice
-            })
-        
     }
     catch(error) {
         console.log("error", error)

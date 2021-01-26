@@ -8,25 +8,26 @@ const {checkoutPaymentMethod} = require('./stripePaymentMethod')
 
 // Helper function calculates cart total price
 const calculateOrderAmount = (req, res) => {
-    // let totalCartPrice = 0
+    let totalCartPrice = 0
+    
+    if(req.headers.authorization){
+        if(req.user) {
+            const loggedInCart = LoggedInCart.findOne({LoggedInBuyer: req.user._id})
 
-    // if(req.user) {
-    //   const loggedInCart = LoggedInCart.findOne({LoggedInBuyer: req.user._id})
+            for(let i=0; i<loggedInCart.Items.length; i++) {
+                totalCartPrice+= loggedInCart.Items.TotalPrice
+            }
+        }
+    } else { 
+        const guestCart = req.session.cart
+        console.log(22, "guest cart: ", guestCart)
 
-    //   for(let i=0; i<loggedInCart.Items.length; i++) {
-    //     totalCartPrice+= loggedInCart.Items.TotalPrice
-    //   }
+        for(let i=0; i<guestCart.length; i++) {
+            totalCartPrice += guestCart.TotalPrice
+        }
+    }
 
-    // } else { 
-    //   const guestCart = req.session.cart
-
-    //   for(let i=0; i<guestCart.length; i++) {
-    //     totalCartPrice += guestCart.TotalPrice
-    //   }
-    // }
-
-    // return totalCartPrice *=100 // total cart price in cents
-    return 1400
+    return totalCartPrice *=100 // total cart price in cents
 }
 
 // Click Checkout and create customer ONCE by customer() helper if user is logged in. Only need one customer object to be made for any future payments. 
