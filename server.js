@@ -47,9 +47,9 @@ const {webhook} = require('./controller/buyer/stripeWebhook')
 
 //////// CORS ////////
 const corsOptions = {
-  // origin: 'http://localhost:3000', 
+  origin: 'http://localhost:3000', 
   // origin: true, 
-  origin: 'https://elecommerce.netlify.app',
+  // origin: 'https://elecommerce.netlify.app',
   credentials: true,
 };
 
@@ -74,7 +74,7 @@ app.use(session({
   // When hitting route, a new document would show up (when it is true) even when there is not a property
   saveUninitialized: false,
   store: sessionStore,
-  proxy: true,
+  // proxy: true,
   cookie: {
     maxAge: 1000*60*60*24*30, 
     // secure if true is only for https
@@ -90,8 +90,8 @@ app.use(function(req, res, next) {
   // console.log("res:", res)
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-  res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app");
-  // res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  // res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie, X-Forwarded-Proto");
   // console.log("res 2:", res)
   next();
