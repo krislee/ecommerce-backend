@@ -10,7 +10,7 @@ const {webhook} = require('../../controller/buyer/stripeWebhook')
 
 
 // Create or update payment intent Router
-router.post('/', createOrUpdatePaymentIntent)
+router.post('/payment-intent', createOrUpdatePaymentIntent)
 
 
 // Payment Methods Router

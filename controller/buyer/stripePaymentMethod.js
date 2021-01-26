@@ -7,15 +7,19 @@ const indexPaymentMethods = async(req, res) => {
     try {
         if(req.user.buyer) {
             const loggedInUser = await LoggedInUser.findById(req.user._id)
-  
+            
             const paymentMethods = await stripe.paymentMethods.list({
                 customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
                 type: 'card',
             });
+
+            console.log(16, "all payment methods attached to customer: ", paymentMethods)
             
             // Get the default payment method ID to display it in Payment Method component
             const customer = await stripe.customers.retrieve(loggedInUser.customer)
             defaultPaymentMethodID = customer.invoice_settings.default_payment_method
+
+            console.log(22, "default payment method: ", defaultPaymentMethodID)
 
             const allPaymentMethods = []
 
@@ -43,15 +47,16 @@ const indexPaymentMethods = async(req, res) => {
                 if(req.query.save) {
                     if(req.params.id === paymentMethod.paymentMethodID) return
                 }
-                
+
                 allPaymentMethods.push(paymentMethod)
 
+                console.log(53, "a list of payment methods to send back: ", allPaymentMethods)
             }
 
             res.status(200).json({paymentMethods: allPaymentMethods})
         }
     } catch(error) {
-        console.log("error", error)
+        console.log(59, "error", error)
         res.status(400).json({msg: "Error"})
     }
 }
@@ -61,6 +66,9 @@ const showPaymentMethod = async(req, res) => {
     try {
         if(req.user.buyer) {
             const paymentMethod = await stripe.paymentMethods.retrieve(req.params.id)
+
+            console.log(70, "get one payment method: ", paymentMethod)
+
             res.status(200).json({
                 paymentMethodID: paymentMethod.id,
                 brand: paymentMethod[card][brand],
@@ -74,7 +82,7 @@ const showPaymentMethod = async(req, res) => {
             })
         }
     } catch(error) {
-        console.log("error", error)
+        console.log(85, "error", error)
         res.status(400).json({msg: "Error"})
     }
 }
@@ -94,7 +102,7 @@ const updatePaymentMethod = async(req, res) => {
                 customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
                 type: 'card',
             });
-            console.log("before updating payment method: ", paymentMethods)
+            console.log(105, "before updating, a list of payment method: ", paymentMethods)
 
             const {billingDetails, expMonth, expYear, name, recollectCVV} = req.body
             const updatedPaymentMethod = await stripe.paymentMethods.update(req.params.id, {
@@ -119,12 +127,14 @@ const updatePaymentMethod = async(req, res) => {
                 }
             })
 
+            console.log(130, "after updating payment method: ", updatedPaymentMethod)
+
             // REMOVE THE CODE BELOW AFTER CHECKING
             const updatedPaymentMethods = await stripe.paymentMethods.list({
                 customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
                 type: 'card',
             });
-            console.log("after updating payment method: ", updatedPaymentMethods)
+            console.log(137, "after updating, a list of payment methods: ", updatedPaymentMethods)
 
 
             // Send back the updated payment method details
@@ -141,7 +151,7 @@ const updatePaymentMethod = async(req, res) => {
             })
         }
     } catch(error) {
-        console.log("error", error)
+        console.log(154, "error", error)
         res.status(400).json({msg: "Error"})
     }
 }
@@ -150,7 +160,10 @@ const updatePaymentMethod = async(req, res) => {
 const deletePaymentMethod = async(req, res) => {
     try {
         if(req.user.buyer) {
-            const paymentMethod = await stripe.paymentMethods.detach(req.params.id)
+            const detachedPaymentMethod = await stripe.paymentMethods.detach(req.params.id)
+
+            console.log(165, "the detached payment method: ", detachedPaymentMethod)
+
             indexPaymentMethods(req, res)
         }
     } catch(error) {
@@ -173,38 +186,13 @@ const defaultPaymentMethod = async(req, res) => {
                 }
             });
 
-            console.log("updated customer: ", updatedCustomer)
+            console.log(189, "updated customer: ", updatedCustomer)
 
-            // indexPaymentMethods(req, res)
-            
-            res.status(200).json({paymentMethodID: req.query.pm})
+            indexPaymentMethods(req, res)
+    
         }
     } catch(error){
-        console.log(" default Payment method error", error)
-        res.status(400).json({msg: "Error"})
-    }
-}
-
-// Remove default payment method
-const removeDefaultPaymentMethod = async(req, res) => {
-    try {
-        if(req.user.buyer) {
-            // Get the user's info, which contains customer's ID
-            const loggedInUser = await LoggedInUser.findById(req.user._id)
-            
-            // Update the Stripe customer object to remove the default payment method
-            const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
-                invoice_settings: {
-                    default_payment_method: ""
-                }
-            });
-
-            console.log("updated customer: ", updatedCustomer)
-
-            res.status(200).json({success: true})
-        }
-    } catch(error){
-        console.log(" default Payment method error", error)
+        console.log(195, " default Payment method error", error)
         res.status(400).json({msg: "Error"})
     }
 }
@@ -220,11 +208,16 @@ const createPaymentMethod = async(req, res) => {
             const loggedInUser = await LoggedInUser.findById(req.user._id)
             // Get Stripe customer
             const customer = await stripe.customers.retrieve(loggedInUser.customer)
+
+            console.log(212, "customer: ", customer)
+
             // Get all the payment methods attached to the customer
             const paymentMethods = await stripe.paymentMethods.list({
                 customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
                 type: 'card',
             });
+
+            console.log(220, "a list of payment attached attached to customer: ", paymentMethods)
 
             let match = false
             let oldPaymentMethodID = ""
@@ -234,32 +227,35 @@ const createPaymentMethod = async(req, res) => {
                     oldPaymentMethodID = paymentMethods.data[i][id]
                 }
             }
+            console.log(230, "match and old payment method id", match, oldPaymentMethodID)
 
             // If the new payment method that the user is trying to add does match to the payment method already attached to the stripe customer, first detach the older same payment method and then attach the new payment method to the Stripe customer.
             // If the new payment method that the user is trying to add does not match any payment methods already attached to the Stripe customer, then proceed to attach the new payment method to the Stripe customer
             if(match){
                 const removeOldMatchedPaymentMethod = await stripe.paymentMethods.detach(oldPaymentMethodID)
+
+                console.log(236, "remove old matched payment method: ", removeOldMatchedPaymentMethod)
             }
             const attachPaymentMethod = await stripe.paymentMethods.attach(req.body.paymentMethodID, {
                 customer: loggedInUser.customer
             })
 
-            const paymentMethod = await stripe.paymentMethods.retrieve(req.body.paymentMethodID)
+            console.log(243, "newly attached payment method: ", attachPaymentMethod)
 
             res.status(200).json({
-                paymentMethodID: paymentMethod.id,
-                brand: paymentMethod[card][brand],
-                last4: paymentMethod[card][last4],
-                expDate: `${paymentMethod[card][exp_month]}/${paymentMethod[card][exp_year]}`,
+                paymentMethodID: attachPaymentMethod.id,
+                brand: attachPaymentMethod[card][brand],
+                last4: attachPaymentMethod[card][last4],
+                expDate: `${attachPaymentMethod[card][exp_month]}/${attachPaymentMethod[card][exp_year]}`,
                 billingDetails: {
-                    address: paymentMethod[billing_details][address],
-                    name: paymentMethod[billing_details][name]
+                    address: attachPaymentMethod[billing_details][address],
+                    name: attachPaymentMethod[billing_details][name]
                 },
-                recollectCVV: paymentMethod[metadata][recollect_cvv] ? true : false
+                recollectCVV: attachPaymentMethod[metadata][recollect_cvv] ? true : false
             })
         }
     } catch(error) {
-        console.log("error", error)
+        console.log(258, "error", error)
         res.status(400).json({msg: "Error"})
     }
 }
@@ -277,16 +273,18 @@ const checkoutPaymentMethod = async(req, res) => {
             // Get the Stripe customer
             const customer = await stripe.customers.retrieve(loggedInUser.customer)
 
+            console.log(276, "customer: ", customer)
+
             if(customer) {
                 // Get the default payment method stored in Stripe customer. The value is null if no default is stored.
                 const defaultPaymentMethod = await customer.invoice_settings.default_payment_method
 
-                console.log("default payment method ID: ", defaultPaymentMethod)
+                console.log(282, "default payment method ID: ", defaultPaymentMethod)
 
                 if(defaultPaymentMethod) {
                     paymentMethod = await stripe.paymentMethods.retrieve(defaultPaymentMethod)
 
-                    console.log("default payment method obj: ", paymentMethod)
+                    console.log(287, "default payment method obj: ", paymentMethod)
 
                 } 
 
@@ -295,12 +293,16 @@ const checkoutPaymentMethod = async(req, res) => {
                 if (!defaultPaymentMethod) {
                     const lastUsedPaymentMethodID = await customer.metadata.last_used_payment // metadata.last_used_payment's default value is null, or is updated with the used payment method ID in the payment_intent.succeed event webhook
 
+                    console.log(295, "last used payment method id: ", lastUsedPaymentMethodID)
+
                     // Check if the last used payment method is saved to the customer because if the last used payment method was not saved to the customer, then we cannot display it to the customer:
                     const allPaymentMethods = await stripe.paymentMethods.list({
                         customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
                         type: 'card',
                     });
                     
+                    console.log(304, "all customer's payment methods: ", allPaymentMethods)
+
                     let lastUsedSavedPaymentMethodID = ""
                     if(allPaymentMethods.data !== []) {
                         for(let i=0; i<allPaymentMethods.data.length; i++) {
@@ -310,12 +312,12 @@ const checkoutPaymentMethod = async(req, res) => {
                         }
                     }
 
-                    console.log(304, "lastUsedSavedPaymentMethodID: ", lastUsedSavedPaymentMethodID)
+                    console.log(315, "lastUsedSavedPaymentMethodID: ", lastUsedSavedPaymentMethodID)
 
                     if(lastUsedSavedPaymentMethodID) {
                         paymentMethod = await stripe.paymentMethods.retrieve(lastUsedSavedPaymentMethodID)
     
-                        console.log("last used payment method obj: ", paymentMethod)
+                        console.log(320, "last used and saved payment method obj: ", paymentMethod)
                     }
                 }
 
@@ -326,14 +328,14 @@ const checkoutPaymentMethod = async(req, res) => {
                     type: 'card',
                 });
 
-                console.log("list of customer's payment methods: ", allPaymentMethods)
+                console.log(331, "list of customer's payment methods: ", allPaymentMethods)
 
                 // If there are payment methods saved under the customer, then load in the first created payment method on the client side.
                 if(allPaymentMethods.data !== []) {
                     //  Get the first saved payment method
                     paymentMethod = allPaymentMethods.data[allPaymentMethods.data.length - 1]
 
-                    console.log("first saved payment method obj: ", paymentMethod)
+                    console.log(339, "first saved payment method obj: ", paymentMethod)
 
                 } else {
                     paymentMethod = null
@@ -342,7 +344,7 @@ const checkoutPaymentMethod = async(req, res) => {
             return paymentMethod
         }
     } catch(error){
-        console.log("error", error)
+        console.log(347, "error", error)
         res.status(400).json({msg: "Error"})
     }
 }
@@ -356,15 +358,18 @@ const sendCheckoutPaymentMethod = async(req, res) => {
             // Get the Stripe customer
             const customer = await stripe.customers.retrieve(loggedInUser.customer)
 
+            console.log(361, "customer: ", customer)
+
             // Get the default payment method stored in Stripe customer. The value is null if no default is stored.
             const defaultPaymentMethod = await customer.invoice_settings.default_payment_method
 
-            console.log("default payment method ID: ", defaultPaymentMethod)
+            console.log(366, "default payment method ID: ", defaultPaymentMethod)
 
             // If there is no default payment method, get the last used, saved payment method that is also stored in Stripe customer object
-            
             if (!defaultPaymentMethod) {
                 const lastUsedPaymentMethodID = await customer.metadata.last_used_payment // metadata.last_used_payment's default value is null, or is updated with the used payment method ID in the payment_intent.succeed event webhook
+
+                console.log(372, "last used payment method id: ", lastUsedPaymentMethodID)
 
                 // Check if the last used payment method is saved to the customer because if the last used payment method was not saved to the customer, then we cannot display it to the customer:
                 const allPaymentMethods = await stripe.paymentMethods.list({
@@ -372,6 +377,8 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                     type: 'card',
                 });
                 
+                console.log(380, "all customer's payment methods: ", allPaymentMethods)
+
                 let lastUsedSavedPaymentMethodID = ""
                 if(allPaymentMethods.data !== []) {
                     for(let i=0; i<allPaymentMethods.data.length; i++) {
@@ -383,38 +390,22 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                     
             }
 
-            console.log(275, "lastUsedSavedPaymentMethodID: ", lastUsedSavedPaymentMethodID)
+            console.log(394, "lastUsedSavedPaymentMethodID: ", lastUsedSavedPaymentMethodID)
 
-            // Get the Stripe payment method object if there is a default or last used payment method ID. If there is no default or last used payment method, then check if there are any saved payment methods user created but have not made any purchases yet. If there are no saved payment methods, then send back null for no any record of payment methods for the Stripe customer object.
+            // Get the Stripe payment method object if there is a default or last used payment method ID. If there is no default or last used payment method, then send back null for no any record of payment methods for the Stripe customer object.
             let paymentMethod
             if(defaultPaymentMethod) {
                 paymentMethod = await stripe.paymentMethods.retrieve(defaultPaymentMethod)
 
-                console.log("default payment method obj: ", paymentMethod)
+                console.log(401, "default payment method obj: ", paymentMethod)
 
             } else if(lastUsedSavedPaymentMethodID) {
                 paymentMethod = await stripe.paymentMethods.retrieve(lastUsedSavedPaymentMethodID)
 
-                console.log("last used payment method obj: ", paymentMethod)
+                console.log(406, "last used payment method obj: ", paymentMethod)
 
             } else {
-                const allPaymentMethods = await stripe.paymentMethods.list({
-                    customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
-                    type: 'card',
-                });
-
-                console.log("list of customer's payment methods: ", allPaymentMethods)
-
-                // If there are payment methods saved under the customer, then load in the first created payment method on the client side.
-                if(allPaymentMethods.data !== []) {
-                    //  Get the first saved payment method
-                    paymentMethod = allPaymentMethods.data[allPaymentMethods.data.length - 1]
-
-                    console.log("first saved payment method obj: ", paymentMethod)
-
-                } else {
-                    paymentMethod = null
-                }
+                paymentMethod = null
             }
 
             // If there are no default payment method, last used, saved payment method, or saved payment methods, send back null
@@ -444,6 +435,29 @@ const sendCheckoutPaymentMethod = async(req, res) => {
     }
 }
 
+// Remove default payment method
+const removeDefaultPaymentMethod = async(req, res) => {
+    try {
+        if(req.user.buyer) {
+            // Get the user's info, which contains customer's ID
+            const loggedInUser = await LoggedInUser.findById(req.user._id)
+            
+            // Update the Stripe customer object to remove the default payment method
+            const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
+                invoice_settings: {
+                    default_payment_method: ""
+                }
+            });
+
+            console.log("updated customer: ", updatedCustomer)
+
+            res.status(200).json({success: true})
+        }
+    } catch(error){
+        console.log(" default Payment method error", error)
+        res.status(400).json({msg: "Error"})
+    }
+}
 
 // https://github.com/stripe/stripe-payments-demo/issues/45
 

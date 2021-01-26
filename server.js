@@ -43,7 +43,7 @@ const guestCartRouter = require('./routes/buyer/guestCart')
 
 // Stripe Dependencies
 const stripeRouter = require('./routes/buyer/stripe')
-
+const {webhook} = require('./controller/buyer/stripeWebhook')
 
 //////// CORS ////////
 const corsOptions = {
@@ -128,8 +128,8 @@ app.use('/guestbuyer', guestCartRouter)
 app.use('/guest/buyer', guestCartRouter)
 
 // Stripe Route
-app.use('/create-payment-intent', stripeRouter)
-app.use('/webhook', stripeRouter)
+app.use('/order', stripeRouter)
+app.use('/webhook', webhook)
 
 // LISTEN TO PORT
 app.listen(process.env.PORT, () => {
