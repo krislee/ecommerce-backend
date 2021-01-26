@@ -6,6 +6,6 @@ const cachePaymentIntentSchema = new Schema ({
     PaymentIntentId: String
 })
 
-const cachePaymentIntent = model('cachePaymentIntent', cachePaymentIntentSchema)
+const CachePaymentIntent = model('cachePaymentIntent', cachePaymentIntentSchema)
 
-module.exports = cachePaymentIntent
+module.exports = {CachePaymentIntent}
