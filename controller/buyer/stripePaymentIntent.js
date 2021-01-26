@@ -10,7 +10,7 @@ const {checkoutPaymentMethod} = require('./stripePaymentMethod')
 const calculateOrderAmount = (req, res) => {
     let totalCartPrice = 0
     
-    if(req.headers.authorization){
+    if(req.header.authorization){
         if(req.user) {
             const loggedInCart = LoggedInCart.findOne({LoggedInBuyer: req.user._id})
 
