@@ -2,7 +2,7 @@ const router = require('express').Router();
 const passport = require('passport');
 const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
-const {createOrUpdatePaymentIntent} = require('../../controller/buyer/stripePaymentIntent')
+const {createOrUpdatePaymentIntent, createLoggedInPaymentIntent} = require('../../controller/buyer/stripePaymentIntent')
 
 const {indexPaymentMethods, showPaymentMethod, updatePaymentMethod, deletePaymentMethod, defaultPaymentMethod, removeDefaultPaymentMethod, createPaymentMethod, sendCheckoutPaymentMethod} = require('../../controller/buyer/stripePaymentMethod')
 
@@ -11,7 +11,7 @@ const {webhook} = require('../../controller/buyer/stripeWebhook')
 
 // Create or update payment intent Router
 router.post('/payment-intent', createOrUpdatePaymentIntent)
-
+router.post('/', passportAuthenticate, createLoggedInPaymentIntent)
 
 // Payment Methods Router
 router.get('/index/payment', passportAuthenticate, indexPaymentMethods)

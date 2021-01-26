@@ -34,7 +34,6 @@ const calculateOrderAmount = (req, res) => {
 const customer = async (req, res) => { // need to passportAuthenticate this controller
     console.log(35)
     if(req.headers.authorization) {
-        console.log(37, "user: ", req.user)
         if (req.user.buyer) {
             const loggedInUser = await LoggedInUser.findById(req.user._id)
             console.log(39)
@@ -107,7 +106,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
             const loggedInCart = await LoggedInCart.findOne({LoggedInBuyer: req.user._id})
 
             // Need to run the customer helper to obtain a Stripe customer obj ID which will be included to make a payment intent for logged in users (do not need to run customer helper for guest because we do not need to make a payment intent that includes customer param). Customer param is needed to save Stripe Payment Method obj ID. 
-            const {newCustomer, customerId} = customer()
+            const {newCustomer, customerId} = customer(req, res)
             
             console.log(111, "customer obj's id: ", customerId)
             console.log(112, "newCustomer: ", newCustomer)
@@ -199,7 +198,8 @@ const createOrUpdatePaymentIntent = async(req, res) => {
         } else {
 
             if(req.headers.authorization) {
-                createLoggedInPaymentIntent(req, res)
+                res.redirect(307, '/logged-in/create-payment-intent')
+                // createLoggedInPaymentIntent(req, res)
             } else if(!req.headers.authorization) {
                 createGuestPaymentIntent(req, res)
             }
@@ -209,7 +209,7 @@ const createOrUpdatePaymentIntent = async(req, res) => {
     }
 }
 
-module.exports = {createOrUpdatePaymentIntent}
+module.exports = {createOrUpdatePaymentIntent, createLoggedInPaymentIntent}
 
 
 /* Idempotency:

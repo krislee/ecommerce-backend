@@ -131,6 +131,9 @@ app.use('/guest/buyer', guestCartRouter)
 app.use('/order', stripeRouter)
 app.use('/webhook', webhook)
 
+// Stripe Re-route for logged in users creating payment intent
+app.use('/logged-in/create-payment-intent', )
+
 // LISTEN TO PORT
 app.listen(process.env.PORT, () => {
     console.log(`Listening to ${process.env.PORT}`)
