@@ -9,8 +9,7 @@ const {checkoutPaymentMethod} = require('./stripePaymentMethod')
 // Helper function calculates cart total price
 const calculateOrderAmount = (req, res) => {
     let totalCartPrice = 0
-    
-    if(req.header.authorization){
+    if(req.headers.authorization){
         if(req.user) {
             const loggedInCart = LoggedInCart.findOne({LoggedInBuyer: req.user._id})
 
@@ -23,10 +22,10 @@ const calculateOrderAmount = (req, res) => {
         console.log(22, "guest cart: ", guestCart)
 
         for(let i=0; i<guestCart.length; i++) {
-            totalCartPrice += guestCart.TotalPrice
+            totalCartPrice += guestCart[i].TotalPrice
         }
     }
-
+    console.log(28, "total cart price: ", totalCartPrice)
     return totalCartPrice *=100 // total cart price in cents
 }
 
@@ -35,6 +34,7 @@ const calculateOrderAmount = (req, res) => {
 const customer = async (req, res) => { // need to passportAuthenticate this controller
     console.log(35)
     if(req.headers.authorization) {
+        console.log(37, "user: ", req.user)
         if (req.user.buyer) {
             const loggedInUser = await LoggedInUser.findById(req.user._id)
             console.log(39)
@@ -56,14 +56,14 @@ const customer = async (req, res) => { // need to passportAuthenticate this cont
                 return {newCustomer: false, customerId: loggedInUser.customer}
             }
         }
-    } else {
-        return {newCustomer: false, customerId: null}
-    }
+    } //else {
+        //return {newCustomer: false, customerId: null}
+    //}
 }
 
 const updateExistingPaymentIntent = async(req, res) => {
     try {
-        const existingPaymentIntent = await CachePaymentIntent.findOne({Idempotency: req.headers['Idempotency-Key']})
+        const existingPaymentIntent = await CachePaymentIntent.findOne({Idempotency: req.headers['idempotency-key']})
 
         // Retrieve the payment intent ID from CachePaymentIntent document to update the payment intent
         const paymentIntentId = existingPaymentIntent.PaymentIntentId
@@ -77,12 +77,12 @@ const updateExistingPaymentIntent = async(req, res) => {
 
         if(newCustomer) {
             updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
-                amount: calculateOrderAmount(),
+                amount: calculateOrderAmount(req, res),
                 customer: customerId
             })
         } else {
             updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
-                amount: calculateOrderAmount()
+                amount: calculateOrderAmount(req, res)
             })
         }
 
@@ -119,7 +119,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
         
             const paymentIntent = await stripe.paymentIntents.create({
                 customer: customerId,
-                amount: calculateOrderAmount(),
+                amount: calculateOrderAmount(req, res),
                 currency: "usd"
             }, {
                 idempotencyKey: loggedInCart._id
@@ -130,7 +130,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
             // store the created payment intent's id & the idempotent key in CachePaymentIntent database
             const cache = await CachePaymentIntent.create({
                 Customer: customerId,
-                Idempotency: req.headers['Idempotency-Key'],
+                Idempotency: req.headers['idempotency-key'],
                 PaymentIntentId: paymentIntent.id
             })
 
@@ -157,7 +157,7 @@ const createGuestPaymentIntent = async(req, res) => {
 
         // if user is not logged in, do not create a payment intent with customer property
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: calculateOrderAmount(),
+            amount: calculateOrderAmount(req, res),
             currency: "usd"
         }, {
             idempotencyKey: idempotencyKey
@@ -190,8 +190,8 @@ const createOrUpdatePaymentIntent = async(req, res) => {
     try {
         // If payment intent has already been created, update the payment intent's amount parameter to ensure the amount is the most current.
         // If payment intent has not been created, create a new payment intent with the customer id if user is logged in
-        
-        const existingPaymentIntent = await CachePaymentIntent.findOne({Idempotency: req.headers['Idempotency-Key']})
+        console.log(192, "idempotency key header value: ", req.headers['idempotency-key'])
+        const existingPaymentIntent = await CachePaymentIntent.findOne({Idempotency: req.headers['idempotency-key']})
         console.log(194, "existingPaymentIntent: ", existingPaymentIntent)
 
         if (existingPaymentIntent) {

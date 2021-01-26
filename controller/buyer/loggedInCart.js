@@ -218,12 +218,15 @@ const loggedInIndexCart = async(req, res) => {
         if(req.user) {
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
             let totalCartPrice = 0
-            for (let i=0; i < cart.Items.length; i++) {
-                totalCartPrice += cart.Items[i].TotalPrice
-            }
-            console.log(cart, "logged in cart")
+            if(cart) {
+                for (let i=0; i < cart.Items.length; i++) {
+                    totalCartPrice += cart.Items[i].TotalPrice
+                }
+                console.log(cart, "logged in cart")
+            } 
+
             res.status(200).json({
-                cart: cart,
+                cart: cart ? cart : 'No cart available',
                 totalCartPrice: totalCartPrice
             })
         }
