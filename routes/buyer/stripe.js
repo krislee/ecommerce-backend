@@ -8,27 +8,41 @@ const {indexPaymentMethods, showPaymentMethod, updatePaymentMethod, deletePaymen
 
 const {webhook} = require('../../controller/buyer/stripeWebhook')
 
-
-// Create or update payment intent Router
+/* ------- PAYMENT INTENT ROUTER ------- */
+// Create or update payment intent Router. This route will be rerouted for logged in users.
 router.post('/payment-intent', createOrUpdatePaymentIntent)
+
+// Create a new payment intent for logged in user
 router.post('/create/payment-intent', passportAuthenticate, createLoggedInPaymentIntent)
+
+// Update existing payment intent for logged in user
 router.post('/update/payment-intent', passportAuthenticate, updateLoggedInPaymentIntent)
 
-// Payment Methods Router
+
+/* ------- PAYMENT METHODS ROUTER ------- */
+// Show all payment methods the logged in user made
 router.get('/index/payment', passportAuthenticate, indexPaymentMethods)
+
+// Show one payment method when one of the payment method from the Saved Cards at checkout is selected
 router.get('/show/payment/:id', passportAuthenticate, showPaymentMethod)
+
+// When the checkout page is loaded, either the default, or last used, saved, or saved, non-default, unused payment method
 router.get('/checkout/payment', passportAuthenticate, sendCheckoutPaymentMethod)
 
-router.get('/default/payment', passportAuthenticate, defaultPaymentMethod) // fetch(/default/payment?pm=pm_id)
-router.delete('/default/payment', passportAuthenticate, removeDefaultPaymentMethod) //maybe unncessary route
+// Updates the already created payment method to be the default
+router.get('/default/payment/:id', passportAuthenticate, defaultPaymentMethod) 
 
+// Create a payment method with the option as default
 router.post('/payment', passportAuthenticate, createPaymentMethod) //(include req.body: fingerprint and paymentMethodID)
 
+// Update the selected payment method at Payment Method or at checkout
 router.put('/payment/:id', passportAuthenticate, updatePaymentMethod) //(include in req.body: billingDetails, expMonth, expYear, name, recollectCVV)
 
+// Delete the selected payment method
 router.delete('/payment/:id', passportAuthenticate, deletePaymentMethod)
 
-// Webhook Event Router
+
+/* ------- WEBHOOK EVENTS ROUTER ------- */
 router.post("/events", webhook);
   
 

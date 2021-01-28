@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const {addShipping, updateShipping, updateDefaultShipping, updateLastUsedShipping, indexShipping, savedShipping, checkoutShipping, deleteShipping} = require('../../controller/buyer/shippingAddress')
+const {addShipping, updateShipping, changeDefaultShipping, showShipping, indexShipping, savedShipping, checkoutShipping, deleteShipping} = require('../../controller/buyer/shippingAddress')
 
 passportAuthenticate = passport.authenticate('jwt', {session: false})
 
@@ -11,20 +11,22 @@ router.get('/address', passportAuthenticate, indexShipping)
 // Get all saved addresses besides the displayed address during checkout
 router.get('/saved/address/:id', passportAuthenticate, savedShipping) 
 
-// Show either the default or last used, saved address
+// Get one address when an address is selected from the Saved Addresses during checkout
+router.get('/show/address/:id', showShipping)
+
+// Show either the default or last used, saved or last created, non-default, unused address
 router.get('checkout/address', passportAuthenticate, checkoutShipping)
 
-// Create shipping address with the option of creating the address default. In the checkout page, this addShipping() will only run if default is checked. 
-router.post('/address', passportAuthenticate, addShipping) // fetch to (/address?lastUsed=true or /address?lastUsed=false)
+// Create shipping address with the option of creating the address default. In the checkout page, this addShipping() will only run if Save Address is checked.
+router.post('/address', passportAuthenticate, addShipping) // examples: fetch to (/address?lastUsed=true&default=true or /address?lastUsed=false&default=true)
 
 // Update one shipping address
 router.put('/address/:id', passportAuthenticate, updateShipping)
 
-router.put('default/address/:id', passportAuthenticate, updateDefaultShipping)
+// Change the default shipping. There will only be one defauly shipping for the logged in user.
+router.put('default/address/:id', passportAuthenticate, changeDefaultShipping)
 
-// router.put('lastUsed/address/:id', passportAuthenticate, updateLastUsedShipping)
-
-
+// Delete shipping from Shipping Address component
 router.delete('/address/:id', passportAuthenticate, deleteShipping)
 
 module.exports = router

@@ -186,7 +186,7 @@ const defaultPaymentMethod = async(req, res) => {
             // Update the Stripe customer object to include the default payment method
             const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
                 invoice_settings: {
-                    default_payment_method: req.query.pm
+                    default_payment_method: req.params.id
                 }
             });
 
@@ -275,12 +275,13 @@ const sendCheckoutPaymentMethod = async(req, res) => {
 
             console.log(361, "customer: ", customer)
 
-            // Get the default payment method stored in Stripe customer. The value is null if no default is stored.
+            // 1) Get the default payment method stored in Stripe customer. The value is null if no default is stored.
             const defaultPaymentMethod = await customer.invoice_settings.default_payment_method
 
             console.log(366, "default payment method ID: ", defaultPaymentMethod)
 
-            // If there is no default payment method, get the last used, saved payment method that is also stored in Stripe customer object
+            // 2) If there is no default payment method, get the last used, saved payment method that is also stored in Stripe customer object
+            let lastUsedSavedPaymentMethodID = ""
             if (!defaultPaymentMethod) {
                 const lastUsedPaymentMethodID = await customer.metadata.last_used_payment // metadata.last_used_payment's default value is null, or is updated with the used payment method ID in the payment_intent.succeed event webhook
 
@@ -294,7 +295,6 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                 
                 console.log(380, "all customer's payment methods: ", allPaymentMethods)
 
-                let lastUsedSavedPaymentMethodID = ""
                 if(allPaymentMethods.data !== []) {
                     for(let i=0; i<allPaymentMethods.data.length; i++) {
                         if (allPaymentMethods.data[i].id === lastUsedPaymentMethodID) {
@@ -307,7 +307,13 @@ const sendCheckoutPaymentMethod = async(req, res) => {
 
             console.log(394, "lastUsedSavedPaymentMethodID: ", lastUsedSavedPaymentMethodID)
 
-            // Get the Stripe payment method object if there is a default or last used payment method ID. If there is no default or last used payment method, then send back null for no any record of payment methods for the Stripe customer object.
+            // 3) Check if there are payment methods user has created in Payment Method component but has not used nor checked for default
+            const allPaymentMethods = await stripe.paymentMethods.list({
+                customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
+                type: 'card',
+            });
+
+            // Get the Stripe payment method object if there is a default or last used, saved payment method ID. If there is no default or last used payment method, then get the payment method the user last created in the Payment Method component but has not used or check default yet. If this doesn't apply, send back null for no record of payment methods for the Stripe customer object.
             let paymentMethod
             if(defaultPaymentMethod) {
                 paymentMethod = await stripe.paymentMethods.retrieve(defaultPaymentMethod)
@@ -319,7 +325,7 @@ const sendCheckoutPaymentMethod = async(req, res) => {
 
                 console.log(406, "last used payment method obj: ", paymentMethod)
 
-            } else {
+            } else if(allPaymentMethods.data !== []){
                 paymentMethod = null
             }
 
@@ -340,7 +346,7 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                     address: paymentMethod[billing_details][address],
                     name: paymentMethod[billing_details][name]
                 },
-                recollectCVV: paymentMethod[metadata][recollect_cvv] ? true : false
+                recollectCVV: paymentMethod[metadata][recollect_cvv]
             })
             
         }
