@@ -119,8 +119,9 @@ const guestIndexCart = (req, res) => {
                     totalCartPrice += req.session.cart[i].TotalPrice
                 }
                 res.status(200).json({
+                    sessionID: req.sessionID,
+                    totalCartPrice: totalCartPrice,
                     cart: req.session.cart,
-                    totalCartPrice: totalCartPrice
                 })
             } else {
                 res.status(200).json({message: 'No items in cart'})
