@@ -27,7 +27,7 @@ router.put('/address/:id', passportAuthenticate, updateShipping)
 router.put('/last-used/address/:id', passportAuthenticate, updateLastUsedShipping)
 
 // Add or remove the default shipping. There will only be one default shipping for the logged in user.
-router.put('/default/address/:id', passportAuthenticate, changeDefaultShipping)
+router.put('/default/address/:id', passportAuthenticate, changeDefaultShipping) // example: (/default/address/:id?default=true if default button is clicked and checked, or /default/address/:id?default=false is clicked and unchecked)
 
 // Delete shipping from Shipping Address component
 router.delete('/address/:id', passportAuthenticate, deleteShipping)
