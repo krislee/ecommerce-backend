@@ -12,10 +12,10 @@ router.get('/address', passportAuthenticate, indexShipping)
 router.get('/saved/address/:id', passportAuthenticate, savedShipping) 
 
 // Get one address when an address is selected from the Saved Addresses during checkout
-router.get('/address/:id', showShipping)
+router.get('/address/:id', passportAuthenticate, showShipping)
 
 // Show either the default or last used, saved or last created, non-default, unused address
-router.get('checkout/address', passportAuthenticate, checkoutShipping)
+router.get('/checkout/address', passportAuthenticate, checkoutShipping)
 
 // Create shipping address with the option of creating the address default. In the checkout page, this addShipping() will only run if Save Address is checked.
 router.post('/address', passportAuthenticate, addShipping) // examples: fetch to (/address?lastUsed=true&default=true or /address?lastUsed=false&default=true)
