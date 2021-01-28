@@ -118,30 +118,47 @@ const updateShipping = async(req, res) => {
     }
 }
 
-// Default address button for existing shipping address has the id of the shipping address document. Default address button for adding shipping address does not have the id.
-// Update default shipping address. The function will only run if default button is checked.
+// Update existing shipping address to be default or remove default property from existing shipping address. The function will only run if default button is clicked and checked.
+// Default address button for existing shipping address has the id of the shipping address document.
 const changeDefaultShipping = async(req, res) => {
-    // First, check if there is already a default shipping stored
-    // If there is, then update that address document's DefaultAddress to false, then update the selected address to have DefaultAddress to true
-    // If there is not default, then update the selected address to have DefaultAddress to false
     try {
         if(req.user.buyer) {
-            const defaultShipping = await BuyerShippingAddress.find({DefaultAddress: true})
+            // If default box is checked, then add default property
+            if(req.query.default === "true") {
 
-            console.log(105, "defaultShipping: ", defaultShipping)
+                // First, check if there is already a default shipping stored. If there is, then update that address document's DefaultAddress to false
+                const defaultShipping = await BuyerShippingAddress.findOne({DefaultAddress: true, Buyer: req.user._id})
 
-            if (defaultShipping !== []) {
-                const changePreviousDefaultAddressToFalse = await BuyerShippingAddress.findOneAndUpdate({_id: defaultShipping[0]._id, Buyer: req.user._id}, {DefaultAddress: false}, {new: true})
-                
-                console.log(110, "updated default to false:", changePreviousDefaultAddressToFalse)
-            }
+                console.log(105, "defaultShipping: ", defaultShipping)
 
-            const newDefaultAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id}, {DefaultAddress: true}, {new: true})
+                if (defaultShipping) {
 
-            console.log(115, "new default address: ", newDefaultAddress)
+                    console.log("before update, default shipping: ", defaultShipping)
 
-            // res.status(200).json({address: newDefaultAddress})
-            indexShipping(req, res)
+                    defaultShipping.DefaultAddress = false
+                    defaultShipping.save()
+                    
+                    console.log(110, "after update, default shipping:", defaultShipping)
+                }
+
+                // Update the selected address to have DefaultAddress to true
+                const newDefaultAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, {DefaultAddress: true}, {new: true})
+
+                console.log(115, "new default address: ", newDefaultAddress)
+
+                // res.status(200).json({address: newDefaultAddress})
+
+                // Send back all addresses
+                indexShipping(req, res)
+            } else {
+                // If checked default box is clicked unchecked, this part of the function is triggered
+                const removeDefaultAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, {DefaultAddress: false}, {new: true})
+
+                console.log("removed default address: ", removeDefaultAddress)
+
+                // Send back all addresses
+                indexShipping(req, res)
+            } 
         } else {
             res.status(400).json({msg: "You are not authorized to update default shipping address"})
         }
@@ -149,6 +166,35 @@ const changeDefaultShipping = async(req, res) => {
         res.status(400).json({msg: error});
     }
 }
+
+// Update Last Used Shipping
+const updateLastUsedShipping = async(req, res) => {		
+    try {		
+        if (req.user.buyer) {		
+            // Check if there is already a last used shipping address, and remove it
+            const previousLastUsedAddress = await Address.findOne({LastUsed: true, Buyer: req.user._id})
+            if(previousLastUsedAddress) {
+
+                console.log("before updating, previous last used address: ", previousLastUsedAddress)
+
+                previousLastUsedAddress.LastUsed = false
+                previousLastUsedAddress.save()
+
+                console.log("after updating, previous last used address: ", previousLastUsedAddress)
+            }
+
+            // Add the lastUsed property to the address last used to checkout
+            const lastUsedAddress = await Address.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, {LastUsed: true}, {new: true})		
+
+             console.log("last used address for checkout: ", lastUsedAddress)		
+
+             res.status(200).json({address: lastUsedAddress})		
+        }		
+    } catch(error) {	
+        console.log("error: ", error)	
+        res.status(400).json({msg: error});		
+    }		
+}		
 
 // Get all addresses associated with the logged in buyer (for shipping address component)
 const indexShipping = async(req, res) => {
@@ -272,4 +318,4 @@ const deleteShipping = async(req, res) => {
     }
 }
 
-module.exports = {addShipping, updateShipping, changeDefaultShipping, indexShipping, showShipping, savedShipping, checkoutShipping, deleteShipping}
+module.exports = {addShipping, updateShipping, updateLastUsedShipping, changeDefaultShipping, indexShipping, showShipping, savedShipping, checkoutShipping, deleteShipping}
