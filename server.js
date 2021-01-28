@@ -32,8 +32,8 @@ const sellerAuthRoute = require('./routes/seller/sellerAuth')
 const buyerAuthRoute = require('./routes/buyer/buyerAuth')
 
 // Profile Dependencies
-const sellerProfile = require('./routes/seller/sellerProfile')
-const buyerProfile = require('./routes/buyer/buyerProfile')
+const sellerProfileRouter = require('./routes/seller/sellerProfile')
+const buyerProfileRouter = require('./routes/buyer/buyerProfile')
 
 // Cart Dependencies
 const shoppingCartRouter = require('./routes/buyer/shoppingCart');
@@ -44,6 +44,9 @@ const guestCartRouter = require('./routes/buyer/guestCart')
 // Stripe Dependencies
 const stripeRouter = require('./routes/buyer/stripe')
 const {webhook} = require('./controller/buyer/stripeWebhook')
+
+// Shipping Address Dependency
+const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 
 //////// CORS ////////
 const corsOptions = {
@@ -110,6 +113,7 @@ app.use(
   })
 );
 app.use(express.urlencoded({extended: true}))
+
 //////// ROUTES AND ROUTER ////////
 
 // Login/Register Route
@@ -117,10 +121,10 @@ app.use('/auth/seller', sellerAuthRoute)
 app.use('/auth/buyer', buyerAuthRoute)
 
 // Seller Account Route
-app.use('/seller', [electronicRouter, sellerProfile])
+app.use('/seller', [electronicRouter, sellerProfileRouter])
 
 // Buyer Route
-app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfile, shoppingCartRouter])
+app.use('/buyer', [storeRouter, electronicReviewRouter, buyerProfileRouter, shoppingCartRouter])
 
 // Buyer Cart Re-routing from shoppingCartRouter
 app.use('/loginbuyer', loginCartRouter)
@@ -131,8 +135,11 @@ app.use('/guest/buyer', guestCartRouter)
 app.use('/order', stripeRouter)
 app.use('/webhook', webhook)
 
-// Stripe Re-route for logged in users creating payment intent
+// Stripe Re-route for creating payment intent for LOGGED IN users 
 app.use('/logged-in', stripeRouter)
+
+// Shipping Address Route
+app.use('/shipping', shippingAddressRouter)
 
 // LISTEN TO PORT
 app.listen(process.env.PORT, () => {
