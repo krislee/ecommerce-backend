@@ -162,9 +162,9 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             console.log(162, "after deleting session: ", req.session)
         }
 
-        console.log(155, "new cart for adding items from guest to logged in cart: ", newCart)
+        console.log(165, "new cart for adding items from guest to logged in cart: ", newCart)
 
-        res.status(200).json({successful: "created a NEW cart and SYNC items"})
+        res.status(200).json({successful: "created a NEW cart and SYNC items", cart: newCart})
     }
 }
 
