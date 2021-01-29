@@ -15,7 +15,7 @@ const loggedInOrderAmount = async (req, res) => {
         if(req.user) {
 
             const loggedInCart = await LoggedInCart.findOne({LoggedInBuyer: req.user._id})
-            // console.log(18, loggedInCart)
+            console.log(18, loggedInCart)
             for(let i=0; i<loggedInCart.Items.length; i++) {
                 totalCartPrice+= loggedInCart.Items[i].TotalPrice
             }
@@ -196,17 +196,18 @@ const createLoggedInPaymentIntent = async(req, res) => {
                 paymentIntentId: paymentIntent.id,
                 clientSecret: paymentIntent.client_secret,
                 returningCustomer: newCustomer ? !newCustomer : newCustomer,
-                customer: true
+                customer: true,
+                cartID: loggedInCart._id
             });
         }
     } catch(error){
         console.log(203, "error: ", error)
         console.log(204, error.code)
-        if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
-            res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
-        } else if(error.type === 'StripeIdempotencyError') {
-            res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
-        }
+        // if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
+        //     res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
+        // } else if(error.type === 'StripeIdempotencyError') {
+        //     res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
+        // }
     }
 }
 
