@@ -6,6 +6,7 @@ const Cart = require('../../model/buyer/cart')
 // Logged in user adds item to cart
 const loggedInAddItem = async(req, res, next) => {
     try {
+        console.log(9, req.user)
         if (req.user) {
             console.log(req.params.id, "req.params.id")
             const item = await Electronic.findById(req.params.id)
