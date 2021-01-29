@@ -95,7 +95,10 @@ const updateGuestPaymentIntent = async(req, res) => {
         res.status(200).json({
             publicKey: process.env.STRIPE_PUBLIC,
             // paymentIntentId: updatedPaymentIntent.id,
-            clientSecret: updatedPaymentIntent.client_secret
+            clientSecret: updatedPaymentIntent.client_secret,
+            returningCustomer: false,
+            customer: false,
+            idempotency: req.sessionID
         });
     } catch(error) {
         console.log(101, "error: ", error)
@@ -140,7 +143,9 @@ const updateLoggedInPaymentIntent = async(req, res) => {
         res.status(200).json({
             publicKey: process.env.STRIPE_PUBLIC,
             // paymentIntentId: updatedPaymentIntent.id,
-            clientSecret: updatedPaymentIntent.client_secret
+            clientSecret: updatedPaymentIntent.client_secret,
+            returningCustomer: !newCustomer,
+            customer: true
         });
     } catch(error) {
         console.log(146, "error: ", error)
@@ -195,7 +200,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
                 publicKey: process.env.STRIPE_PUBLIC,
                 paymentIntentId: paymentIntent.id,
                 clientSecret: paymentIntent.client_secret,
-                returningCustomer: newCustomer ? !newCustomer : newCustomer,
+                returningCustomer: !newCustomer,
                 customer: true
             });
         }
