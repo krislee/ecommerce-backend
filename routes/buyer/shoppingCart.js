@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-const {addItemsFromGuestToLoggedIn} = require('../../controller/buyer/loggedInCart')
+const {addItemsFromGuestToLoggedIn, getCartID} = require('../../controller/buyer/loggedInCart')
 
 const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
@@ -40,6 +40,8 @@ router.get('/cart', (req, res) => {
         res.redirect(`/loginbuyer/cart`)
     }
 })
+
+router.get('/cartID', passportAuthenticate, getCartID)
 
 module.exports = router
 
