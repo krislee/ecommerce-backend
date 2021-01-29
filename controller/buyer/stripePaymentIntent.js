@@ -196,8 +196,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
                 paymentIntentId: paymentIntent.id,
                 clientSecret: paymentIntent.client_secret,
                 returningCustomer: newCustomer ? !newCustomer : newCustomer,
-                customer: true,
-                cartID: loggedInCart._id
+                customer: true
             });
         }
     } catch(error){

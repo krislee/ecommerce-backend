@@ -222,13 +222,15 @@ const loggedInIndexCart = async(req, res) => {
                 for (let i=0; i < cart.Items.length; i++) {
                     totalCartPrice += cart.Items[i].TotalPrice
                 }
+                
                 console.log(cart, "logged in cart")
-            } 
 
-            res.status(200).json({
-                cart: cart ? cart : 'No cart available',
-                totalCartPrice: totalCartPrice
-            })
+                
+                res.status(200).json({
+                    cart: cart ? cart : 'No cart available',
+                    totalCartPrice: totalCartPrice
+                })
+            } 
         }
     }
     catch(error) {
@@ -236,4 +238,19 @@ const loggedInIndexCart = async(req, res) => {
     }
 }
 
-module.exports = {loggedInAddItem, addItemsFromGuestToLoggedIn, loggedInUpdateItemQuantity, loggedInDeleteItem, loggedInIndexCart}
+// Get cart ID
+const getCartID = async(req, res) => {
+    try {
+        console.log(req.user, 'user');
+        if(req.user) {
+            const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
+            res.status(200).json({cartID: cart._id})
+        }
+    }
+    catch(error) {
+        res.status(400).send(error)
+    }
+}
+
+
+module.exports = {loggedInAddItem, addItemsFromGuestToLoggedIn, loggedInUpdateItemQuantity, loggedInDeleteItem, loggedInIndexCart, getCartID}
