@@ -228,10 +228,12 @@ const loggedInIndexCart = async(req, res) => {
 
                 
                 res.status(200).json({
-                    cart: cart ? cart : 'No cart available',
+                    cart: cart,
                     totalCartPrice: totalCartPrice
                 })
-            } 
+            } else {
+                res.status(200).json({cart: 'No cart available'})
+            }
         }
     }
     catch(error) {
