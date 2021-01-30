@@ -313,7 +313,7 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                 
                 console.log(314, "all customer's payment methods: ", allPaymentMethods)
 
-                if(allPaymentMethods.data !== []) {
+                if(allPaymentMethods.data.length) {
                     for(let i=0; i<allPaymentMethods.data.length; i++) {
                         if (allPaymentMethods.data[i].id === lastUsedPaymentMethodID) {
                             lastUsedSavedPaymentMethodID = lastUsedPaymentMethodID
