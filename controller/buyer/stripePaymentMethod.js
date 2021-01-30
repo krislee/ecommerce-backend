@@ -346,15 +346,17 @@ const sendCheckoutPaymentMethod = async(req, res) => {
 
             } else if(allPaymentMethods.data.length<1){
                 paymentMethod = null
+                console.log(349, paymentMethod)
             }
 
             // If there are no default payment method, last used, saved payment method, or saved payment methods, send back null
             if(!paymentMethod) {
+                console.log(354)
                 res.status(200).json({
                     paymentMethodID: null
                 })
             }
-
+            console.log(358)
             // Send the payment method's ID, brand, last 4, expiration date, and billing details
             res.status(200).json({
                 paymentMethodID: paymentMethod.id,
