@@ -106,7 +106,7 @@ const updateGuestPaymentIntent = async(req, res) => {
             res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         } else if(error.type === 'StripeIdempotencyError') {
             res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
-        }
+        } else (res.status(400).json({message: error}))
     }
 }
 
@@ -153,7 +153,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
             res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         } else if(error.type === 'StripeIdempotencyError') {
             res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
-        }
+        }else (res.status(400).json({message: error}))
     }
 }
 
@@ -212,6 +212,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
         // } else if(error.type === 'StripeIdempotencyError') {
         //     res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
         // }
+        res.status(400).json({message: error})
     }
 }
 
@@ -255,7 +256,7 @@ const createGuestPaymentIntent = async(req, res) => {
             res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         } else if(error.type === 'StripeIdempotencyError') {
             res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
-        }
+        } else (res.status(400).json({message: error}))
     }
 }
 // Click Checkout leads to either a) creating only ONE payment intent for each unpaid cart (exception is guest customer clears cookies in the browser, then there will be a previous incomplete payment intent), or b) updating existing payment intent by calling updateExistingPaymentIntent() helper

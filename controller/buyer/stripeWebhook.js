@@ -3,6 +3,7 @@ const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
 const { v4: uuidv4 } = require('uuid');
 const Cart = require('../../model/buyer/cart')
 const Order = require('../../model/orders')
+const {BuyerUser} = require('../../model/buyer/buyerUser')
 const Electronic = require('../../model/seller/electronic')
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
@@ -54,36 +55,41 @@ const webhook = async (req, res) => {
             const updatedCustomer = await stripe.customers.update(data.object.customer, {
                 metadata: {last_used_payment: paymentMethodID}
             })
-            console.log(57, "updated customer after successful payment: ", updatedCustomer)
+            console.log(58, "updated customer after successful payment: ", updatedCustomer)
 
             // Check if the payment method object that was just used to pay had to recollect CVV because user updated the payment method in payment method component. If CVV was recollected, then change it back to false. Since the updated payment method succeeded in making the payment, we no longer need to recollect the CVV.
             const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodID)
-            if(paymentMethod.metadata.recollect_cvv){
+            if(paymentMethod.metadata && paymentMethod.metadata.recollect_cvv){
                 const updatedPaymentMethod = await stripe.paymentMethods.update(paymentMethodID, {
                     metadata: {recollect_cvv: false}
                 })
-                console.log(65, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
+                console.log(66, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
 
             }
-    
+            console.log(69)
             // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
+            // First, need to get the logged in user's document ID by using the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
+            const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
             const order = await Order.create({
-                LoggedInBuyer: data.object.customer,
+                LoggedInBuyer: loggedInUser._id,
                 OrderNumber: uuidv4() // generate random order ID number using uuid 
             })
             
-            console.log(75, "create logged in order: ", order)
+            console.log(78, "create logged in order: ", order)
 
-            const cart = await Cart.findOne({LoggedInBuyer: data.object.customer})
+            const cart = await Cart.findOne({LoggedInBuyer: loggedInUser._id})
             
-            console.log(79, "find cart: ", cart)
+            console.log(82, "find cart: ", cart)
 
             for(let i=0; i < cart.Items.length; i++){
 
                 order.Items.push(cart.Items[[i]])
 
-                // Update inventory quantity of the items sold
+                // Update inventory quantity of the items after items sold
                 const electronic = await Electronic.findById(cart.Items[i].ItemId)
+                
+                console.log(92, "before update electronic quantity: ", electronic)
+
                 electronic.Quantity -= cart.Items[i].Quantity
 
                 console.log("updated quantity electronic: ", electronic)
@@ -100,7 +106,7 @@ const webhook = async (req, res) => {
             // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
             const order = Order.create({OrderNumber: uuidv4()})
 
-            console.log(103, "create order: ", order)
+            console.log(109, "create order: ", order)
 
             for(let i=0; i < req.session.cart.length; i++) {
 
@@ -110,14 +116,14 @@ const webhook = async (req, res) => {
                 const electronic = await Electronic.findOneAndUpdate(req.session.cart[i].ItemId)
                 electronic.Quantity -= cart.Items[i].Quantity
 
-                console.log(113, "updated quantity in electronic: ", electronic)
+                console.log(119, "updated quantity in electronic: ", electronic)
             }
             console.log(115, "added items in guest order: ", order)
 
             // Since there is a new cart for each order, delete guest's cart after fulfilling order.
-            console.log(118, "req.session before deleting: ", req.session)
+            console.log(124, "req.session before deleting: ", req.session)
             delete req.session.cart
-            console.log(120, "delete req.session after successful payment: ", req.session)
+            console.log(126, "delete req.session after successful payment: ", req.session)
         }
 
         //////////////////////////////////
