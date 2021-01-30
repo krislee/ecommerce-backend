@@ -344,7 +344,7 @@ const sendCheckoutPaymentMethod = async(req, res) => {
 
                 console.log(344, "last used payment method obj: ", paymentMethod)
 
-            } else if(!allPaymentMethods.data.length){
+            } else if(allPaymentMethods.data.length<1){
                 paymentMethod = null
             }
 
