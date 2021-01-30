@@ -355,20 +355,21 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                 res.status(200).json({
                     paymentMethodID: null
                 })
+            } else{
+                // Send the payment method's ID, brand, last 4, expiration date, and billing details
+                res.status(200).json({
+                    paymentMethodID: paymentMethod.id,
+                    brand: paymentMethod[card][brand],
+                    last4: paymentMethod[card][last4],
+                    expDate: `${paymentMethod[card][exp_month]}/${paymentMethod[card][exp_year]}`,
+                    billingDetails: {
+                        address: paymentMethod[billing_details][address],
+                        name: paymentMethod[billing_details][name]
+                    },
+                    recollectCVV: paymentMethod[metadata][recollect_cvv]
+                })
             }
-            console.log(358)
-            // Send the payment method's ID, brand, last 4, expiration date, and billing details
-            res.status(200).json({
-                paymentMethodID: paymentMethod.id,
-                brand: paymentMethod[card][brand],
-                last4: paymentMethod[card][last4],
-                expDate: `${paymentMethod[card][exp_month]}/${paymentMethod[card][exp_year]}`,
-                billingDetails: {
-                    address: paymentMethod[billing_details][address],
-                    name: paymentMethod[billing_details][name]
-                },
-                recollectCVV: paymentMethod[metadata][recollect_cvv]
-            })
+            
             
         }
     } catch(error){
