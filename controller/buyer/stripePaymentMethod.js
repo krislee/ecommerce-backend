@@ -71,12 +71,13 @@ const showPaymentMethod = async(req, res) => {
             const paymentMethod = await stripe.paymentMethods.retrieve(req.params.id)
 
             console.log(73, "get one payment method: ", paymentMethod)
-
+            console.log(74, paymentMethod.card)
+            console.log(75, `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`)
             res.status(200).json({
                 paymentMethodID: paymentMethod.id,
-                brand: paymentMethod[card][brand],
-                last4: paymentMethod[card][last4],
-                expDate: `${paymentMethod[card][exp_month]}/${paymentMethod[card][exp_year]}`,
+                brand: paymentMethod.card.brand,
+                last4: paymentMethod.card.last4,
+                expDate: `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`,
                 billingDetails: {
                     address: paymentMethod[billing_details][address],
                     name: paymentMethod[billing_details][name]
