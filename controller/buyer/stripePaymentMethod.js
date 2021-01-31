@@ -53,7 +53,6 @@ const indexPaymentMethods = async(req, res) => {
                 }
 
                 allPaymentMethods.push(onePaymentMethod)
-
                 console.log(56, "a list of payment methods to send back: ", allPaymentMethods)
             }
 
@@ -145,14 +144,14 @@ const updatePaymentMethod = async(req, res) => {
             // Send back the updated payment method details
             res.status(200).json({
                 paymentMethodID: updatedPaymentMethod.id,
-                brand: updatedPaymentMethod[card][brand],
-                last4: updatedPaymentMethod[card][last4],
-                expDate: `${updatedPaymentMethod[card][exp_month]}/${updatedPaymentMethod[card][exp_year]}`,
+                brand: updatedPaymentMethod.card.brand,
+                last4: updatedPaymentMethod.card.last4,
+                expDate: `${updatedPaymentMethod.card.exp_month}/${updatedPaymentMethod.card.exp_year}`,
                 billingDetails: {
-                    address: updatedPaymentMethod[billing_details][address],
-                    name: updatedPaymentMethod[billing_details][name]
+                    address: updatedPaymentMethod.billing_details.address,
+                    name: updatedPaymentMethod.billing_details.name
                 },
-                recollectCVV: updatedPaymentMethod[metadata][recollect_cvv] ? true : false
+                recollectCVV: updatedPaymentMethod.metadata.recollect_cvv ? true : false
             })
         }
     } catch(error) {
