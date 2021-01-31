@@ -245,9 +245,10 @@ const createPaymentMethod = async(req, res) => {
             let match = false
             let oldPaymentMethodID = ""
             for(let i=0; i < paymentMethods.data.length; i++) {
-                if(paymentMethods.data[i][card][fingerprint] === req.body.fingerprint) {
+                const paymentMethod = paymentMethods.data[i]
+                if(paymentMethod.card.fingerprint === req.body.fingerprint) {
                     match = true
-                    oldPaymentMethodID = paymentMethods.data[i][id]
+                    oldPaymentMethodID = paymentMethod.id
                 }
             }
             console.log(253, "match and old payment method id", match, oldPaymentMethodID)
@@ -319,7 +320,7 @@ const sendCheckoutPaymentMethod = async(req, res) => {
 
                 if(allPaymentMethods.data.length !== 0) {
                     for(let i=0; i<allPaymentMethods.data.length; i++) {
-                        console.log(322, allPaymentMethods.data[i].billing_details)
+                        console.log(322)
                         if (allPaymentMethods.data[i].id === lastUsedPaymentMethodID) {
                             lastUsedSavedPaymentMethodID = lastUsedPaymentMethodID
                         }
@@ -364,14 +365,14 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                 // Send the payment method's ID, brand, last 4, expiration date, and billing details
                 res.status(200).json({
                     paymentMethodID: paymentMethod.id,
-                    brand: paymentMethod[card][brand],
-                    last4: paymentMethod[card][last4],
-                    expDate: `${paymentMethod[card][exp_month]}/${paymentMethod[card][exp_year]}`,
+                    brand: paymentMethod.card.brand,
+                    last4: paymentMethod.card.last4,
+                    expDate: `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`,
                     billingDetails: {
-                        address: paymentMethod[billing_details][address],
-                        name: paymentMethod[billing_details][name]
+                        address: paymentMethod.billing_details.address,
+                        name: paymentMethod.billing_details.name
                     },
-                    recollectCVV: paymentMethod[metadata][recollect_cvv]
+                    recollectCVV: paymentMethod.metadata.recollect_cvv
                 })
             }
             
@@ -388,3 +389,10 @@ const sendCheckoutPaymentMethod = async(req, res) => {
 
 
 module.exports = {indexPaymentMethods, showPaymentMethod, updatePaymentMethod, deletePaymentMethod, defaultPaymentMethod, createPaymentMethod, sendCheckoutPaymentMethod}
+
+// pm_1IFmY8IYuoOQip6pG2XBDBsp, /hello world, 04/24
+// dBior3d9OPZfOyi1
+
+
+
+// pm_1IFoTSIYuoOQip6pCGlLonsP

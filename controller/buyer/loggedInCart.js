@@ -215,7 +215,7 @@ const loggedInIndexCart = async(req, res) => {
     console.log('logged in indexCart route used');
 
     try {
-        console.log(req.user, 'user');
+        // console.log(req.user, 'user');
         if(req.user) {
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
             let totalCartPrice = 0
@@ -224,7 +224,7 @@ const loggedInIndexCart = async(req, res) => {
                     totalCartPrice += cart.Items[i].TotalPrice
                 }
                 
-                console.log(cart, "logged in cart")
+                // console.log(cart, "logged in cart")
 
                 
                 res.status(200).json({
