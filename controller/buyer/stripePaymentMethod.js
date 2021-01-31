@@ -274,7 +274,11 @@ const createPaymentMethod = async(req, res) => {
             console.log(274, "newly attached payment method: ", attachPaymentMethod)
 
             // Return all payment methods back
-            indexPaymentMethods(req, res)
+            if(req.query.checkout === 'false'){
+                indexPaymentMethods(req, res)
+            } else {
+                res.status(200).json({paymentMethodID: req.body.paymentMethodID})
+            }
         }
     } catch(error) {
         console.log(280, "error", error)
