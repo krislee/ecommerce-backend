@@ -94,14 +94,14 @@ const webhook = async (req, res) => {
                     console.log(94, "before update electronic quantity: ", electronic)
 
                     electronic.Quantity -= cart.Items[i].Quantity
-
+                    electronic.save()
                     console.log("updated quantity electronic: ", electronic)
                 }
 
                 console.log(101, "added items to logged in order: ", order)
 
                 // Since there is a new cart for each order, delete cart after fulfilling order.
-                const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: data.object.customer})
+                const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
 
                 console.log(107, "logged in cart deleted: ", deletedCart)
             
