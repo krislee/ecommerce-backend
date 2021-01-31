@@ -44,96 +44,102 @@ const webhook = async (req, res) => {
     // Customer’s payment succeeded
     if (eventType === "payment_intent.succeeded") {
         
-        // The payment was complete
-        console.log("💰 Payment succeeded with payment method " + data.object.payment_method);
+        try {
+            // The payment was complete
+            console.log("💰 Payment succeeded with payment method " + data.object.payment_method);
 
-        // If there is a Stripe customer ID, then it indicates user is logged in since we create a Stripe customer (just once) when creating a payment intent for logged in users.
-        if(data.object.customer) {  
+            // If there is a Stripe customer ID, then it indicates user is logged in since we create a Stripe customer (just once) when creating a payment intent for logged in users.
+            if(data.object.customer) {  
 
-            // Include the last used payment method for logged in user. The last used payment method ID is stored in the data[object][payment_method] property of the event. 
-            const paymentMethodID = data.object.payment_method
-            const updatedCustomer = await stripe.customers.update(data.object.customer, {
-                metadata: {last_used_payment: paymentMethodID}
-            })
-            console.log(58, "updated customer after successful payment: ", updatedCustomer)
-
-            // Check if the payment method object that was just used to pay had to recollect CVV because user updated the payment method in payment method component. If CVV was recollected, then change it back to false. Since the updated payment method succeeded in making the payment, we no longer need to recollect the CVV.
-            const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodID)
-            if(paymentMethod.metadata && paymentMethod.metadata.recollect_cvv){
-                const updatedPaymentMethod = await stripe.paymentMethods.update(paymentMethodID, {
-                    metadata: {recollect_cvv: false}
+                // Include the last used payment method for logged in user. The last used payment method ID is stored in the data[object][payment_method] property of the event. 
+                const paymentMethodID = data.object.payment_method
+                const updatedCustomer = await stripe.customers.update(data.object.customer, {
+                    metadata: {last_used_payment: paymentMethodID}
                 })
-                console.log(66, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
+                console.log(59, "updated customer after successful payment: ", updatedCustomer)
 
-            }
-            console.log(69)
-            // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
-            // First, need to get the logged in user's document ID by using the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
-            const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
-            const order = await Order.create({
-                LoggedInBuyer: loggedInUser._id,
-                OrderNumber: uuidv4() // generate random order ID number using uuid 
-            })
-            
-            console.log(78, "create logged in order: ", order)
+                // Check if the payment method object that was just used to pay had to recollect CVV because user updated the payment method in payment method component. If CVV was recollected, then change it back to false. Since the updated payment method succeeded in making the payment, we no longer need to recollect the CVV.
+                const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodID)
+                if(paymentMethod.metadata && paymentMethod.metadata.recollect_cvv){
+                    const updatedPaymentMethod = await stripe.paymentMethods.update(paymentMethodID, {
+                        metadata: {recollect_cvv: false}
+                    })
+                    console.log(67, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
 
-            const cart = await Cart.findOne({LoggedInBuyer: loggedInUser._id})
-            
-            console.log(82, "find cart: ", cart)
-
-            for(let i=0; i < cart.Items.length; i++){
-
-                order.Items.push(cart.Items[[i]])
-
-                // Update inventory quantity of the items after items sold
-                const electronic = await Electronic.findById(cart.Items[i].ItemId)
+                }
+                console.log(70)
+                // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
+                // First, need to get the logged in user's document ID by using the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
+                const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
+                const order = await Order.create({
+                    LoggedInBuyer: loggedInUser._id,
+                    OrderNumber: uuidv4() // generate random order ID number using uuid 
+                })
                 
-                console.log(92, "before update electronic quantity: ", electronic)
+                console.log(79, "create logged in order: ", order)
 
-                electronic.Quantity -= cart.Items[i].Quantity
+                const cart = await Cart.findOne({LoggedInBuyer: loggedInUser._id})
+                
+                console.log(83, "find cart: ", cart)
 
-                console.log("updated quantity electronic: ", electronic)
-            }
+                for(let i=0; i < cart.Items.length; i++){
 
-            console.log(92, "added items to logged in order: ", order)
+                    order.Items.push(cart.Items[i])
+                    order.save()
+                    console.log(89, cart.Items[i].ItemId)
+                    console.log(90, order)
+                    // Update inventory quantity of the items after items sold
+                    const electronic = await Electronic.findById(cart.Items[i].ItemId)
+                
+                    console.log(94, "before update electronic quantity: ", electronic)
 
-            // Since there is a new cart for each order, delete cart after fulfilling order.
-            const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: data.object.customer})
+                    electronic.Quantity -= cart.Items[i].Quantity
 
-            console.log(97, "logged in cart deleted: ", deletedCart)
+                    console.log("updated quantity electronic: ", electronic)
+                }
+
+                console.log(101, "added items to logged in order: ", order)
+
+                // Since there is a new cart for each order, delete cart after fulfilling order.
+                const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: data.object.customer})
+
+                console.log(107, "logged in cart deleted: ", deletedCart)
             
-        } else {
-            // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
-            const order = Order.create({OrderNumber: uuidv4()})
+            } else {
+                // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
+                const order = Order.create({OrderNumber: uuidv4()})
 
-            console.log(109, "create order: ", order)
+                console.log(112, "create order: ", order)
 
-            for(let i=0; i < req.session.cart.length; i++) {
+                for(let i=0; i < req.session.cart.length; i++) {
 
-                order.Items.push(req.session.cart[i])
+                    order.Items.push(req.session.cart[i])
 
-                // Update inventory quantity of the items sold
-                const electronic = await Electronic.findOneAndUpdate(req.session.cart[i].ItemId)
-                electronic.Quantity -= cart.Items[i].Quantity
+                    // Update inventory quantity of the items sold
+                    const electronic = await Electronic.findOneAndUpdate(req.session.cart[i].ItemId)
+                    electronic.Quantity -= cart.Items[i].Quantity
 
-                console.log(119, "updated quantity in electronic: ", electronic)
+                    console.log(122, "updated quantity in electronic: ", electronic)
+                }
+                console.log(124, "added items in guest order: ", order)
+
+                // Since there is a new cart for each order, delete guest's cart after fulfilling order.
+                console.log(127, "req.session before deleting: ", req.session)
+                delete req.session.cart
+                console.log(129, "delete req.session after successful payment: ", req.session)
             }
-            console.log(115, "added items in guest order: ", order)
 
-            // Since there is a new cart for each order, delete guest's cart after fulfilling order.
-            console.log(124, "req.session before deleting: ", req.session)
-            delete req.session.cart
-            console.log(126, "delete req.session after successful payment: ", req.session)
+            //////////////////////////////////
+            // Delete the saved idempotency associated with the payment intent in CachePaymentIntent for the guest(?) since the payment intent is successful???
+            console.log(134, "before clearing cookies: ", req.cookies)
+            if(req.cookies){
+                res.clearCookie('idempotency')
+            }
+            console.log(138, "after clearing cookies: ", req.cookies)
+        } catch(error) {
+            console.log(140)
+            res.status(400).json({message: error})
         }
-
-        //////////////////////////////////
-        // Delete the saved idempotency associated with the payment intent in CachePaymentIntent for the guest(?) since the payment intent is successful???
-        console.log(125, "before clearing cookies: ", req.cookies)
-        if(req.cookies){
-            res.clearCookie('idempotency')
-        }
-        console.log(129, "after clearing cookies: ", req.cookies)
-
     } 
     // Customer’s payment was declined by card network or otherwise expired
     else if (eventType === "payment_intent.payment_failed") { 
