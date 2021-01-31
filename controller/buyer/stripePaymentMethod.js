@@ -25,33 +25,34 @@ const indexPaymentMethods = async(req, res) => {
 
             // Loop through all the payment method objects and send back only the id, brand, last4 digits, exp. date, and billing details for each payment method obj instead of just sending paymentMethods.data
             for(let i=0; i < paymentMethods.data.length; i++) {
-                const paymentMethod = {
-                    paymentMethodID: paymentMethods[data][i][id],
-                    brand: paymentMethods[data][i][card][brand],
-                    last4: paymentMethods[data][i][card][last4],
-                    expDate: `${paymentMethods[data][i][card][exp_month]}/${paymentMethods[data][i][card][exp_year]}`,
+                const paymentMethod = paymentMethods.data[i]
+                const onePaymentMethod = {
+                    paymentMethodID: paymentMethod.id,
+                    brand: paymentMethod.card.brand,
+                    last4: paymentMethod.card.last4,
+                    expDate: `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`,
                     billingDetails: {
-                        address: paymentMethods[data][i][billing_details][address],
-                        name: paymentMethods[data][i][billing_details][name]
+                        address: paymentMethod.billing_details.address,
+                        name: paymentMethod.billing_details.name
                     },
-                    cardholderName: paymentMethods[data][i][metadata][cardholder_name],
-                    recollectCVV: paymentMethod[metadata][recollect_cvv] // Add the recollect_cvv property to metadata. If the payment method displayed later in checkout has a recollect_cvv: true, then the user has to enter CVV again. The CVV will be added to the stripe.confirmCardPayment() parameter on the client side. recollect_cvv in metadata will only be true if payment method was updated in Payment Method component
+                    cardholderName: paymentMethod.metadata.cardholder_name,
+                    recollectCVV: paymentMethod.metadata.recollect_cvv // Add the recollect_cvv property to metadata. If the payment method displayed later in checkout has a recollect_cvv: true, then the user has to enter CVV again. The CVV will be added to the stripe.confirmCardPayment() parameter on the client side. recollect_cvv in metadata will only be true if payment method was updated in Payment Method component
                 }
                 
               
                 // Add the default property to the paymentMethod obj above
-                if (paymentMethod.paymentMethodID === defaultPaymentMethodID) {
-                    paymentMethod.default = true 
+                if (onePaymentMethod.paymentMethodID === defaultPaymentMethodID) {
+                    onePaymentMethod.default = true 
                 } else {
-                    paymentMethod.default = false
+                    onePaymentMethod.default = false
                 }
 
                 // Check if this function is being called through clicking saved cards. If it is, then do not send back the already displayed payment method, so do not push into allPaymentMethods
                 if(req.query.save === 'true') {
-                    if(req.params.id === paymentMethod.paymentMethodID) continue
+                    if(req.query.id === onePaymentMethod.paymentMethodID) continue
                 }
 
-                allPaymentMethods.push(paymentMethod)
+                allPaymentMethods.push(onePaymentMethod)
 
                 console.log(56, "a list of payment methods to send back: ", allPaymentMethods)
             }
@@ -71,10 +72,7 @@ const showPaymentMethod = async(req, res) => {
             const paymentMethod = await stripe.paymentMethods.retrieve(req.params.id)
 
             console.log(73, "get one payment method: ", paymentMethod)
-            console.log(74, paymentMethod.card)
-            console.log(75, `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`)
-            console.log(75, paymentMethod.billing_details)
-            console.log(76, paymentMethod.billing_details.address)
+
             res.status(200).json({
                 paymentMethodID: paymentMethod.id,
                 brand: paymentMethod.card.brand,

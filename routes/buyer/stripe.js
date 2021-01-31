@@ -21,7 +21,7 @@ router.post('/update/payment-intent', passportAuthenticate, updateLoggedInPaymen
 
 /* ------- PAYMENT METHODS ROUTER ------- */
 // Show all payment methods the logged in user made
-router.get('/index/payment', passportAuthenticate, indexPaymentMethods)
+router.get('/index/payment', passportAuthenticate, indexPaymentMethods) // example: /index/payment?save=false or /index/payment?save=true&id=paymentMethodID
 
 // Show one payment method when one of the payment method from the Saved Cards at checkout is selected
 router.get('/show/payment/:id', passportAuthenticate, showPaymentMethod)
