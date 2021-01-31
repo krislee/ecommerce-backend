@@ -231,7 +231,7 @@ const createPaymentMethod = async(req, res) => {
             const loggedInUser = await BuyerUser.findById(req.user._id)
             // Get Stripe customer
             const customer = await stripe.customers.retrieve(loggedInUser.customer)
-
+            console.log(234, "CREATING PAYMENT METHOD")
             console.log(235, "customer: ", customer)
 
             // Get all the payment methods attached to the customer
