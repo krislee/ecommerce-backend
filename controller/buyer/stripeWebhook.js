@@ -118,7 +118,7 @@ const webhook = async (req, res) => {
                     // Update inventory quantity of the items sold
                     const electronic = await Electronic.findOneAndUpdate(req.session.cart[i].ItemId)
                     electronic.Quantity -= cart.Items[i].Quantity
-
+                    electronic.save()
                     console.log(122, "updated quantity in electronic: ", electronic)
                 }
                 console.log(124, "added items in guest order: ", order)
@@ -146,21 +146,21 @@ const webhook = async (req, res) => {
 
         // The payment failed to go through due to decline or authentication request 
         const error = data.object.last_payment_error.message;
-        console.log(137, "❌ Payment failed with error: " + error);
+        console.log(149, "❌ Payment failed with error: " + error);
 
-        console.log(139, "status: ", data.object.status)
+        console.log(151, "status: ", data.object.status)
 
         // Prompt user to provide another payment method and attaching it to the already made payment intent by sending back to the payment intent's client secret
-        res.send({
-            error: data.object.last_payment_error,
-            clientSecret: data.object.client_secret,
-            publicKey: process.env.STRIPE_PUBLIC
-        });
+        // res.send({
+        //     error: data.object.last_payment_error,
+        //     clientSecret: data.object.client_secret,
+        //     publicKey: process.env.STRIPE_PUBLIC
+        // });
 
     } else if (eventType === "payment_method.attached") {
 
         // A new payment method was attached to a customer 
-        console.log(151, "💳 Attached " + data.object.id + " to customer");
+        console.log(163, "💳 Attached " + data.object.id + " to customer");
     }
 
     res.sendStatus(200);
