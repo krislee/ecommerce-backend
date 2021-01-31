@@ -73,6 +73,8 @@ const showPaymentMethod = async(req, res) => {
             console.log(73, "get one payment method: ", paymentMethod)
             console.log(74, paymentMethod.card)
             console.log(75, `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`)
+            console.log(75, paymentMethod.billing_details)
+            console.log(76, paymentMethod.billing_details.address)
             res.status(200).json({
                 paymentMethodID: paymentMethod.id,
                 brand: paymentMethod.card.brand,
