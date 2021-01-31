@@ -246,6 +246,8 @@ const createPaymentMethod = async(req, res) => {
             let oldPaymentMethodID = ""
             for(let i=0; i < paymentMethods.data.length; i++) {
                 const paymentMethod = paymentMethods.data[i]
+                console.log(249, paymentMethod.card.fingerprint)
+                console.log(250, req.body.fingerprint)
                 if(paymentMethod.card.fingerprint === req.body.fingerprint) {
                     match = true
                     oldPaymentMethodID = paymentMethod.id
