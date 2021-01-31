@@ -82,9 +82,9 @@ const showPaymentMethod = async(req, res) => {
                 expDate: `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`,
                 billingDetails: {
                     address: paymentMethod.billing_details.address,
-                    name: paymentMethod/billing_details.name
+                    name: paymentMethod.billing_details.name
                 },
-                cardholderName: paymentMethods.metadata.cardholder_name,
+                cardholderName: paymentMethod.metadata.cardholder_name,
                 recollectCVV: paymentMethod.metadata.recollect_cvv
             })
         }
