@@ -138,7 +138,7 @@ const webhook = async (req, res) => {
             console.log(138, "after clearing cookies: ", req.cookies)
         } catch(error) {
             console.log(140)
-            res.status(400).json({message: error})
+            // res.status(400).json({message: error})
         }
     } 
     // Customer’s payment was declined by card network or otherwise expired
