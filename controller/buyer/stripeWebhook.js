@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const Cart = require('../../model/buyer/cart')
 const Order = require('../../model/orders')
 const {BuyerUser} = require('../../model/buyer/buyerUser')
-const Electronic = require('../../model/seller/electronic')
+const {Electronic} = require('../../model/seller/electronic')
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
 
@@ -137,7 +137,7 @@ const webhook = async (req, res) => {
             }
             console.log(138, "after clearing cookies: ", req.cookies)
         } catch(error) {
-            console.log(140)
+            console.log(140, error)
             // res.status(400).json({message: error})
         }
     } 
