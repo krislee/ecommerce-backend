@@ -292,6 +292,7 @@ const createOrUpdatePaymentIntent = async(req, res) => {
         }
     } catch(error) {
         console.log(284, "error: ", error)
+        res.status(400).json({error: error})
     }
 }
 
