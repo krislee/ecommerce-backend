@@ -226,13 +226,16 @@ const loggedInIndexCart = async(req, res) => {
                 
                 // console.log(cart, "logged in cart")
 
-                
-                res.status(200).json({
-                    cart: cart,
-                    totalCartPrice: totalCartPrice
-                })
+                if(cart.Items.length !== 0) {
+                    res.status(200).json({
+                        cart: cart,
+                        totalCartPrice: totalCartPrice
+                    })
+                } else {
+                    res.status(200).json({cart: 'No cart available'}) // When users log in, syncing occurs so a cart is created with the possibility of no items in the cart, so we need to send 'No cart available back'.
+                }
             } else {
-                res.status(200).json({cart: 'No cart available'})
+                res.status(200).json({cart: 'No cart available'}) // Send 'No cart available' back when there is no cart, i.e. after a successful payment the old cart is deleted so there won't be any cart
             }
         }
     }

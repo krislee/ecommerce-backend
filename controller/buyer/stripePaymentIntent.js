@@ -212,7 +212,11 @@ const createLoggedInPaymentIntent = async(req, res) => {
         // } else if(error.type === 'StripeIdempotencyError') {
         //     res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
         // }
-        res.status(400).json({message: error})
+        if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
+            res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
+        } else if(error.type === 'StripeIdempotencyError') {
+            res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
+        }else (res.status(400).json({message: error}))
     }
 }
 
