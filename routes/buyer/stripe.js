@@ -36,7 +36,7 @@ router.get('/default/payment/:id', passportAuthenticate, defaultPaymentMethod) /
 router.post('/payment', passportAuthenticate, createPaymentMethod) //(include req.body: fingerprint and paymentMethodID)
 
 // Update the selected payment method at Payment Method or at checkout
-router.put('/payment/:id', passportAuthenticate, updatePaymentMethod) //(include in req.body: billingDetails, expMonth, expYear, name, recollectCVV)
+router.put('/update/payment/:id', passportAuthenticate, updatePaymentMethod) //(include in req.body: billingDetails, expMonth, expYear, name, recollectCVV)
 
 // Delete the selected payment method
 router.delete('/payment/:id', passportAuthenticate, deletePaymentMethod)
