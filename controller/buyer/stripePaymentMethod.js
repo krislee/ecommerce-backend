@@ -130,7 +130,7 @@ const updatePaymentMethod = async(req, res) => {
                         line2: billingDetails.line2,
                         city: billingDetails.city,
                         state: billingDetails.state,
-                        postal_code: billingDetails.postal_code,
+                        postal_code: billingDetails.postalCode,
                         country: billingDetails.country
                     },
                     name: billingDetails.name
