@@ -1,4 +1,4 @@
-//////// DEPENDENCIES ////////
+/* ------- DEPENDENCIES ------- */
 
 // General Dependencies
 require("dotenv").config()
@@ -48,7 +48,7 @@ const {webhook} = require('./controller/buyer/stripeWebhook')
 // Shipping Address Dependency
 const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 
-//////// CORS ////////
+/* ------- CORS ------- */
 const corsOptions = {
   origin: 'http://localhost:3000', 
   // origin: true, 
@@ -56,7 +56,7 @@ const corsOptions = {
   credentials: true,
 };
 
-//////// MIDDLEWARES ////////
+/* ------- MIDDLEWARES ------- */
 
 app.use(cors(corsOptions))
 
@@ -114,7 +114,7 @@ app.use(
 );
 app.use(express.urlencoded({extended: true}))
 
-//////// ROUTES AND ROUTER ////////
+/* ------- ROUTES AND ROUTER ------- */
 
 // Login/Register Route
 app.use('/auth/seller', sellerAuthRoute)
