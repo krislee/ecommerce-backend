@@ -393,7 +393,7 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                     billingDetails: {
                         address: {
                             line1: paymentMethod.billing_details.address.line1,
-                            line2: paymentMethod.billing_details.address.line1,
+                            line2: paymentMethod.billing_details.address.line2,
                             city:  paymentMethod.billing_details.address.city,
                             state:  paymentMethod.billing_details.address.state,
                             postalCode:  paymentMethod.billing_details.address.postal_code,
