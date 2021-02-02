@@ -378,7 +378,7 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                 console.log(372, "last used payment method obj: ", paymentMethod)
 
             } else if(allPaymentMethods.data.length >= 1) {
-                paymentMethod = allPaymentMethods[0]
+                paymentMethod = allPaymentMethods.data[0]
             } else if (allPaymentMethods.data.length===0){
                 paymentMethod = null
                 console.log(376, paymentMethod)
