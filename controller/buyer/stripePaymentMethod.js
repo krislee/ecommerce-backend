@@ -169,7 +169,7 @@ const updatePaymentMethod = async(req, res) => {
                         name: updatedPaymentMethod.billing_details.name
                     },
                     recollectCVV: updatedPaymentMethod.metadata.recollect_cvv ? true : false,
-                    cardholderName: paymentMethod.metadata.cardholder_name
+                    cardholderName: updatedPaymentMethod.metadata.cardholder_name
                 })
             } else {
                 indexPaymentMethods(req, res)
