@@ -34,7 +34,7 @@ const indexPaymentMethods = async(req, res) => {
                     billingDetails: {
                         address:  {
                             line1: paymentMethod.billing_details.address.line1,
-                            line2: paymentMethod.billing_details.address.line1,
+                            line2: paymentMethod.billing_details.address.line2,
                             city:  paymentMethod.billing_details.address.city,
                             state:  paymentMethod.billing_details.address.state,
                             postalCode:  paymentMethod.billing_details.address.postal_code,
@@ -87,7 +87,7 @@ const showPaymentMethod = async(req, res) => {
                 billingDetails: {
                     address: {
                         line1: paymentMethod.billing_details.address.line1,
-                        line2: paymentMethod.billing_details.address.line1,
+                        line2: paymentMethod.billing_details.address.line2,
                         city:  paymentMethod.billing_details.address.city,
                         state:  paymentMethod.billing_details.address.state,
                         postalCode:  paymentMethod.billing_details.address.postal_code,
@@ -151,24 +151,29 @@ const updatePaymentMethod = async(req, res) => {
 
 
             // Send back the updated payment method details
-            res.status(200).json({
-                paymentMethodID: updatedPaymentMethod.id,
-                brand: updatedPaymentMethod.card.brand,
-                last4: updatedPaymentMethod.card.last4,
-                expDate: `${updatedPaymentMethod.card.exp_month}/${updatedPaymentMethod.card.exp_year}`,
-                billingDetails: {
-                    address: {
-                        line1: updatedPaymentMethod.billing_details.address.line1,
-                        line2: updatedPaymentMethod.billing_details.address.line2,
-                        city: updatedPaymentMethod.billing_details.address.city,
-                        state: updatedPaymentMethod.billing_details.address.state,
-                        postalCode: updatedPaymentMethod.billing_details.address.postal_code,
-                        country: updatedPaymentMethod.billing_details.address.country
+            if(req.query.checkout === 'true') {
+                res.status(200).json({
+                    paymentMethodID: updatedPaymentMethod.id,
+                    brand: updatedPaymentMethod.card.brand,
+                    last4: updatedPaymentMethod.card.last4,
+                    expDate: `${updatedPaymentMethod.card.exp_month}/${updatedPaymentMethod.card.exp_year}`,
+                    billingDetails: {
+                        address: {
+                            line1: updatedPaymentMethod.billing_details.address.line1,
+                            line2: updatedPaymentMethod.billing_details.address.line2,
+                            city: updatedPaymentMethod.billing_details.address.city,
+                            state: updatedPaymentMethod.billing_details.address.state,
+                            postalCode: updatedPaymentMethod.billing_details.address.postal_code,
+                            country: updatedPaymentMethod.billing_details.address.country
+                        },
+                        name: updatedPaymentMethod.billing_details.name
                     },
-                    name: updatedPaymentMethod.billing_details.name
-                },
-                recollectCVV: updatedPaymentMethod.metadata.recollect_cvv ? true : false
-            })
+                    recollectCVV: updatedPaymentMethod.metadata.recollect_cvv ? true : false,
+                    cardholderName: paymentMethod.metadata.cardholder_name
+                })
+            } else {
+                indexPaymentMethods(req, res)
+            }
         }
     } catch(error) {
         console.log(173, "error", error)
@@ -401,7 +406,8 @@ const sendCheckoutPaymentMethod = async(req, res) => {
                         },
                         name: paymentMethod.billing_details.name
                     },
-                    recollectCVV: paymentMethod.metadata.recollect_cvv
+                    recollectCVV: paymentMethod.metadata.recollect_cvv,
+                    cardholderName: paymentMethod.metadata.cardholder_name
                 })
             }
             
