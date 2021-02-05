@@ -111,7 +111,7 @@ const webhook = async (req, res) => {
 
                 console.log(112, "create order: ", order)
                 console.log(113, req.session.cart)
-                await req.sessionStore.get(data.object.metadata.sessionID, function(err, session) {
+                await req.sessionStore.get(data.object.metadata.sessionID, async function(err, session) {
                     console.log(115, err)
                     console.log(116, session)
 
