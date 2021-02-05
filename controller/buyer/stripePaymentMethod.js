@@ -305,7 +305,25 @@ const createPaymentMethod = async(req, res) => {
             if(req.query.checkout === 'false'){
                 indexPaymentMethods(req, res)
             } else {
-                res.status(200).json({paymentMethodID: req.body.paymentMethodID})
+                res.status(200).json({
+                    paymentMethodID: attachPaymentMethod.id,
+                    brand: attachPaymentMethod.card.brand,
+                    last4: attachPaymentMethod.card.last4,
+                    expDate: `${attachPaymentMethod.card.exp_month}/${attachPaymentMethod.card.exp_year}`,
+                    billingDetails: {
+                        address: {
+                            line1: attachPaymentMethod.billing_details.address.line1,
+                            line2: attachPaymentMethod.billing_details.address.line2,
+                            city:  attachPaymentMethod.billing_details.address.city,
+                            state:  attachPaymentMethod.billing_details.address.state,
+                            postalCode:  attachPaymentMethod.billing_details.address.postal_code,
+                            country:  attachPaymentMethod.billing_details.address.country
+                        },
+                        name: attachPaymentMethod.billing_details.name
+                    },
+                    recollectCVV: attachPaymentMethod.metadata.recollect_cvv,
+                    cardholderName: attachPaymentMethod.metadata.cardholder_name
+                })
             }
         }
     } catch(error) {
