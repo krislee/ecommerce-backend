@@ -29,7 +29,7 @@ const guestOrderAmount = (req, res) => {
     let totalCartPrice = 0
     console.log(30)
     const guestCart = req.session.cart
-
+    console.log(32, guestCart)
     console.log(33, "guest cart: ", guestCart)
     if(guestCart){
         for(let i=0; i<guestCart.length; i++) {
