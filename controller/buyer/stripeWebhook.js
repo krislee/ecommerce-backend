@@ -103,7 +103,7 @@ const webhook = async (req, res) => {
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
 
-                console.log(107, "logged in cart deleted: ", deletedCart)
+                console.log(106, "logged in cart deleted: ", deletedCart)
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
@@ -114,23 +114,24 @@ const webhook = async (req, res) => {
                 await req.sessionStore.get(data.object.metadata.sessionID, function(err, session) {
                     console.log(115, err)
                     console.log(116, session)
+
+                    for(let i=0; i < session.cart.length; i++) {
+
+                        order.Items.push(session.cart[i])
+                        order.save()
+                        // Update inventory quantity of the items sold
+                        const electronic = await Electronic.findOne(session.cart[i].ItemId)
+                        electronic.Quantity -= cart.Items[i].Quantity
+                        electronic.save()
+                        console.log(126, "updated quantity in electronic: ", electronic)
+                    } 
+                    // Since there is a new cart for each order, delete guest's cart after fulfilling order.
+                    req.session.destroy()
+                    console.log(130, "delete req.session after successful payment: ", req.session)
                 })
-                for(let i=0; i < req.session.cart.length; i++) {
-
-                    order.Items.push(req.session.cart[i])
-
-                    // Update inventory quantity of the items sold
-                    const electronic = await Electronic.findOne(req.session.cart[i].ItemId)
-                    electronic.Quantity -= cart.Items[i].Quantity
-                    electronic.save()
-                    console.log(122, "updated quantity in electronic: ", electronic)
-                }
-                console.log(124, "added items in guest order: ", order)
-
-                // Since there is a new cart for each order, delete guest's cart after fulfilling order.
-                console.log(127, "req.session before deleting: ", req.session)
-                req.session.destroy()
-                console.log(129, "delete req.session after successful payment: ", req.session)
+                
+                console.log(133, "added items in guest order: ", order)
+                
             }
 
             //////////////////////////////////
