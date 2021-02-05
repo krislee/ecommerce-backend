@@ -110,13 +110,13 @@ const webhook = async (req, res) => {
                 const order = await Order.create({OrderNumber: uuidv4()})
 
                 console.log(112, "create order: ", order)
-
+                console.log(113, req.session.cart)
                 for(let i=0; i < req.session.cart.length; i++) {
 
                     order.Items.push(req.session.cart[i])
 
                     // Update inventory quantity of the items sold
-                    const electronic = await Electronic.findOneAndUpdate(req.session.cart[i].ItemId)
+                    const electronic = await Electronic.findOne(req.session.cart[i].ItemId)
                     electronic.Quantity -= cart.Items[i].Quantity
                     electronic.save()
                     console.log(122, "updated quantity in electronic: ", electronic)
@@ -125,17 +125,17 @@ const webhook = async (req, res) => {
 
                 // Since there is a new cart for each order, delete guest's cart after fulfilling order.
                 console.log(127, "req.session before deleting: ", req.session)
-                delete req.session.cart
+                req.session.destroy()
                 console.log(129, "delete req.session after successful payment: ", req.session)
             }
 
             //////////////////////////////////
             // Delete the saved idempotency associated with the payment intent in CachePaymentIntent for the guest(?) since the payment intent is successful???
-            console.log(134, "before clearing cookies: ", req.cookies)
-            if(req.cookies){
-                res.clearCookie('idempotency')
-            }
-            console.log(138, "after clearing cookies: ", req.cookies)
+            // console.log(134, "before clearing cookies: ", req.cookies)
+            // if(req.cookies){
+            //     res.clearCookie('idempotency')
+            // }
+            // console.log(138, "after clearing cookies: ", req.cookies)
         } catch(error) {
             console.log(140, error)
             // res.status(400).json({message: error})
