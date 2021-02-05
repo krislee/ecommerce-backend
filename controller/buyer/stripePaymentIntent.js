@@ -230,7 +230,10 @@ const createGuestPaymentIntent = async(req, res) => {
         // if user is not logged in, do not create a payment intent with customer property
         const paymentIntent = await stripe.paymentIntents.create({
             amount: guestOrderAmount(req, res),
-            currency: "usd"
+            currency: "usd",
+            metadata: {
+                sessionID: idempotencyKey
+            }
         }, {
             idempotencyKey: idempotencyKey
         });
