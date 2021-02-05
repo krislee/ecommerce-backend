@@ -107,7 +107,7 @@ const webhook = async (req, res) => {
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
-                const order = Order.create({OrderNumber: uuidv4()})
+                const order = await Order.create({OrderNumber: uuidv4()})
 
                 console.log(112, "create order: ", order)
 
