@@ -110,29 +110,31 @@ const webhook = async (req, res) => {
                 const order = await Order.create({OrderNumber: uuidv4()})
 
                 console.log(112, "create order: ", order)
-                console.log(113, req.session.cart)
-                await req.sessionStore.get(data.object.metadata.sessionID, async function(err, session) {
-                    console.log(115, err)
-                    console.log(116, session.cart)
+        
+                const session = await req.sessionStore.get(data.object.metadata.sessionID)
+                console.log(120, session)
+                //     , async function(err, session) {
+                //     console.log(115, err)
+                //     console.log(116, session.cart)
 
-                    for(let i=0; i < session.cart.length; i++) {
-                        console.log(119, session.cart[i].ItemId)
-                        const electronic = await Electronic.findById(session.cart[i].ItemId)
-                        console.log(120, electronic)
-                        order.Items.push(session.cart[i])
-                        order.save()
+                //     for(let i=0; i < session.cart.length; i++) {
+                //         console.log(119, session.cart[i].ItemId)
+                //         const electronic = await Electronic.findById(session.cart[i].ItemId)
+                //         console.log(120, electronic)
+                //         order.Items.push(session.cart[i])
+                //         order.save()
 
-                        // Update inventory quantity of the items sold
+                //         // Update inventory quantity of the items sold
                         
-                        electronic.Quantity -= cart.Items[i].Quantity
-                        console.log(128, electronic.Quantity)
-                        electronic.save()
-                        console.log(130, "updated quantity in electronic: ", electronic)
-                    } 
-                    // Since there is a new cart for each order, delete guest's cart after fulfilling order.
-                    req.session.destroy()
-                    console.log(134, "delete req.session after successful payment: ", req.session)
-                })
+                //         electronic.Quantity -= cart.Items[i].Quantity
+                //         console.log(128, electronic.Quantity)
+                //         electronic.save()
+                //         console.log(130, "updated quantity in electronic: ", electronic)
+                //     } 
+                //     // Since there is a new cart for each order, delete guest's cart after fulfilling order.
+                //     req.session.destroy()
+                //     console.log(134, "delete req.session after successful payment: ", req.session)
+                // })
                 
                 console.log(137, "added items in guest order: ", order)
                 
