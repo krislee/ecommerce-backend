@@ -113,7 +113,8 @@ const webhook = async (req, res) => {
                     console.log(113, "create order: ", order)
             
                     const session = await req.sessionStore.get(data.object.metadata.sessionID)
-
+                    console.log(116, session)
+                    console.log(117, req.session)
                     for(let i=0; i < session.cart.length; i++) {
                         console.log(118, session.cart[i].ItemId)
                         order.Items.push(session.cart[i])
