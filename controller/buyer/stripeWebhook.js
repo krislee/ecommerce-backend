@@ -120,7 +120,7 @@ const webhook = async (req, res) => {
                         order.Items.push(session.cart[i])
                         order.save()
                         // Update inventory quantity of the items sold
-                        const electronic = await Electronic.findOne(session.cart[i].ItemId)
+                        const electronic = await Electronic.findById(session.cart[i].ItemId)
                         electronic.Quantity -= cart.Items[i].Quantity
                         electronic.save()
                         console.log(126, "updated quantity in electronic: ", electronic)
