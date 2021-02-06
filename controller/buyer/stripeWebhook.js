@@ -107,33 +107,37 @@ const webhook = async (req, res) => {
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
-                const order = await Order.create({OrderNumber: uuidv4()})
+                try {
+                    const order = await Order.create({OrderNumber: uuidv4()})
 
-                console.log(112, "create order: ", order)
-        
-                await req.sessionStore.get(data.object.metadata.sessionID, async function(err, session) {
-                    console.log(115, err)
-                    console.log(116, session.cart)
+                    console.log(113, "create order: ", order)
+            
+                    const session = await req.sessionStore.get(data.object.metadata.sessionID)
 
                     for(let i=0; i < session.cart.length; i++) {
-                        console.log(119, session.cart[i].ItemId)
+                        console.log(118, session.cart[i].ItemId)
                         order.Items.push(session.cart[i])
                         order.save()
 
                         // Update inventory quantity of the items sold
                         const electronic = await Electronic.findById(session.cart[i].ItemId)
-                        console.log(125, electronic)
+                        console.log(124, electronic)
                         electronic.Quantity -= cart.Items[i].Quantity
-                        console.log(128, electronic.Quantity)
+                        console.log(126, electronic.Quantity)
                         electronic.save()
-                        console.log(130, "updated quantity in electronic: ", electronic)
+                        console.log(128, "updated quantity in electronic: ", electronic)
                     } 
                     // Since there is a new cart for each order, delete guest's cart after fulfilling order.
                     await req.session.destroy()
-                    console.log(133, "delete req.session after successful payment: ", req.session)
-                })
+                    console.log(132, "delete req.session after successful payment: ", req.session)
+                    
+                    
+                    console.log(135, "added items in guest order: ", order)
+                } catch(error) {
+                    console.log(137)
+                    console.log(error)
+                }
                 
-                console.log(136, "added items in guest order: ", order)
                 
             }
 
