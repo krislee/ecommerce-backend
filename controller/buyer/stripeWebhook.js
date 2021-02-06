@@ -113,25 +113,28 @@ const webhook = async (req, res) => {
                 console.log(113, req.session.cart)
                 await req.sessionStore.get(data.object.metadata.sessionID, async function(err, session) {
                     console.log(115, err)
-                    console.log(116, session)
+                    console.log(116, session.cart)
 
                     for(let i=0; i < session.cart.length; i++) {
-
+                        console.log(119, session.cart[i].ItemId)
+                        const electronic = await Electronic.findById(session.cart[i].ItemId)
+                        console.log(120, electronic)
                         order.Items.push(session.cart[i])
                         order.save()
-                        console.log(session.cart[i].ItemId)
+
                         // Update inventory quantity of the items sold
-                        const electronic = await Electronic.findById(session.cart[i].ItemId)
+                        
                         electronic.Quantity -= cart.Items[i].Quantity
+                        console.log(128, electronic.Quantity)
                         electronic.save()
-                        console.log(126, "updated quantity in electronic: ", electronic)
+                        console.log(130, "updated quantity in electronic: ", electronic)
                     } 
                     // Since there is a new cart for each order, delete guest's cart after fulfilling order.
                     req.session.destroy()
-                    console.log(130, "delete req.session after successful payment: ", req.session)
+                    console.log(134, "delete req.session after successful payment: ", req.session)
                 })
                 
-                console.log(133, "added items in guest order: ", order)
+                console.log(137, "added items in guest order: ", order)
                 
             }
 
@@ -143,7 +146,7 @@ const webhook = async (req, res) => {
             // }
             // console.log(138, "after clearing cookies: ", req.cookies)
         } catch(error) {
-            console.log(140, error)
+            console.log(149, error)
             // res.status(400).json({message: error})
         }
     } 
