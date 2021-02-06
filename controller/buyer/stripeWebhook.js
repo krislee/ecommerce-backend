@@ -111,32 +111,29 @@ const webhook = async (req, res) => {
 
                 console.log(112, "create order: ", order)
         
-                const session = await req.sessionStore.get(data.object.metadata.sessionID)
-                console.log(120, session)
-                //     , async function(err, session) {
-                //     console.log(115, err)
-                //     console.log(116, session.cart)
+                await req.sessionStore.get(data.object.metadata.sessionID, async function(err, session) {
+                    console.log(115, err)
+                    console.log(116, session.cart)
 
-                //     for(let i=0; i < session.cart.length; i++) {
-                //         console.log(119, session.cart[i].ItemId)
-                //         const electronic = await Electronic.findById(session.cart[i].ItemId)
-                //         console.log(120, electronic)
-                //         order.Items.push(session.cart[i])
-                //         order.save()
+                    for(let i=0; i < session.cart.length; i++) {
+                        console.log(119, session.cart[i].ItemId)
+                        order.Items.push(session.cart[i])
+                        order.save()
 
-                //         // Update inventory quantity of the items sold
-                        
-                //         electronic.Quantity -= cart.Items[i].Quantity
-                //         console.log(128, electronic.Quantity)
-                //         electronic.save()
-                //         console.log(130, "updated quantity in electronic: ", electronic)
-                //     } 
-                //     // Since there is a new cart for each order, delete guest's cart after fulfilling order.
-                //     req.session.destroy()
-                //     console.log(134, "delete req.session after successful payment: ", req.session)
-                // })
+                        // Update inventory quantity of the items sold
+                        const electronic = await Electronic.findById(session.cart[i].ItemId)
+                        console.log(125, electronic)
+                        electronic.Quantity -= cart.Items[i].Quantity
+                        console.log(128, electronic.Quantity)
+                        electronic.save()
+                        console.log(130, "updated quantity in electronic: ", electronic)
+                    } 
+                    // Since there is a new cart for each order, delete guest's cart after fulfilling order.
+                    await req.session.destroy()
+                    console.log(133, "delete req.session after successful payment: ", req.session)
+                })
                 
-                console.log(137, "added items in guest order: ", order)
+                console.log(136, "added items in guest order: ", order)
                 
             }
 
@@ -148,7 +145,7 @@ const webhook = async (req, res) => {
             // }
             // console.log(138, "after clearing cookies: ", req.cookies)
         } catch(error) {
-            console.log(149, error)
+            console.log(148, error)
             // res.status(400).json({message: error})
         }
     } 
@@ -157,9 +154,9 @@ const webhook = async (req, res) => {
 
         // The payment failed to go through due to decline or authentication request 
         const error = data.object.last_payment_error.message;
-        console.log(149, "❌ Payment failed with error: " + error);
+        console.log(157, "❌ Payment failed with error: " + error);
 
-        console.log(151, "status: ", data.object.status)
+        console.log(159, "status: ", data.object.status)
 
         // Prompt user to provide another payment method and attaching it to the already made payment intent by sending back to the payment intent's client secret
         // res.send({
@@ -171,7 +168,7 @@ const webhook = async (req, res) => {
     } else if (eventType === "payment_method.attached") {
 
         // A new payment method was attached to a customer 
-        console.log(163, "💳 Attached " + data.object.id + " to customer");
+        console.log(171, "💳 Attached " + data.object.id + " to customer");
     }
 
     res.sendStatus(200);
