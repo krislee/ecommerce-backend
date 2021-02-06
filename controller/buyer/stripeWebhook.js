@@ -114,30 +114,30 @@ const webhook = async (req, res) => {
             
                     const session = await req.sessionStore.get(data.object.metadata.sessionID)
                     console.log(116, session)
-                    console.log(117, req.session)
+
+                    console.log(118, req.session)
                     for(let i=0; i < session.cart.length; i++) {
-                        console.log(118, session.cart[i].ItemId)
+                        console.log(120, session.cart[i].ItemId)
                         order.Items.push(session.cart[i])
                         order.save()
 
                         // Update inventory quantity of the items sold
                         const electronic = await Electronic.findById(session.cart[i].ItemId)
-                        console.log(124, electronic)
+                        console.log(126, electronic)
                         electronic.Quantity -= session.cart[i].Quantity
-                        console.log(126, electronic.Quantity)
+                        console.log(128, electronic.Quantity)
                         electronic.save()
-                        console.log(128, "updated quantity in electronic: ", electronic)
+                        console.log(130, "updated quantity in electronic: ", electronic)
                     } 
-                    // Since there is a new cart for each order, delete guest's cart after fulfilling order.
+                    // Since there is a new cart for each order, delete guest's session after fulfilling order.
                     await req.sessionStore.destroy(data.object.metadata.sessionID, function() {
-                        console.log(132, session)
+                        const deletedSession = await req.sessionStore.get(data.object.metadata.sessionID)
+                        console.log(deletedSession)
                     })
-                    // delete session
-                    console.log(135, "delete req.session after successful payment: ", session)
                     
-                    console.log(137, "added items in guest order: ", order)
+                    console.log(138, "added items in guest order: ", order)
                 } catch(error) {
-                    console.log(139)
+                    console.log(140)
                     console.log(error)
                 }
                 
@@ -152,7 +152,7 @@ const webhook = async (req, res) => {
             // }
             // console.log(138, "after clearing cookies: ", req.cookies)
         } catch(error) {
-            console.log(148, error)
+            console.log(155, error)
             // res.status(400).json({message: error})
         }
     } 
@@ -161,9 +161,9 @@ const webhook = async (req, res) => {
 
         // The payment failed to go through due to decline or authentication request 
         const error = data.object.last_payment_error.message;
-        console.log(157, "❌ Payment failed with error: " + error);
+        console.log(164, "❌ Payment failed with error: " + error);
 
-        console.log(159, "status: ", data.object.status)
+        console.log(166, "status: ", data.object.status)
 
         // Prompt user to provide another payment method and attaching it to the already made payment intent by sending back to the payment intent's client secret
         // res.send({
@@ -175,7 +175,7 @@ const webhook = async (req, res) => {
     } else if (eventType === "payment_method.attached") {
 
         // A new payment method was attached to a customer 
-        console.log(171, "💳 Attached " + data.object.id + " to customer");
+        console.log(178, "💳 Attached " + data.object.id + " to customer");
     }
 
     res.sendStatus(200);
