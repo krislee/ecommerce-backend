@@ -128,7 +128,7 @@ const webhook = async (req, res) => {
                         console.log(128, "updated quantity in electronic: ", electronic)
                     } 
                     // Since there is a new cart for each order, delete guest's cart after fulfilling order.
-                    await req.session.destroy()
+                    await session.destroy()
                     console.log(132, "delete req.session after successful payment: ", req.session)
                     
                     
