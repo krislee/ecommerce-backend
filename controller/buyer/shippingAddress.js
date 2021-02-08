@@ -215,16 +215,14 @@ const checkoutShipping = async(req, res) => {
             const allAddresses = await BuyerShippingAddress.find({Buyer: req.user._id})
 
             if(defaultAddress) {
-                res.status(200).json(defaultAddress)
+                res.status(200).json({address: defaultAddress})
             } else if (lastUsedSavedAddress) {
-                res.status(200).json(lastUsedSavedAddress)
+                res.status(200).json({address: lastUsedSavedAddress})
             } else if(allAddresses.length > 0) {
                 const lastCreatedAddress = allAddresses[allAddresses.length-1]
-                res.status(200).json(lastCreatedAddress)
+                res.status(200).json({address: lastCreatedAddress})
             } else {
-                res.status(200).json({
-                    address: null
-                })
+                res.status(200).json({address: null})
             }   
         } else {
             res.status(400).json({msg: "You are not authorized to view buyer's last used address"})
