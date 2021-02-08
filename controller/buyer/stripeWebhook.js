@@ -81,20 +81,20 @@ const webhook = async (req, res) => {
 
                 console.log(82, "previous last used address: ", previousLastUsedAddress)
 
-                // Add the lastUsed property to the address last used to checkout
-                const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
-                
-                console.log(87, "new last used address: ", lastUsedAddress)
-
                 // Create new shipping address if logged in user checked Save Shipping for Future
-                console.log(90, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
+                console.log(85, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
 
                 if(data.object.metadata.saveShipping) {
                     const savedShipping = await BuyerShippingAddress.create({
                         Name: data.object.shipping.name,
                         Address: `${data.object.shipping.line1}, ${data.object.shipping.line2}, ${data.object.shipping.city}, ${data.object.shipping.state}, ${data.object.shipping.postal_code}`,
-                        Buyer: loggedInUser._id
+                        Buyer: loggedInUser._id,
+                        LastUsed: true
                     })
+                } else {
+                    // Add the lastUsed property to the address last used to checkout
+                    const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
+                    console.log(97, "new last used address: ", lastUsedAddress)
                 }
                 
 
