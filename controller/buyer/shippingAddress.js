@@ -107,7 +107,7 @@ const changeDefaultShipping = async(req, res) => {
 
                 // First, check if there is already a default shipping stored. If there is, then update that address document's DefaultAddress to false
                 const defaultShipping = await BuyerShippingAddress.findOne({DefaultAddress: true, Buyer: req.user._id})
-
+                console.log(110, defaultShipping)
                 if (defaultShipping) {
                     defaultShipping.DefaultAddress = false
                     defaultShipping.save() 
@@ -115,13 +115,13 @@ const changeDefaultShipping = async(req, res) => {
 
                 // Update the selected address to have DefaultAddress to true
                 const newDefaultAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, {DefaultAddress: true}, {new: true})
-
+                console.log(118, defaultShipping)
                 // Send back all addresses
                 indexShipping(req, res)
             } else {
                 // If checked default box is clicked unchecked, this part of the function is triggered
                 const removeDefaultAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, {DefaultAddress: false}, {new: true})
-
+                (console.log(removeDefaultAddress))
                 // Send back all addresses
                 indexShipping(req, res)
             } 
