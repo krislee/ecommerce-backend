@@ -122,7 +122,7 @@ const changeDefaultShipping = async(req, res) => {
             } else {
                 // If checked default box is clicked unchecked, this part of the function is triggered
                 const removeDefaultAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, {DefaultAddress: false}, {new: true})
-                (console.log(removeDefaultAddress))
+                console.log(removeDefaultAddress)
                 // Send back all addresses
                 indexShipping(req, res)
             } 
