@@ -9,7 +9,7 @@ const {indexPaymentMethods, showPaymentMethod, updatePaymentMethod, deletePaymen
 const {webhook} = require('../../controller/buyer/stripeWebhook')
 
 /* ------- PAYMENT INTENT ROUTER ------- */
-// Create or update payment intent Router. This route will be rerouted for logged in users.
+// Create or update payment intent Router. This route will be rerouted to the 2 below routes for logged in users.
 router.post('/payment-intent', createOrUpdatePaymentIntent)
 
 // Create a new payment intent for logged in user
