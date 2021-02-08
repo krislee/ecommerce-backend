@@ -155,7 +155,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                     },
                     name: name ? name : ""
                 },
-                metadata: {saveShipping: req.body.saveShipping}
+                metadata: {saveShipping: req.body.saveShipping, lastUsedShipping: req.body.lastUsedShipping}
             })
         } else {
             updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
@@ -171,7 +171,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                     },
                     name: name ? name : ""
                 },
-                metadata: {saveShipping: req.body.saveShipping}
+                metadata: {saveShipping: req.body.saveShipping, lastUsedShipping: req.body.lastUsedShipping}
             })
         }
 

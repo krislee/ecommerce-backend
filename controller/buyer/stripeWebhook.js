@@ -5,6 +5,7 @@ const Cart = require('../../model/buyer/cart')
 const Order = require('../../model/orders')
 const {BuyerUser} = require('../../model/buyer/buyerUser')
 const {Electronic} = require('../../model/seller/electronic')
+const {BuyerShippingAddress} = require('../../model/buyer/shippingAddress')
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
 
@@ -72,14 +73,30 @@ const webhook = async (req, res) => {
                 const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
 
                 // Check if there is already a last used shipping address, and remove it
-                // const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
-                // if(previousLastUsedAddress) {
-                //     previousLastUsedAddress.LastUsed = false
-                //     previousLastUsedAddress.save()
-                // }
+                const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
+                if(previousLastUsedAddress) {
+                    previousLastUsedAddress.LastUsed = false
+                    previousLastUsedAddress.save()
+                }
 
-                // // Add the lastUsed property to the address last used to checkout
-                // const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})			
+                console.log(82, "previous last used address: ", previousLastUsedAddress)
+
+                // Add the lastUsed property to the address last used to checkout
+                const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
+                
+                console.log(87, "new last used address: ", lastUsedAddress)
+
+                // Create new shipping address if logged in user checked Save Shipping for Future
+                console.log(90, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
+
+                if(data.object.metadata.saveShipping) {
+                    const savedShipping = await BuyerShippingAddress.create({
+                        Name: data.object.shipping.name,
+                        Address: `${data.object.shipping.line1}, ${data.object.shipping.line2}, ${data.object.shipping.city}, ${data.object.shipping.state}, ${data.object.shipping.postal_code}`,
+                        Buyer: loggedInUser._id
+                    })
+                }
+                
 
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 const order = await Order.create({
@@ -87,58 +104,58 @@ const webhook = async (req, res) => {
                     OrderNumber: uuidv4() // generate random order ID number using uuid 
                 })
                 
-                console.log(79, "create logged in order: ", order)
+                console.log(107, "create logged in order: ", order)
 
                 const cart = await Cart.findOne({LoggedInBuyer: loggedInUser._id})
                 
-                console.log(83, "find cart: ", cart)
+                console.log(111, "find cart: ", cart)
 
                 for(let i=0; i < cart.Items.length; i++){
 
                     order.Items.push(cart.Items[i])
                     order.save()
-                    console.log(89, cart.Items[i].ItemId)
-                    console.log(90, order)
+                    console.log(117, cart.Items[i].ItemId)
+                    console.log(118, order)
                     // Update inventory quantity of the items after items sold
                     const electronic = await Electronic.findById(cart.Items[i].ItemId)
                 
-                    console.log(94, "before update electronic quantity: ", electronic)
+                    console.log(122, "before update electronic quantity: ", electronic)
 
                     electronic.Quantity -= cart.Items[i].Quantity
                     electronic.save()
                     console.log("updated quantity electronic: ", electronic)
                 }
 
-                console.log(101, "added items to logged in order: ", order)
+                console.log(129, "added items to logged in order: ", order)
 
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
 
-                console.log(106, "logged in cart deleted: ", deletedCart)
+                console.log(134, "logged in cart deleted: ", deletedCart)
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
                     const order = await Order.create({OrderNumber: uuidv4()})
 
-                    console.log(113, "create order: ", order)
+                    console.log(141, "create order: ", order)
             
                     const session = await req.sessionStore.get(data.object.metadata.sessionID)
-                    console.log(116, session)
+                    console.log(144, session)
 
-                    console.log(118, req.session)
+                    console.log(146, req.session)
                     for(let i=0; i < session.cart.length; i++) {
-                        console.log(120, session.cart[i].ItemId)
+                        console.log(148, session.cart[i].ItemId)
                         order.Items.push(session.cart[i])
                         order.save()
 
                         // Update inventory quantity of the items sold
                         const electronic = await Electronic.findById(session.cart[i].ItemId)
-                        console.log(126, electronic)
+                        console.log(154, electronic)
                         electronic.Quantity -= session.cart[i].Quantity
-                        console.log(128, electronic.Quantity)
+                        console.log(156, electronic.Quantity)
                         electronic.save()
-                        console.log(130, "updated quantity in electronic: ", electronic)
+                        console.log(158, "updated quantity in electronic: ", electronic)
                     } 
                     // Since there is a new cart for each order, delete guest's session after fulfilling order.
                     await req.sessionStore.destroy(data.object.metadata.sessionID, async function() {
@@ -146,9 +163,9 @@ const webhook = async (req, res) => {
                         console.log(deletedSession)
                     })
                     
-                    console.log(138, "added items in guest order: ", order)
+                    console.log(166, "added items in guest order: ", order)
                 } catch(error) {
-                    console.log(140)
+                    console.log(168)
                     console.log(error)
                 }
                 
@@ -163,7 +180,7 @@ const webhook = async (req, res) => {
             // }
             // console.log(138, "after clearing cookies: ", req.cookies)
         } catch(error) {
-            console.log(155, error)
+            console.log(183, error)
             // res.status(400).json({message: error})
         }
     } 
@@ -172,9 +189,9 @@ const webhook = async (req, res) => {
 
         // The payment failed to go through due to decline or authentication request 
         const error = data.object.last_payment_error.message;
-        console.log(164, "❌ Payment failed with error: " + error);
+        console.log(192, "❌ Payment failed with error: " + error);
 
-        console.log(166, "status: ", data.object.status)
+        console.log(194, "status: ", data.object.status)
 
         // Prompt user to provide another payment method and attaching it to the already made payment intent by sending back to the payment intent's client secret
         // res.send({
@@ -186,7 +203,7 @@ const webhook = async (req, res) => {
     } else if (eventType === "payment_method.attached") {
 
         // A new payment method was attached to a customer 
-        console.log(178, "💳 Attached " + data.object.id + " to customer");
+        console.log(206, "💳 Attached " + data.object.id + " to customer");
     }
 
     res.sendStatus(200);
