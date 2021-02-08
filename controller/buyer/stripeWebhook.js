@@ -67,10 +67,21 @@ const webhook = async (req, res) => {
                     console.log(67, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
 
                 }
-                console.log(70)
-                // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
-                // First, need to get the logged in user's document ID by using the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
+                
+                // Need to get the logged in user's document ID for updating last used shipping address and creating an order. To find the logged in user, use the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
                 const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
+
+                // Check if there is already a last used shipping address, and remove it
+                // const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
+                // if(previousLastUsedAddress) {
+                //     previousLastUsedAddress.LastUsed = false
+                //     previousLastUsedAddress.save()
+                // }
+
+                // // Add the lastUsed property to the address last used to checkout
+                // const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})			
+
+                // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 const order = await Order.create({
                     LoggedInBuyer: loggedInUser._id,
                     OrderNumber: uuidv4() // generate random order ID number using uuid 

@@ -87,10 +87,21 @@ const updateGuestPaymentIntent = async(req, res) => {
         // Guest has already made a payment intent by clicking checking out but then stopped checkout to log in for the very first time. Therefore, payment intent needs to be updated to also include the customer obj.
         
         const updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
-                amount: guestOrderAmount(req, res)
+                amount: guestOrderAmount(req, res),
+                shipping: {
+                    address: {
+                        line1: line1 ? line1: "",
+                        line2: line2 ? line2: "",
+                        city: city ? city: "",
+                        state: state ? state: "",
+                        postal_code: postalCode ? postalCode: "",
+                        country : 'US'
+                    },
+                    name: name ? name : ""
+                }
             })
 
-        console.log(93, "updated existing payment intent: ", updatedPaymentIntent)
+        console.log(104, "updated existing payment intent: ", updatedPaymentIntent)
 
         res.status(200).json({
             publicKey: process.env.STRIPE_PUBLIC,
@@ -101,7 +112,7 @@ const updateGuestPaymentIntent = async(req, res) => {
             idempotency: req.sessionID
         });
     } catch(error) {
-        console.log(101, "error: ", error)
+        console.log(115, "error: ", error)
         if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
             res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         } else if(error.type === 'StripeIdempotencyError') {
@@ -117,28 +128,52 @@ const updateLoggedInPaymentIntent = async(req, res) => {
         // Retrieve the payment intent ID from CachePaymentIntent document to update the payment intent
         const paymentIntentId = existingPaymentIntent.PaymentIntentId
 
-        console.log(117, "paymentIntentId from existing payment intent: ", paymentIntentId)
+        console.log(131, "paymentIntentId from existing payment intent: ", paymentIntentId)
 
         // Guest has already made a payment intent by clicking checking out but then stopped checkout to log in for the very first time. Therefore, payment intent needs to be updated to also include the customer obj.
         const {newCustomer, customerId} = await customer(req, res)
 
-        console.log(122, "customer obj's id: ", customerId)
-        console.log(123, "newCustomer: ", newCustomer)
+        console.log(136, "customer obj's id: ", customerId)
+        console.log(137, "newCustomer: ", newCustomer)
+
+        const {name, line1, line2, city, state, postalCode} = req.body.address
 
         let updatedPaymentIntent
 
         if(newCustomer) {
             updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
                 amount: await loggedInOrderAmount(req, res),
-                customer: customerId
+                customer: customerId,
+                shipping: {
+                    address: {
+                        line1: line1 ? line1: "",
+                        line2: line2 ? line2: "",
+                        city: city ? city: "",
+                        state: state ? state: "",
+                        postal_code: postalCode ? postalCode: "",
+                        country : 'US'
+                    },
+                    name: name ? name : ""
+                }
             })
         } else {
             updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
-                amount: await loggedInOrderAmount(req, res)
+                amount: await loggedInOrderAmount(req, res),
+                shipping: {
+                    address: {
+                        line1: line1 ? line1: "",
+                        line2: line2 ? line2: "",
+                        city: city ? city: "",
+                        state: state ? state: "",
+                        postal_code: postalCode ? postalCode: "",
+                        country : 'US'
+                    },
+                    name: name ? name : ""
+                }
             })
         }
 
-        console.log(138, "updated existing payment intent: ", updatedPaymentIntent)
+        console.log(176, "updated existing payment intent: ", updatedPaymentIntent)
 
         res.status(200).json({
             publicKey: process.env.STRIPE_PUBLIC,
@@ -148,7 +183,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
             customer: true
         });
     } catch(error) {
-        console.log(146, "error: ", error)
+        console.log(186, "error: ", error)
         if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
             res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         } else if(error.type === 'StripeIdempotencyError') {
@@ -161,16 +196,16 @@ const createLoggedInPaymentIntent = async(req, res) => {
     try {
         if(req.user.buyer) {
 
-            console.log(159, "user is logged in, create payment intent")
+            console.log(199, "user is logged in, create payment intent")
 
             // id of logged in customer's cart will be the idempotent key in payment intent creation
             const loggedInCart = await LoggedInCart.findOne({LoggedInBuyer: req.user._id})
-            console.log(163, "logged in cart: ", loggedInCart)
+            console.log(203, "logged in cart: ", loggedInCart)
             // Need to run the customer helper to obtain a Stripe customer obj ID which will be included to make a payment intent for logged in users (do not need to run customer helper for guest because we do not need to make a payment intent that includes customer param). Customer param is needed to save Stripe Payment Method obj ID. 
             const {newCustomer, customerId} = await customer(req, res)
 
-            console.log(167, "customer obj's id: ", customerId)
-            console.log(168, "newCustomer: ", newCustomer)
+            console.log(207, "customer obj's id: ", customerId)
+            console.log(208, "newCustomer: ", newCustomer)
 
             // Create a PaymentIntent with the order amount and currency params
             // For first-time purchasing customers, include also the customer's id 
@@ -185,7 +220,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
                 idempotencyKey: loggedInCart._id
             });
             
-            console.log(183, "creating payment intent for logged in user ", paymentIntent)
+            console.log(223, "creating payment intent for logged in user ", paymentIntent)
 
             // store the created payment intent's id & the idempotent key in CachePaymentIntent database
             const cache = await CachePaymentIntent.create({
@@ -194,7 +229,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
                 PaymentIntentId: paymentIntent.id
             })
 
-            console.log(192, "cache: ", cache)
+            console.log(232, "cache: ", cache)
 
             res.status(200).json({
                 publicKey: process.env.STRIPE_PUBLIC,
@@ -205,8 +240,8 @@ const createLoggedInPaymentIntent = async(req, res) => {
             });
         }
     } catch(error){
-        console.log(203, "error: ", error)
-        console.log(204, error.code)
+        console.log(243, "error: ", error)
+        console.log(244, error.code)
         // if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
         //     res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         // } else if(error.type === 'StripeIdempotencyError') {
@@ -222,11 +257,11 @@ const createLoggedInPaymentIntent = async(req, res) => {
 
 const createGuestPaymentIntent = async(req, res) => {
     try {
-        console.log(215, "user not logged in, create payment intent")
+        console.log(260, "user not logged in, create payment intent")
                 
         // const idempotencyKey = uuidv4() // Randomly create an idempotency key value, which is used to avoid creating a duplicate payment intent
         const idempotencyKey = req.sessionID
-        console.log(219, idempotencyKey)
+        console.log(264, idempotencyKey)
         // if user is not logged in, do not create a payment intent with customer property
         const paymentIntent = await stripe.paymentIntents.create({
             amount: guestOrderAmount(req, res),
@@ -238,7 +273,7 @@ const createGuestPaymentIntent = async(req, res) => {
             idempotencyKey: idempotencyKey
         });
 
-        console.log(228, "creating payment intent for guest user ", paymentIntent)
+        console.log(276, "creating payment intent for guest user ", paymentIntent)
 
         // Store the idempotency key in CachePaymentIntent database. When the client sends the idempotency key back, we will check our database to see if we already made a payment intent that is associated with the idempotency key value.
         const cache = await CachePaymentIntent.create({
@@ -246,7 +281,7 @@ const createGuestPaymentIntent = async(req, res) => {
             PaymentIntentId: paymentIntent.id
         })
 
-         console.log(236, "cache payment intent: ", cache)
+         console.log(284, "cache payment intent: ", cache)
 
         res.status(200).json({
             publicKey: process.env.STRIPE_PUBLIC,
@@ -257,8 +292,8 @@ const createGuestPaymentIntent = async(req, res) => {
             idempotency: idempotencyKey
         });
     } catch(error){
-        console.log(247, error)
-        console.log(248, error.code)
+        console.log(295, error)
+        console.log(296, error.code)
         if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
             res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         } else if(error.type === 'StripeIdempotencyError') {
@@ -272,11 +307,11 @@ const createOrUpdatePaymentIntent = async(req, res) => {
         // If payment intent has already been created, update the payment intent's amount parameter to ensure the amount is the most current.
         // If payment intent has not been created, create a new payment intent with the customer id if user is logged in
 
-        console.log(262, "idempotency key header value: ", req.headers['idempotency-key'])
+        console.log(310, "idempotency key header value: ", req.headers['idempotency-key'])
         const idempotency = req.headers['idempotency-key']
         const existingPaymentIntent = await CachePaymentIntent.findOne({Idempotency: idempotency})
 
-        console.log(266, "existingPaymentIntent: ", existingPaymentIntent)
+        console.log(314, "existingPaymentIntent: ", existingPaymentIntent)
 
         if (existingPaymentIntent) {
             if(req.headers.authorization) {
@@ -294,7 +329,7 @@ const createOrUpdatePaymentIntent = async(req, res) => {
             }
         }
     } catch(error) {
-        console.log(284, "error: ", error)
+        console.log(332, "error: ", error)
         res.status(400).json({error: error})
     }
 }

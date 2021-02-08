@@ -1,10 +1,10 @@
 const {BuyerShippingAddress}= require('../../model/buyer/shippingAddress')
 
 // A new shipping address is created if logged in user clicks 'Add new address' in Shipping Address component or 'Save address for future' is checked in checkout (but for checkout this function won't actually run until Confirm Card Payment is clicked)
-// ?lastUsed=false when running addShipping() from Shipping Address component, ?lastUsed=true when running addShipping() from checkout
+// ?lastUsed=false when running addShipping() from Shipping Address component, ?lastUsed=true when running addShipping() from checkout + first time saving the shipping
 // ?default=false if default is not checked. ?default=true if default is checked. 
 // Combinations from Shipping Address component: ?lastUsed=false&default=false, ?lastUsed=false&default=true
-// Combinations from checkout:?lastUsed=true&default=false, ?lastUsed=true&default=true
+// Possible combinations from checkout:?lastUsed=true&default=false, ?lastUsed=false&default=true
 const addShipping = async(req, res) => {
     try {
         if(req.user.buyer) {
