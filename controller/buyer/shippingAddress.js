@@ -103,6 +103,7 @@ const changeDefaultShipping = async(req, res) => {
     try {
         if(req.user.buyer) {
             // If default box is checked, then add default property
+            console.log(106, req.query.default)
             if(req.query.default === "true") {
 
                 // First, check if there is already a default shipping stored. If there is, then update that address document's DefaultAddress to false
@@ -129,6 +130,7 @@ const changeDefaultShipping = async(req, res) => {
             res.status(400).json({msg: "You are not authorized to update default shipping address"})
         }
     } catch(error) {
+        console.log(132, error)
         res.status(400).json({msg: error});
     }
 }
