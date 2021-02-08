@@ -135,8 +135,10 @@ const updateLoggedInPaymentIntent = async(req, res) => {
 
         console.log(136, "customer obj's id: ", customerId)
         console.log(137, "newCustomer: ", newCustomer)
-
-        const {name, line1, line2, city, state, postalCode} = req.body.address
+        let name, line1, line2, city, state, postalCode
+        if(req.body.address){
+            let {name, line1, line2, city, state, postalCode} = req.body.address
+        }
 
         let updatedPaymentIntent
 
