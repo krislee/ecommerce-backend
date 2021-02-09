@@ -85,9 +85,10 @@ const webhook = async (req, res) => {
                 console.log(85, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
                 console.log(86, "shipping in web hook", data.object.shipping)
                 if(data.object.metadata.saveShipping === "true") {
+                    const shippingAddress = data.object.shipping.address
                     const savedShipping = await BuyerShippingAddress.create({
                         Name: data.object.shipping.name,
-                        Address: `${data.object.shipping.line1}, ${data.object.shipping.line2}, ${data.object.shipping.city}, ${data.object.shipping.state}, ${data.object.shipping.postal_code}`,
+                        Address: `${shippingAddress.line1}, ${shippingAddress.line2}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.postal_code}`,
                         Buyer: loggedInUser._id,
                         LastUsed: true
                     })
