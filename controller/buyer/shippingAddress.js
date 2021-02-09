@@ -90,7 +90,7 @@ const updateShipping = async(req, res) => {
             const buyerAddress = await BuyerShippingAddress.findOneAndUpdate({Buyer:req.user._id, _id: req.params.id}, {Address: req.body.address, Name: req.body.name}, {new: true})
             console.log(91, buyerAddress)
             if(req.query.checkout === "true") {
-                res.status(400).json({address: buyerAddress})
+                res.status(200).json({address: buyerAddress})
             } else {
                 indexShipping(req, res)
             }
