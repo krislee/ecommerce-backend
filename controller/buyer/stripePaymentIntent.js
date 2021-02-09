@@ -161,14 +161,14 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                 amount: await loggedInOrderAmount(req, res),
                 shipping: {
                     address: {
-                        line1: line1 ? line1: "",
-                        line2: line2 ? line2: "",
-                        city: city ? city: "",
-                        state: state ? state: "",
-                        postal_code: postalCode ? postalCode: "",
+                        line1: address.line1 ? address.line1: "",
+                        line2: address.line2 ? address.line2: "",
+                        city: address.city ? address.city: "",
+                        state: address.state ? address.state: "",
+                        postal_code: address.postalCode ? address.postalCode: "",
                         country : 'US'
                     },
-                    name: name ? name : ""
+                    name: req.body.name ? req.body.name : ""
                 },
                 metadata: {saveShipping: req.body.saveShipping, lastUsedShipping: req.body.lastUsedShipping}
             })
