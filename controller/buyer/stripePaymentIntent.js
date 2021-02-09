@@ -29,7 +29,7 @@ const guestOrderAmount = (req, res) => {
     let totalCartPrice = 0
     console.log(30)
     const guestCart = req.session.cart
-    console.log(32, guestCart)
+    console.log(32, req.sessionID, req.session)
     console.log(33, "guest cart: ", guestCart)
     if(guestCart){
         for(let i=0; i<guestCart.length; i++) {
@@ -311,7 +311,7 @@ const createOrUpdatePaymentIntent = async(req, res) => {
     try {
         // If payment intent has already been created, update the payment intent's amount parameter to ensure the amount is the most current.
         // If payment intent has not been created, create a new payment intent with the customer id if user is logged in
-        console.log(req.headers['authorization'])
+        // console.log(req.headers['authorization'])
         console.log(312, "idempotency key header value: ", req.headers['idempotency-key'])
         const idempotency = req.headers['idempotency-key']
         const existingPaymentIntent = await CachePaymentIntent.findOne({Idempotency: idempotency})
