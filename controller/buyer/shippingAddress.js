@@ -9,6 +9,7 @@ const addShipping = async(req, res) => {
     try {
         if(req.user.buyer) {
             let newAddress
+            console.log(12, req.query.lastUsed, typeof req.query.lastUsed, req.query.default, typeof req.query.default, req.query.checkout, typeof req.query.checkout)
             // Check if client's default shipping address box is checked when creating the address
             if (req.query.default === 'true') { // default is checked
 
@@ -67,7 +68,7 @@ const addShipping = async(req, res) => {
                 }
             }
 
-            if (req.query.lastUsed === 'true'){
+            if (req.query.checkout === 'true'){
                 res.status(200).json({address: newAddress})
             } else {
                 indexShipping(req, res)
