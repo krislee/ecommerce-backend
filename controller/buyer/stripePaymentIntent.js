@@ -135,13 +135,9 @@ const updateLoggedInPaymentIntent = async(req, res) => {
 
         console.log(136, "customer obj's id: ", customerId)
         console.log(137, "newCustomer: ", newCustomer)
-        let name, line1, line2, city, state, postalCode
-        if(req.body.address){
-            let {name, line1, line2, city, state, postalCode} = req.body.address
-            console.log(141, name, line1, line2, city, state, postalCode)
-        }
-        console.log(143, name, line1, line2, city, state, postalCode)
+
         let updatedPaymentIntent
+        const address = req.body.address
 
         if(newCustomer) {
             updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
@@ -149,14 +145,14 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                 customer: customerId,
                 shipping: {
                     address: {
-                        line1: line1 ? line1: "",
-                        line2: line2 ? line2: "",
-                        city: city ? city: "",
-                        state: state ? state: "",
-                        postal_code: postalCode ? postalCode: "",
+                        line1: address.line1 ? address.line1: "",
+                        line2: address.line2 ? address.line2: "",
+                        city: address.city ? address.city: "",
+                        state: address.state ? address.state: "",
+                        postal_code: address.postalCode ? address.postalCode: "",
                         country : 'US'
                     },
-                    name: name ? name : ""
+                    name: req.body.name ? req.body.name : ""
                 },
                 metadata: {saveShipping: req.body.saveShipping, lastUsedShipping: req.body.lastUsedShipping}
             })
