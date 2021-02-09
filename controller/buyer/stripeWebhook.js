@@ -122,7 +122,7 @@ const webhook = async (req, res) => {
                     console.log(122, "before update electronic quantity: ", electronic)
 
                     electronic.Quantity -= cart.Items[i].Quantity
-                    electronic.save()
+                    // electronic.save()
                     console.log("updated quantity electronic: ", electronic)
                 }
 
