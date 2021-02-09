@@ -85,20 +85,23 @@ const updateGuestPaymentIntent = async(req, res) => {
         console.log(85, "paymentIntentId from existing payment intent: ", paymentIntentId)
 
         // Guest has already made a payment intent by clicking checking out but then stopped checkout to log in for the very first time. Therefore, payment intent needs to be updated to also include the customer obj.
-        
+        const address = req.body.address
+        console.log(89, address)
+        console.log(90, req.body.saveShipping)
         const updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
                 amount: guestOrderAmount(req, res),
                 shipping: {
                     address: {
-                        line1: line1 ? line1: "",
-                        line2: line2 ? line2: "",
-                        city: city ? city: "",
-                        state: state ? state: "",
-                        postal_code: postalCode ? postalCode: "",
+                        line1: address ? address.line1: "",
+                        line2: address ? address.line2: "",
+                        city: address ? address.city: "",
+                        state: address ? address.state: "",
+                        postal_code: address ? address.postalCode: "",
                         country : 'US'
                     },
-                    name: name ? name : ""
-                }
+                    name: address ? address.name : ""
+                },
+                metadata: {saveShipping: req.body.saveShipping},
             })
 
         console.log(104, "updated existing payment intent: ", updatedPaymentIntent)
@@ -139,7 +142,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
         let updatedPaymentIntent
         const address = req.body.address
         console.log(141, address)
-
+        
         if(newCustomer) {
             updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
                 amount: await loggedInOrderAmount(req, res),
