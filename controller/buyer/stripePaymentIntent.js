@@ -138,6 +138,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
 
         let updatedPaymentIntent
         const address = req.body.address
+        console.log(141, address)
 
         if(newCustomer) {
             updatedPaymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
@@ -145,11 +146,11 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                 customer: customerId,
                 shipping: {
                     address: {
-                        line1: address.line1 ? address.line1: "",
-                        line2: address.line2 ? address.line2: "",
-                        city: address.city ? address.city: "",
-                        state: address.state ? address.state: "",
-                        postal_code: address.postalCode ? address.postalCode: "",
+                        line1: address ? address.line1: "",
+                        line2: address ? address.line2: "",
+                        city: address ? address.city: "",
+                        state: address ? address.state: "",
+                        postal_code: address ? address.postalCode: "",
                         country : 'US'
                     },
                     name: req.body.name ? req.body.name : ""
@@ -161,11 +162,11 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                 amount: await loggedInOrderAmount(req, res),
                 shipping: {
                     address: {
-                        line1: address.line1 ? address.line1: "",
-                        line2: address.line2 ? address.line2: "",
-                        city: address.city ? address.city: "",
-                        state: address.state ? address.state: "",
-                        postal_code: address.postalCode ? address.postalCode: "",
+                        line1: address ? address.line1: "",
+                        line2: address ? address.line2: "",
+                        city: address ? address.city: "",
+                        state: address ? address.state: "",
+                        postal_code: address ? address.postalCode: "",
                         country : 'US'
                     },
                     name: req.body.name ? req.body.name : ""
