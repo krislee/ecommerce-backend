@@ -88,8 +88,12 @@ const updateShipping = async(req, res) => {
     try {
         if(req.user.buyer) {
             const buyerAddress = await BuyerShippingAddress.findOneAndUpdate({Buyer:req.user._id, _id: req.params.id}, {Address: req.body.address, Name: req.body.name}, {new: true})
-
-            indexShipping(req, res)
+            console.log(91, buyerAddress)
+            if(req.query.checkout === "true") {
+                res.status(400).json({address: buyerAddress})
+            } else {
+                indexShipping(req, res)
+            }
         } else {
             res.status(400).json({msg: "You are not authorized to update shipping address"})
         }
