@@ -224,7 +224,7 @@ const checkoutShipping = async(req, res) => {
                 const lastCreatedAddress = allAddresses[allAddresses.length-1]
                 res.status(200).json({address: lastCreatedAddress})
             } else {
-                res.status(200).json({address: null})
+                res.status(200).json({address: {address: null}})
             }   
         } else {
             res.status(400).json({msg: "You are not authorized to view buyer's last used address"})
