@@ -77,7 +77,6 @@ const webhook = async (req, res) => {
                 if(previousLastUsedAddress && (previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping)) {
                         previousLastUsedAddress.LastUsed = false
                         previousLastUsedAddress.save()
-                    }
                 }
 
                 console.log(82, "previous last used address: ", previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
