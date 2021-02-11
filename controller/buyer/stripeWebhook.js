@@ -95,7 +95,7 @@ const webhook = async (req, res) => {
                 } else {
                     // Add the lastUsed property to the address last used to checkout
                     const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
-                    console.log(97, "new last used address: ", lastUsedAddress)
+                    console.log(97, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping
                 }
                 
 
@@ -114,7 +114,7 @@ const webhook = async (req, res) => {
                 for(let i=0; i < cart.Items.length; i++){
 
                     order.Items.push(cart.Items[i])
-                    order.save()
+                    
                     console.log(117, cart.Items[i].ItemId)
                     console.log(118, order)
                     // Update inventory quantity of the items after items sold
@@ -123,10 +123,11 @@ const webhook = async (req, res) => {
                     console.log(122, "before update electronic quantity: ", electronic)
 
                     electronic.Quantity -= cart.Items[i].Quantity
-                    // electronic.save()
+                    
                     console.log("updated quantity electronic: ", electronic)
                 }
-
+                order.save()
+                electronic.save()
                 console.log(129, "added items to logged in order: ", order)
 
                 // Since there is a new cart for each order, delete cart after fulfilling order.
