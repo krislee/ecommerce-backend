@@ -112,7 +112,7 @@ const webhook = async (req, res) => {
                 const cart = await Cart.findOne({LoggedInBuyer: loggedInUser._id})
                 
                 console.log(111, "find cart: ", cart)
-
+                let electronic
                 for(let i=0; i < cart.Items.length; i++){
 
                     order.Items.push(cart.Items[i])
@@ -120,7 +120,7 @@ const webhook = async (req, res) => {
                     console.log(117, cart.Items[i].ItemId)
                     console.log(118, order)
                     // Update inventory quantity of the items after items sold
-                    const electronic = await Electronic.findById(cart.Items[i].ItemId)
+                    electronic = await Electronic.findById(cart.Items[i].ItemId)
                 
                     console.log(122, "before update electronic quantity: ", electronic)
 
