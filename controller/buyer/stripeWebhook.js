@@ -72,14 +72,16 @@ const webhook = async (req, res) => {
                 // Need to get the logged in user's document ID for updating last used shipping address and creating an order. To find the logged in user, use the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
                 const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
 
-                // Check if there is already a last used shipping address, and remove it
+                // Check if there is already a last used shipping address that is different from the one that just used, and remove it
                 const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
                 if(previousLastUsedAddress) {
-                    previousLastUsedAddress.LastUsed = false
-                    previousLastUsedAddress.save()
+                    if(previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping) {
+                        previousLastUsedAddress.LastUsed = false
+                        previousLastUsedAddress.save()
+                    }
                 }
 
-                console.log(82, "previous last used address: ", previousLastUsedAddress)
+                console.log(82, "previous last used address: ", previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
 
                 // Create new shipping address if logged in user checked Save Shipping for Future
                 console.log(85, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
@@ -93,9 +95,11 @@ const webhook = async (req, res) => {
                         LastUsed: true
                     })
                 } else {
-                    // Add the lastUsed property to the address last used to checkout
-                    const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
-                    console.log(97, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping
+                    if(previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping) {
+                        // Add the lastUsed property to the address last used to checkout if the address just used is not the same as the previous order's shipping address
+                        const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
+                        console.log(97, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
+                    }
                 }
                 
 
