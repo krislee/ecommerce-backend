@@ -94,11 +94,11 @@ const webhook = async (req, res) => {
                         LastUsed: true
                     })
                 } else {
-                    if(previousLastUsedAddress && previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping) {
-                        // Add the lastUsed property to the address last used to checkout if the address just used is not the same as the previous order's shipping address
-                        const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
-                        console.log(97, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
-                    }
+                    
+                    // Add the lastUsed property to the address last used to checkout if the address just used is not the same as the previous order's shipping address
+                    const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
+                    console.log(97, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
+                    
                 }
                 
 
