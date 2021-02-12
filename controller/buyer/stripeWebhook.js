@@ -139,6 +139,7 @@ const webhook = async (req, res) => {
 
                 // Add the shipping address and payment method used to confirm payment at checkout to the order document, after updating shipping address to have LastUsed: true property/creating an address with LastUsed: true property, and updating customer to have a last_used_payment metadata property.
                 const orderLastUsedShipping = BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
+                const shipping = data.object.shipping.address
                 const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({id: order._id}, {
                     Shipping: {
                         Name: data.object.shipping.name,
