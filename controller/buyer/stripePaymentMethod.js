@@ -293,7 +293,8 @@ const createPaymentMethod = async(req, res) => {
 
             // Aside from logged in user checking 'Save card for future purchases' at checkout or 'Add new card' at Payment Method component, which prompts to run this function, if user also checks Save as default Payment Method component (there would be no option to save as default at checkout), add it as default.
             console.log(295, req.body.default, typeof req.body.default)
-            if(req.body.default === "true") {
+            if(req.body.default) {
+                console.log(297)
                 const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
                     invoice_settings: {
                         default_payment_method: req.body.paymentMethodID
