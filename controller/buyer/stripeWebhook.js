@@ -193,7 +193,7 @@ const webhook = async (req, res) => {
                     // Get the shipping address from Payment Intent
                     // Get the payment method details using the payment method ID
                     const shipping = data.object.shipping.address
-                    const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({id: order._id}, {
+                    const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({_id: order._id}, {
                         Shipping: {
                             Name: data.object.shipping.name,
                             Address: `${shipping.line1}, ${shipping.line2}, ${shipping.city}, ${shipping.state}, ${shipping.postal_code}`
