@@ -95,8 +95,8 @@ const guestDeleteItem = (req, res) => {
 
         console.log(96, "guest cart after deleting item: ", req.session.cart)
 
-        if(req.session.cart.length === 0) delete req.session.cart
-        console.log(99, req.session.cart)
+        // if(req.session.cart.length === 0) delete req.session.cart
+        // console.log(99, req.session.cart)
         res.status(200).json(req.session.cart)
     }
     catch(error) {
