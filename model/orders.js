@@ -14,6 +14,7 @@ const orderSchema = new Schema({
         Address: String
     },
     PaymentMethod: String,
+    TotalPrice: Number,
     OrderNumber: String
 })
 

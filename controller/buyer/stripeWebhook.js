@@ -151,7 +151,8 @@ const webhook = async (req, res) => {
                         Name: data.object.shipping.name,
                         Address: `${shippingAddress.line1}, ${shippingAddress.line2}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.postal_code}`
                     },
-                    PaymentMethod: paymentMethodID
+                    PaymentMethod: paymentMethodID,
+                    TotalPrice: data.object.amount
                 }, {new: true})
 
                 console.log(157, updateOrderWithShippingAndPayment)
@@ -198,7 +199,8 @@ const webhook = async (req, res) => {
                             Name: data.object.shipping.name,
                             Address: `${shipping.line1}, ${shipping.line2}, ${shipping.city}, ${shipping.state}, ${shipping.postal_code}`
                         },
-                        PaymentMethod: data.object.payment_method
+                        PaymentMethod: data.object.payment_method,
+                        TotalPrice: data.object.amount
                     }, {new: true})
                     
                     console.log(204, updateOrderWithShippingAndPayment)
