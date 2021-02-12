@@ -138,9 +138,13 @@ const webhook = async (req, res) => {
                 console.log(138, "logged in cart deleted: ", deletedCart)
 
                 // Add the shipping address and payment method used to confirm payment at checkout to the order document, after updating shipping address to have LastUsed: true property/creating an address with LastUsed: true property, and updating customer to have a last_used_payment metadata property.
-                const orderLastUsedShipping = BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
+                const orderLastUsedShipping = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
                 const shipping = data.object.shipping.address
-                const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({id: order._id}, {
+
+                console.log(144, "find saved last used savedmshipping: ", orderLastUsedShipping)
+                console.log(145, "order id: ", order._id, order)
+
+                const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({_id: order._id}, {
                     Shipping: {
                         Name: data.object.shipping.name,
                         Address: `${shipping.line1}, ${shipping.line2}, ${shipping.city}, ${shipping.state}, ${shipping.postal_code}`
@@ -149,7 +153,7 @@ const webhook = async (req, res) => {
                     PaymentMethod: paymentMethodID
                 }, {new: true})
 
-                console.log(151, updateOrderWithShippingAndPayment)
+                console.log(156, updateOrderWithShippingAndPayment)
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
