@@ -134,7 +134,7 @@ const guestIndexCart = (req, res) => {
                     cart: req.session.cart,
                 })
             } else {
-                res.status(200).json({message: 'No items in cart'})
+                res.status(200).json({cart: 'No items in cart'})
             }
     }
     catch(error) {
