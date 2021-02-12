@@ -13,7 +13,6 @@ const orderSchema = new Schema({
         Name: String,
         Address: String
     },
-    LoggedInShipping: [{type: Schema.Types.ObjectId, ref: "BuyerShippingAddress"}],
     PaymentMethod: String,
     OrderNumber: String
 })
