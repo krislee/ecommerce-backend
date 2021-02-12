@@ -74,9 +74,10 @@ const guestUpdateItemQuantity = async(req, res) => {
         console.log(74,  "cart item we want to update", cartItem)
 
         cartItem.Quantity = req.body.Quantity
+        console.log(77, cartItem)
         cartItem.TotalPrice = (item.Price * req.body.Quantity)
-
-        console.log(79, "after updating guest cart", cartItem)
+        console.log(79, cartItem)
+        console.log(80, "after updating guest cart", cartItem)
         res.status(200).json(req.session.cart)
         
     }
