@@ -182,11 +182,16 @@ const loggedInUpdateItemQuantity = async (req, res) => {
             console.log(182, cartItem)
             cartItem.Quantity = req.body.Quantity
             cartItem.TotalPrice = (item.Price * req.body.Quantity)
-            
-    
             await cart.save()
             console.log(188, cart, "updated cart after save!")
-            res.status(200).json(cart)
+
+            let totalCartPrice = 0
+            if(cart) {
+                for (let i=0; i < cart.Items.length; i++) {
+                    totalCartPrice += cart.Items[i].TotalPrice
+                }
+            }
+            res.status(200).json({cart: cart, totalCartPrice: totalCartPrice})
         }
     }
     catch (error) {
@@ -199,13 +204,20 @@ const loggedInDeleteItem = async (req, res) => {
     try {
         if(req.user){
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-            console.log(cart, "find logged in cart for delete")
+            console.log(207, cart, "find logged in cart for delete")
             const cartItemIndex = await cart.Items.findIndex(i => {return i.ItemId == req.params.id})
-            console.log(cartItemIndex, "find delete index login")
+            console.log(209, cartItemIndex, "find delete index login")
             cart.Items.splice(cartItemIndex, 1)
             await cart.save()
-            console.log(cart, "logged in cart after deleting")
-            res.status(200).json(cart)
+            console.log(212, cart, "logged in cart after deleting")
+
+            let totalCartPrice = 0
+            if(cart) {
+                for (let i=0; i < cart.Items.length; i++) {
+                    totalCartPrice += cart.Items[i].TotalPrice
+                }
+            }
+            res.status(200).json({cart: cart, totalCartPrice: totalCartPrice})
         } 
     } catch(error) {
         res.status(400).send(error)
