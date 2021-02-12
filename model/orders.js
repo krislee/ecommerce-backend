@@ -9,7 +9,12 @@ const orderSchema = new Schema({
         Quantity: Number,
         TotalPrice: Number
     }],
-    LoggedInBuyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}],
+    Shipping: {
+        Name: String,
+        Address: String
+    },
+    LoggedInShipping: [{type: Schema.Types.ObjectId, ref: "BuyerShippingAddress"}],
+    PaymentMethod: String,
     OrderNumber: String
 })
 

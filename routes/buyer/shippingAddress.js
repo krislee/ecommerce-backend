@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const {addShipping, updateShipping, updateLastUsedShipping, changeDefaultShipping, showShipping, indexShipping, savedShipping, checkoutShipping, deleteShipping} = require('../../controller/buyer/shippingAddress')
+const {addShipping, updateShipping, updateLastUsedShipping, changeDefaultShipping, showShipping, indexShipping, savedShipping, checkoutShipping, deleteShipping, confirmPaymentShipping} = require('../../controller/buyer/shippingAddress')
 
 passportAuthenticate = passport.authenticate('jwt', {session: false})
 
@@ -31,5 +31,8 @@ router.put('/default/address/:id', passportAuthenticate, changeDefaultShipping) 
 
 // Delete shipping from Shipping Address component
 router.delete('/address/:id', passportAuthenticate, deleteShipping)
+
+// Get the shipping address used for confirming checkout
+router.get('/last-used/address', passportAuthenticate, confirmPaymentShipping)
 
 module.exports = router

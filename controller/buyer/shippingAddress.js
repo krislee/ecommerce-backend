@@ -260,4 +260,4 @@ const confirmPaymentShipping = async(req, res) => {
     res.status(200).json({address: shipping})
 }
 
-module.exports = {addShipping, updateShipping, updateLastUsedShipping, changeDefaultShipping, indexShipping, showShipping, savedShipping, checkoutShipping, deleteShipping}
+module.exports = {addShipping, updateShipping, updateLastUsedShipping, changeDefaultShipping, indexShipping, showShipping, savedShipping, checkoutShipping, deleteShipping, confirmPaymentShipping}

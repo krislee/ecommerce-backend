@@ -96,7 +96,7 @@ const webhook = async (req, res) => {
                     
                     // Add the lastUsed property to the address last used to checkout if the address just used is not the same as the previous order's shipping address
                     const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
-                    console.log(97, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
+                    console.log(99, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
                     
                 }
                 
@@ -104,25 +104,25 @@ const webhook = async (req, res) => {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 const order = await Order.create({
                     LoggedInBuyer: loggedInUser._id,
-                    OrderNumber: uuidv4() // generate random order ID number using uuid 
+                    OrderNumber: uuidv4(), // generate random order ID number using uuid
                 })
                 
-                console.log(107, "create logged in order: ", order)
+                console.log(110, "create logged in order: ", order)
 
                 const cart = await Cart.findOne({LoggedInBuyer: loggedInUser._id})
                 
-                console.log(111, "find cart: ", cart)
+                console.log(114, "find cart: ", cart)
                 let electronic
                 for(let i=0; i < cart.Items.length; i++){
 
                     order.Items.push(cart.Items[i])
                     
-                    console.log(117, cart.Items[i].ItemId)
-                    console.log(118, order)
+                    console.log(120, cart.Items[i].ItemId)
+                    console.log(121, order)
                     // Update inventory quantity of the items after items sold
                     electronic = await Electronic.findById(cart.Items[i].ItemId)
                 
-                    console.log(122, "before update electronic quantity: ", electronic)
+                    console.log(125, "before update electronic quantity: ", electronic)
 
                     electronic.Quantity -= cart.Items[i].Quantity
                     
@@ -130,12 +130,25 @@ const webhook = async (req, res) => {
                 }
                 order.save()
                 electronic.save()
-                console.log(129, "added items to logged in order: ", order)
+                console.log(133, "added items to logged in order: ", order)
 
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
 
-                console.log(134, "logged in cart deleted: ", deletedCart)
+                console.log(138, "logged in cart deleted: ", deletedCart)
+
+                // Add the shipping address and payment method used to confirm payment at checkout to the order document, after updating shipping address to have LastUsed: true property/creating an address with LastUsed: true property, and updating customer to have a last_used_payment metadata property.
+                const orderLastUsedShipping = BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
+                const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({id: order._id}, {
+                    Shipping: {
+                        Name: data.object.shipping.name,
+                        Address: `${shipping.line1}, ${shipping.line2}, ${shipping.city}, ${shipping.state}, ${shipping.postal_code}`
+                    },
+                    LoggedInShipping: orderLastUsedShipping ? orderLastUsedShipping._id : undefined,
+                    PaymentMethod: paymentMethodID
+                }, {new: true})
+
+                console.log(151, updateOrderWithShippingAndPayment)
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
@@ -161,13 +174,31 @@ const webhook = async (req, res) => {
                         electronic.save()
                         console.log(158, "updated quantity in electronic: ", electronic)
                     } 
+
+                    console.log(150, updateOrderWithShippingAndPayment)
+
                     // Since there is a new cart for each order, delete guest's session after fulfilling order.
                     await req.sessionStore.destroy(data.object.metadata.sessionID, async function() {
                         const deletedSession = await req.sessionStore.get(data.object.metadata.sessionID)
                         console.log(deletedSession)
                     })
+
+                    console.log(189, "added items in guest order: ", order)
+
+                    // Add the shipping address and payment method used to confirm payment at checkout to the order document.
+                    // Get the shipping address from Payment Intent
+                    // Get the payment method details using the payment method ID
+                    const shipping = data.object.shipping.address
+                    const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({id: order._id}, {
+                        Shipping: {
+                            Name: data.object.shipping.name,
+                            Address: `${shipping.line1}, ${shipping.line2}, ${shipping.city}, ${shipping.state}, ${shipping.postal_code}`
+                        },
+                        PaymentMethod: paymentMethodID
+                    }, {new: true})
                     
-                    console.log(166, "added items in guest order: ", order)
+                    console.log(updateOrderWithShippingAndPayment)
+                    
                 } catch(error) {
                     console.log(168)
                     console.log(error)
