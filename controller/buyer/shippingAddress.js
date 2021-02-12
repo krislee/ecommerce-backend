@@ -21,51 +21,51 @@ const addShipping = async(req, res) => {
                     previousDefaultAddress.save()
                 }
 
-                if(req.query.lastUsed === 'true') {
-                    // Check if there is a previous last used shipping addresses. If there is a last used shipping address, then update it to false.
-                    const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: req.user._id})
+                // if(req.query.lastUsed === 'true') {
+                //     // Check if there is a previous last used shipping addresses. If there is a last used shipping address, then update it to false.
+                //     const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: req.user._id})
 
-                    if(previousLastUsedAddress){
-                        previousLastUsedAddress.LastUsed = false
-                        previousLastUsedAddress.save()
-                    }
+                //     if(previousLastUsedAddress){
+                //         previousLastUsedAddress.LastUsed = false
+                //         previousLastUsedAddress.save()
+                //     }
 
-                    newAddress = await BuyerShippingAddress.create({
-                        Address: req.body.address,
-                        DefaultAddress: true,
-                        Buyer: req.user._id,
-                        LastUsed: true,
-                        Name: req.body.name
-                    })
-                } else {
+                //     newAddress = await BuyerShippingAddress.create({
+                //         Address: req.body.address,
+                //         DefaultAddress: true,
+                //         Buyer: req.user._id,
+                //         LastUsed: true,
+                //         Name: req.body.name
+                //     })
+                // } else {
                     newAddress = await BuyerShippingAddress.create({
                         Address: req.body.address,
                         DefaultAddress: true,
                         Buyer: req.user._id,
                         Name: req.body.name,
                     })
-                }
+                // }
             } else { // default is not checked
-                if(req.query.lastUsed === 'true') {  // If the address is created during checkout, then also include the LastUsed property.
-                    // Check if there is a previous last used shipping addresses. If there is a last used shipping address, then update it to false.
-                    const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: req.user._id})
+                // if(req.query.lastUsed === 'true') {  // If the address is created during checkout, then also include the LastUsed property.
+                //     // Check if there is a previous last used shipping addresses. If there is a last used shipping address, then update it to false.
+                //     const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: req.user._id})
 
-                    previousLastUsedAddress.LastUsed = false
-                    previousLastUsedAddress.save()
+                //     previousLastUsedAddress.LastUsed = false
+                //     previousLastUsedAddress.save()
 
-                    newAddress = await BuyerShippingAddress.create({
-                        Address: req.body.address,
-                        Buyer: req.user._id, 
-                        LastUsed: true,
-                        Name: req.body.name,
-                    })
-                } else {
+                //     newAddress = await BuyerShippingAddress.create({
+                //         Address: req.body.address,
+                //         Buyer: req.user._id, 
+                //         LastUsed: true,
+                //         Name: req.body.name,
+                //     })
+                // } else {
                     newAddress = await BuyerShippingAddress.create({
                         Address: req.body.address,
                         Buyer: req.user._id,
                         Name: req.body.name,
                     })
-                }
+                // }
             }
 
             if (req.query.checkout === 'true'){
