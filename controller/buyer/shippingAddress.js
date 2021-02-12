@@ -254,4 +254,10 @@ const deleteShipping = async(req, res) => {
     }
 }
 
+// Get the address used during checkout
+const confirmPaymentShipping = async(req, res) => {
+    const shipping = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: req.users._id})
+    res.status(200).json({address: shipping})
+}
+
 module.exports = {addShipping, updateShipping, updateLastUsedShipping, changeDefaultShipping, indexShipping, showShipping, savedShipping, checkoutShipping, deleteShipping}
