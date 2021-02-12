@@ -197,7 +197,7 @@ const webhook = async (req, res) => {
                         PaymentMethod: paymentMethodID
                     }, {new: true})
                     
-                    console.log(updateOrderWithShippingAndPayment)
+                    console.log(200, updateOrderWithShippingAndPayment)
                     
                 } catch(error) {
                     console.log(168)
