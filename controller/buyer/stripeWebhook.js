@@ -151,23 +151,22 @@ const webhook = async (req, res) => {
                         Name: data.object.shipping.name,
                         Address: `${shippingAddress.line1}, ${shippingAddress.line2}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.postal_code}`
                     },
-                    LoggedInShipping: orderLastUsedShipping ? orderLastUsedShipping : undefined,
                     PaymentMethod: paymentMethodID
                 }, {new: true})
 
-                console.log(156, updateOrderWithShippingAndPayment)
+                console.log(157, updateOrderWithShippingAndPayment)
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
                     const order = await Order.create({OrderNumber: uuidv4()})
 
-                    console.log(163, "create order: ", order)
+                    console.log(164, "create order: ", order)
             
                     const session = await req.sessionStore.get(data.object.metadata.sessionID)
-                    console.log(166, session)
+                    console.log(167, session)
 
-                    console.log(168, req.session)
+                    console.log(169, req.session)
                     for(let i=0; i < session.cart.length; i++) {
                         console.log(170, session.cart[i].ItemId)
                         order.Items.push(session.cart[i])
@@ -177,12 +176,10 @@ const webhook = async (req, res) => {
                         const electronic = await Electronic.findById(session.cart[i].ItemId)
                         console.log(176, electronic)
                         electronic.Quantity -= session.cart[i].Quantity
-                        console.log(178, electronic.Quantity)
+                        console.log(179, electronic.Quantity)
                         electronic.save()
-                        console.log(180, "updated quantity in electronic: ", electronic)
+                        console.log(181, "updated quantity in electronic: ", electronic)
                     } 
-
-                    console.log(183, updateOrderWithShippingAndPayment)
 
                     // Since there is a new cart for each order, delete guest's session after fulfilling order.
                     await req.sessionStore.destroy(data.object.metadata.sessionID, async function() {
@@ -190,7 +187,7 @@ const webhook = async (req, res) => {
                         console.log(deletedSession)
                     })
 
-                    console.log(191, "added items in guest order: ", order)
+                    console.log(190, "added items in guest order: ", order)
 
                     // Add the shipping address and payment method used to confirm payment at checkout to the order document.
                     // Get the shipping address from Payment Intent
@@ -204,10 +201,10 @@ const webhook = async (req, res) => {
                         PaymentMethod: paymentMethodID
                     }, {new: true})
                     
-                    console.log(205, updateOrderWithShippingAndPayment)
+                    console.log(204, updateOrderWithShippingAndPayment)
                     
                 } catch(error) {
-                    console.log(208)
+                    console.log(207)
                     console.log(error)
                 }
                 
