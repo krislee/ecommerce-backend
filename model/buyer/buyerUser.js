@@ -56,9 +56,6 @@ buyerUserSchema.pre('deleteOne', { document: true, query: true}, async function(
         // Delete cart document (if there is one) that referenced to the removed buyer
         await this.model('cart').deleteOne({LoggedInBuyer: this._id})
 
-        // Deleted all orders documents that referenced to the removed buyer
-        await this.model('loggedInOrder').deleteMany({LoggedInBuyer: this._id})
-
         // Continue running the deleteOne function in the delete buyer profile route
         next()
     }

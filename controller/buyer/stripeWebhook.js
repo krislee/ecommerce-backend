@@ -84,12 +84,11 @@ const webhook = async (req, res) => {
                 // Create new shipping address if logged in user checked Save Shipping for Future
                 console.log(85, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
                 console.log(86, "shipping in web hook", data.object.shipping)
-                let lastUsedAddress
-                let savedShipping
+               
                 const shippingAddress = data.object.shipping.address
                 if(data.object.metadata.saveShipping === "true") {
                     // const shippingAddress = data.object.shipping.address
-                    savedShipping = await BuyerShippingAddress.create({
+                    const savedShipping = await BuyerShippingAddress.create({
                         Name: data.object.shipping.name,
                         Address: `${shippingAddress.line1}, ${shippingAddress.line2}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.postal_code}`,
                         Buyer: loggedInUser._id,
@@ -98,7 +97,7 @@ const webhook = async (req, res) => {
                 } else {
                     
                     // Add the lastUsed property to the address last used to checkout if the address just used is not the same as the previous order's shipping address
-                    lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
+                    const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
                     console.log(99, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
                     
                 }
@@ -152,7 +151,7 @@ const webhook = async (req, res) => {
                         Name: data.object.shipping.name,
                         Address: `${shippingAddress.line1}, ${shippingAddress.line2}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.postal_code}`
                     },
-                    LoggedInShipping: lastUsedAddress ? lastUsedAddress._id : savedShipping ? savedShipping : undefined,
+                    LoggedInShipping: orderLastUsedShipping ? orderLastUsedShipping : undefined,
                     PaymentMethod: paymentMethodID
                 }, {new: true})
 
