@@ -25,7 +25,7 @@ const webhook = async (req, res) => {
                 process.env.STRIPE_WEBHOOK_SECRET
             );
 
-            console.log("event: ", event)
+            // console.log("event: ", event)
 
             data = event.data;
             eventType = event.type;
