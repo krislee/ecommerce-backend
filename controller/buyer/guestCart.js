@@ -16,11 +16,13 @@ const guestAddItem = async(req, res, next) => {
             
             // if item exists in the cart, update quantity and total price
             if (cartItem) { 
-                console.log(19, "cart item quantity: ", cartItem.Quantity, "req.body.quantity: ", req.body.Quantity)
+                console.log(19, "cart item quantity: ", cartItem.Quantity,  typeof cartItem.Quantity, "req.body.quantity: ", req.body.Quantity, typeof req.body.Quantity)
 
                 // cartItem.Quantity += req.body.Quantity
                 cartItem.Quantity = Number(cartItem.Quantity)
+                console.log(23, "cart item quantity: ", cartItem.Quantity,  typeof cartItem.Quantity, "req.body.quantity: ", req.body.Quantity)
                 cartItem.Quantity += req.body.Quantity
+                console.log(25, "cart item quantity: ", cartItem.Quantity,  typeof cartItem.Quantity, "req.body.quantity: ", req.body.Quantity)
                 cartItem.TotalPrice = cartItem.Quantity * item.Price
             } else { // if item does not exists, then add the item to the cart
                 req.session.cart.push({
