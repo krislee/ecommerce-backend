@@ -5,7 +5,8 @@ const Cart = require('../../model/buyer/cart')
 const Order = require('../../model/order')
 const {BuyerUser} = require('../../model/buyer/buyerUser')
 const {Electronic} = require('../../model/seller/electronic')
-const {BuyerShippingAddress} = require('../../model/buyer/shippingAddress')
+const {BuyerShippingAddress} = require('../../model/buyer/shippingAddress');
+const { isValidObjectId } = require('mongoose');
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
 
@@ -214,13 +215,6 @@ const webhook = async (req, res) => {
                 
             }
 
-            //////////////////////////////////
-            // Delete the saved idempotency associated with the payment intent in CachePaymentIntent for the guest(?) since the payment intent is successful???
-            // console.log(134, "before clearing cookies: ", req.cookies)
-            // if(req.cookies){
-            //     res.clearCookie('idempotency')
-            // }
-            // console.log(138, "after clearing cookies: ", req.cookies)
         } catch(error) {
             console.log(183, error)
             // res.status(400).json({message: error})
