@@ -5,6 +5,7 @@ const LoggedInCart = require('../../model/buyer/cart')
 const {BuyerUser}= require('../../model/buyer/buyerUser')
 const {CachePaymentIntent} = require('../../model/buyer/cachePaymentIntent')
 const {checkoutPaymentMethod} = require('./stripePaymentMethod')
+const Order = require('../../model/order')
 
 // Helper function calculates cart total price
 const loggedInOrderAmount = async (req, res) => {
