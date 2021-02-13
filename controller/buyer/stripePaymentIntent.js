@@ -1,10 +1,10 @@
 require("dotenv").config()
-const { v4: uuidv4 } = require('uuid');
+// const { v4: uuidv4 } = require('uuid');
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
 const LoggedInCart = require('../../model/buyer/cart')
 const {BuyerUser}= require('../../model/buyer/buyerUser')
 const {CachePaymentIntent} = require('../../model/buyer/cachePaymentIntent')
-const {checkoutPaymentMethod} = require('./stripePaymentMethod')
+// const {checkoutPaymentMethod} = require('./stripePaymentMethod')
 const Order = require('../../model/order')
 
 // Helper function calculates cart total price

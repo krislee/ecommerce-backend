@@ -1,6 +1,6 @@
 require('dotenv').config()
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
-const { v4: uuidv4 } = require('uuid');
+// const { v4: uuidv4 } = require('uuid');
 const Cart = require('../../model/buyer/cart')
 const Order = require('../../model/order')
 const {BuyerUser} = require('../../model/buyer/buyerUser')
@@ -78,16 +78,19 @@ const webhook = async (req, res) => {
 
                 // Check if there is already a last used shipping address that is different from the one that just used, and remove it
                 const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
-                console.log(81, previousLastUsedAddress._id, previousLastUsedAddress)
-                console.log(82, "previous last used address: ", typeof previousLastUsedAddress._id, previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
+                console.log(81, previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
+                if(previousLastUsedAddress) {
+                    console.log(83, previousLastUsedAddress._id, typeof previousLastUsedAddress._id)
+                }
+               
                 if(previousLastUsedAddress && (previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping)) {
                         previousLastUsedAddress.LastUsed = false
                         previousLastUsedAddress.save()
-                        console.log(86, "make false to previous address: ", previousLastUsedAddress)
+                        console.log(89, "make false to previous address: ", previousLastUsedAddress)
                 }
 
                 // Create new shipping address if logged in user checked Save Shipping for Future
-                console.log(90, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
+                console.log(94, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
                 // console.log(88, "shipping in web hook", data.object.shipping)
                
                 const shippingAddress = data.object.shipping.address

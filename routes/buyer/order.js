@@ -20,7 +20,7 @@ router.get('/order/payment-intent/:id', async(req, res) => {
     const paymentMethod = await stripe.paymentMethods.retrieve(succeededPaymentIntent.payment_method)
     console.log(20, paymentMethod)
     res.status(200).json({
-        orderNumber: paymentIntent.metadata.order_number,
+        orderNumber: succeededPaymentIntent.metadata.order_number,
         cardBrand: paymentMethod.card.brand,
         billingDetails: {
             name: paymentMethod.billingDetails.name,
