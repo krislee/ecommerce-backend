@@ -123,6 +123,7 @@ const updatePaymentMethod = async(req, res) => {
             console.log(123, "before updating, a list of payment method: ", paymentMethods)
 
             const {billingDetails, expMonth, expYear, name, recollectCVV} = req.body
+            console.log(126, billingDetails)
             // console.log(126, billingDetails.line1)
             // console.log(127, billingDetails.line2)
             const updatedPaymentMethod = await stripe.paymentMethods.update(req.params.id, {
