@@ -15,7 +15,7 @@ const orderSchema = new Schema({
     },
     PaymentMethod: String,
     TotalPrice: Number,
-    CartID: String, 
+    // CartID: String, 
     OrderNumber: String,
     LoggedInBuyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}]
 })

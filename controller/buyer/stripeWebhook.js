@@ -48,7 +48,7 @@ const webhook = async (req, res) => {
         
         try {
             // The payment was complete
-            console.log("💰 Payment succeeded with payment method " + data.object.payment_method);
+            console.log("💰💰💰 Payment succeeded with payment method " + data.object.payment_method);
 
             // If there is a Stripe customer ID, then it indicates user is logged in since we create a Stripe customer (just once) when creating a payment intent for logged in users.
             if(data.object.customer) {  
@@ -58,7 +58,7 @@ const webhook = async (req, res) => {
                 const updatedCustomer = await stripe.customers.update(data.object.customer, {
                     metadata: {last_used_payment: paymentMethodID}
                 })
-                console.log(59, "updated customer after successful payment: ", updatedCustomer)
+                console.log(61, "updated customer after successful payment: ", updatedCustomer)
 
                 // Check if the payment method object that was just used to pay had to recollect CVV because user updated the payment method in payment method component. If CVV was recollected, then change it back to false. Since the updated payment method succeeded in making the payment, we no longer need to recollect the CVV.
                 const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodID)
@@ -66,7 +66,7 @@ const webhook = async (req, res) => {
                     const updatedPaymentMethod = await stripe.paymentMethods.update(paymentMethodID, {
                         metadata: {recollect_cvv: false}
                     })
-                    console.log(67, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
+                    console.log(69, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
 
                 }
                 
@@ -81,11 +81,11 @@ const webhook = async (req, res) => {
                         previousLastUsedAddress.save()
                 }
 
-                console.log(82, "previous last used address: ", previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
+                console.log(84, "previous last used address: ", previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
 
                 // Create new shipping address if logged in user checked Save Shipping for Future
-                console.log(85, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
-                console.log(86, "shipping in web hook", data.object.shipping)
+                console.log(87, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
+                console.log(88, "shipping in web hook", data.object.shipping)
                
                 const shippingAddress = data.object.shipping.address
                 if(data.object.metadata.saveShipping === "true") {
@@ -100,33 +100,22 @@ const webhook = async (req, res) => {
                     
                     // Add the lastUsed property to the address last used to checkout if the address just used is not the same as the previous order's shipping address
                     const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
-                    console.log(101, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
+                    console.log(103, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
                     
                 }
-                
 
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
-                const order = await Order.create({
-                    LoggedInBuyer: loggedInUser._id,
-                    OrderNumber: uuidv4(), // generate random order ID number using uuid
-                })
-                
-                // console.log(110, "create logged in order: ", order)
-
                 const cart = await Cart.findOne({LoggedInBuyer: loggedInUser._id})
-                
-                // console.log(114, "find cart: ", cart)
+                const order = await Order.findOne({OrderNumber: cart._id})
+                console.log(110, "create logged in order: ", order)
+
                 let electronic
                 for(let i=0; i < cart.Items.length; i++){
 
                     order.Items.push(cart.Items[i])
-                    
-                    // console.log(120, cart.Items[i].ItemId)
-                    // console.log(121, order)
+
                     // Update inventory quantity of the items after items sold
                     electronic = await Electronic.findById(cart.Items[i].ItemId)
-                
-                    console.log(127, "before update electronic quantity: ", electronic)
 
                     electronic.Quantity -= cart.Items[i].Quantity
                     
@@ -134,14 +123,14 @@ const webhook = async (req, res) => {
                 }
                 order.save()
                 electronic.save()
-                console.log(135, "added items to logged in order: ", order)
+            
+                console.log(127, "before update electronic quantity: ", electronic)
+                console.log(128, "added items to logged in order: ", order)
 
                 // Add the shipping address and payment method used to confirm payment at checkout to the order document, after updating shipping address to have LastUsed: true property/creating an address with LastUsed: true property, and updating customer to have a last_used_payment metadata property.
                 const orderLastUsedShipping = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
-                // const shipping = data.object.shipping.address
 
-                console.log(141, "find saved last used saved shipping: ", orderLastUsedShipping)
-                console.log(142, "order id: ", order._id, order)
+                console.log(133, "find saved last used saved shipping: ", orderLastUsedShipping)
 
                 const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({_id: order._id}, {
                     Shipping: {
@@ -149,48 +138,50 @@ const webhook = async (req, res) => {
                         Address: `${shippingAddress.line1}, ${shippingAddress.line2}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.postal_code}`
                     },
                     PaymentMethod: paymentMethodID,
-                    CartID: cart._id,
                     TotalPrice: data.object.amount
                 }, {new: true})
 
-                console.log(153, updateOrderWithShippingAndPayment)
+                console.log(144, updateOrderWithShippingAndPayment)
 
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
 
-                console.log(158, "logged in cart deleted: ", deletedCart)
+                console.log(149, "logged in cart deleted: ", deletedCart)
+
+                // Delete CachePaymentIntent document
+                const deletedCachePaymentIntent = await CachePayment.findOneAndDelete({PaymentIntentId: data.object.id})
+
+                console.log(154, deletedCachePaymentIntent)
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
-                    const order = await Order.create({OrderNumber: uuidv4()})
-                    console.log(164, "create order: ", order)
+                    const order = await Order.findOne({OrderNumber: data.object.metadata.order_number})
+                    console.log(160, "create order: ", order)
             
-                    const session = await req.sessionStore.get(data.object.metadata.sessionID)
-                    console.log(167, session)
-
-                    console.log(169, req.session)
+                    const session = await req.sessionStore.get(data.object.metadata.order_number)
+                    console.log(163, session)
+                    
+                    let electronic
                     for(let i=0; i < session.cart.length; i++) {
-                        console.log(170, session.cart[i].ItemId)
                         order.Items.push(session.cart[i])
                         order.save()
 
                         // Update inventory quantity of the items sold
-                        const electronic = await Electronic.findById(session.cart[i].ItemId)
-                        console.log(176, electronic)
+                        electronic = await Electronic.findById(session.cart[i].ItemId)
                         electronic.Quantity -= session.cart[i].Quantity
-                        console.log(179, electronic.Quantity)
                         electronic.save()
-                        console.log(181, "updated quantity in electronic: ", electronic)
+                        console.log(173, "updated quantity in electronic: ", electronic)
                     } 
 
-                    // Since there is a new cart for each order, delete guest's session after fulfilling order.
-                    await req.sessionStore.destroy(data.object.metadata.sessionID, async function() {
-                        const deletedSession = await req.sessionStore.get(data.object.metadata.sessionID)
-                        console.log(deletedSession)
-                    })
+                    console.log(177, "updated quantity in electronic: ", electronic)
+                    console.log(178, "added items in guest order: ", order)
 
-                    console.log(190, "added items in guest order: ", order)
+                    // Since there is a new cart for each order, delete guest's session after fulfilling order.
+                    await req.sessionStore.destroy(data.object.metadata.order_number, async function() {
+                        const deletedSession = await req.sessionStore.get(data.object.metadata.order_number)
+                        console.log(183, deletedSession)
+                    })
 
                     // Add the shipping address and payment method used to confirm payment at checkout to the order document.
                     // Get the shipping address from Payment Intent
@@ -202,22 +193,24 @@ const webhook = async (req, res) => {
                             Address: `${shipping.line1}, ${shipping.line2}, ${shipping.city}, ${shipping.state}, ${shipping.postal_code}`
                         },
                         PaymentMethod: data.object.payment_method,
-                        CartID: data.object.metadata.sessionID,
                         TotalPrice: data.object.amount
                     }, {new: true})
                     
-                    console.log(204, updateOrderWithShippingAndPayment)
-                    
+                    console.log(199, updateOrderWithShippingAndPayment)
+
+                    // Delete CachePaymentIntent document
+                    const deletedCachePaymentIntent = await CachePayment.findOneAndDelete({PaymentIntentId: data.object.id})
+
+                    console.log(200, deletedCachePaymentIntent)
+
                 } catch(error) {
-                    console.log(207)
+                    console.log(199)
                     console.log(error)
                 }
-                
-                
             }
 
         } catch(error) {
-            console.log(183, error)
+            console.log(207, error)
             // res.status(400).json({message: error})
         }
     } 
@@ -226,9 +219,9 @@ const webhook = async (req, res) => {
 
         // The payment failed to go through due to decline or authentication request 
         const error = data.object.last_payment_error.message;
-        console.log(192, "❌ Payment failed with error: " + error);
+        console.log(216, "❌ Payment failed with error: " + error);
 
-        console.log(194, "status: ", data.object.status)
+        console.log(218, "status: ", data.object.status)
 
         // Prompt user to provide another payment method and attaching it to the already made payment intent by sending back to the payment intent's client secret
         // res.send({
@@ -240,10 +233,10 @@ const webhook = async (req, res) => {
     } else if (eventType === "payment_method.attached") {
 
         // A new payment method was attached to a customer 
-        console.log(206, "💳 Attached " + data.object.id + " to customer");
+        console.log(230, "💳 Attached " + data.object.id + " to customer");
     }
 
-    res.status(200).json({message: "SUCCEDED !!!! "});
+    res.status(200).json({message: " WEBHOOK SUCCEDED !!!! "});
 }
 
 module.exports = {webhook}
