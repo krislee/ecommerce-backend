@@ -2,7 +2,7 @@ require('dotenv').config()
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
 const { v4: uuidv4 } = require('uuid');
 const Cart = require('../../model/buyer/cart')
-const Order = require('../../model/orders')
+const Order = require('../../model/order')
 const {BuyerUser} = require('../../model/buyer/buyerUser')
 const {Electronic} = require('../../model/seller/electronic')
 const {BuyerShippingAddress} = require('../../model/buyer/shippingAddress')
@@ -98,7 +98,7 @@ const webhook = async (req, res) => {
                     
                     // Add the lastUsed property to the address last used to checkout if the address just used is not the same as the previous order's shipping address
                     const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
-                    console.log(99, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
+                    console.log(101, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
                     
                 }
                 
@@ -124,7 +124,7 @@ const webhook = async (req, res) => {
                     // Update inventory quantity of the items after items sold
                     electronic = await Electronic.findById(cart.Items[i].ItemId)
                 
-                    console.log(125, "before update electronic quantity: ", electronic)
+                    console.log(127, "before update electronic quantity: ", electronic)
 
                     electronic.Quantity -= cart.Items[i].Quantity
                     
@@ -132,19 +132,14 @@ const webhook = async (req, res) => {
                 }
                 order.save()
                 electronic.save()
-                console.log(133, "added items to logged in order: ", order)
-
-                // Since there is a new cart for each order, delete cart after fulfilling order.
-                const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
-
-                console.log(138, "logged in cart deleted: ", deletedCart)
+                console.log(135, "added items to logged in order: ", order)
 
                 // Add the shipping address and payment method used to confirm payment at checkout to the order document, after updating shipping address to have LastUsed: true property/creating an address with LastUsed: true property, and updating customer to have a last_used_payment metadata property.
                 const orderLastUsedShipping = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
                 // const shipping = data.object.shipping.address
 
-                console.log(144, "find saved last used saved shipping: ", orderLastUsedShipping)
-                console.log(145, "order id: ", order._id, order)
+                console.log(141, "find saved last used saved shipping: ", orderLastUsedShipping)
+                console.log(142, "order id: ", order._id, order)
 
                 const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({_id: order._id}, {
                     Shipping: {
@@ -152,16 +147,20 @@ const webhook = async (req, res) => {
                         Address: `${shippingAddress.line1}, ${shippingAddress.line2}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.postal_code}`
                     },
                     PaymentMethod: paymentMethodID,
-                    TotalPrice: data.object.amount
+                    CartID: cart._id
                 }, {new: true})
 
-                console.log(157, updateOrderWithShippingAndPayment)
+                console.log(153, updateOrderWithShippingAndPayment)
+
+                // Since there is a new cart for each order, delete cart after fulfilling order.
+                const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
+
+                console.log(158, "logged in cart deleted: ", deletedCart)
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
                     const order = await Order.create({OrderNumber: uuidv4()})
-
                     console.log(164, "create order: ", order)
             
                     const session = await req.sessionStore.get(data.object.metadata.sessionID)
@@ -200,6 +199,7 @@ const webhook = async (req, res) => {
                             Address: `${shipping.line1}, ${shipping.line2}, ${shipping.city}, ${shipping.state}, ${shipping.postal_code}`
                         },
                         PaymentMethod: data.object.payment_method,
+                        CartID: data.object.metadata.sessionID,
                         TotalPrice: data.object.amount
                     }, {new: true})
                     

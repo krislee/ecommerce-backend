@@ -48,6 +48,9 @@ const {webhook} = require('./controller/buyer/stripeWebhook')
 // Shipping Address Dependency
 const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 
+// Order Dependency
+const orderRouter = require('./routes/buyer/order')
+
 /* ------- CORS ------- */
 const corsOptions = {
   origin: 'http://localhost:3000', 
@@ -140,6 +143,9 @@ app.use('/logged-in', stripeRouter)
 
 // Shipping Address Route
 app.use('/shipping', shippingAddressRouter)
+
+// Order Route
+app.use('/order-complete', orderRouter)
 
 // LISTEN TO PORT
 app.listen(process.env.PORT, () => {

@@ -32,7 +32,5 @@ router.put('/default/address/:id', passportAuthenticate, changeDefaultShipping) 
 // Delete shipping from Shipping Address component
 router.delete('/address/:id', passportAuthenticate, deleteShipping)
 
-// Get the shipping address used for confirming checkout
-router.get('/last-used/address', passportAuthenticate, confirmPaymentShipping)
 
 module.exports = router
