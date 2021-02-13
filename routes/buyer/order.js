@@ -7,8 +7,8 @@ const Order = require('../../model/order')
 passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.get('/orders/:id', async(req, res) => {
-    const order = await Order.find({LoggedInBuyer: req.params.id})
-    console.log(13, order)
+    const order = await Order.findById(req.params.id)
+    console.log(11, order)
     res.status(200).json({order: order})
 })
 
