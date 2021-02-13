@@ -78,16 +78,16 @@ const webhook = async (req, res) => {
 
                 // Check if there is already a last used shipping address that is different from the one that just used, and remove it
                 const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
-                console.log(84, "previous last used address: ", previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
+                console.log(81, "previous last used address: ", typeof previousLastUsedAddress._id, previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
                 if(previousLastUsedAddress && (previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping)) {
                         previousLastUsedAddress.LastUsed = false
                         previousLastUsedAddress.save()
-                        console.log(79, previousLastUsedAddress)
+                        console.log(85, "make false to previous address: ", previousLastUsedAddress)
                 }
 
                 // Create new shipping address if logged in user checked Save Shipping for Future
                 console.log(87, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
-                console.log(88, "shipping in web hook", data.object.shipping)
+                // console.log(88, "shipping in web hook", data.object.shipping)
                
                 const shippingAddress = data.object.shipping.address
                 if(data.object.metadata.saveShipping === "true") {
