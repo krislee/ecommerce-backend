@@ -145,7 +145,7 @@ app.use('/logged-in', stripeRouter)
 app.use('/shipping', shippingAddressRouter)
 
 // Order Route
-app.use('/order-complete', orderRouter)
+app.use('/order', orderRouter)
 
 // LISTEN TO PORT
 app.listen(process.env.PORT, () => {
