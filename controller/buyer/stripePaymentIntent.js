@@ -200,13 +200,13 @@ const updateLoggedInPaymentIntent = async(req, res) => {
 const createLoggedInPaymentIntent = async(req, res) => {
     try {
         if(req.user.buyer) {
-
             console.log(203, "user is logged in, create payment intent")
 
             // id of logged in customer's cart will be the idempotent key in payment intent creation
             const loggedInCart = await LoggedInCart.findOne({LoggedInBuyer: req.user._id})
             console.log(207, "logged in cart: ", loggedInCart)
-
+            console.log(208, typeof loggedInCart._id, loggedInCart._id)
+            console.log(209, typeof String(loggedInCart._id), String(loggedInCart._id)) 
             // Need to run the customer helper to obtain a Stripe customer obj ID which will be included to make a payment intent for logged in users (do not need to run customer helper for guest because we do not need to make a payment intent that includes customer param). Customer param is needed to save Stripe Payment Method obj ID. 
             const {newCustomer, customerId} = await customer(req, res)
 
