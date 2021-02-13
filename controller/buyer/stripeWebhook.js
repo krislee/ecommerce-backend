@@ -76,6 +76,7 @@ const webhook = async (req, res) => {
                 // Check if there is already a last used shipping address that is different from the one that just used, and remove it
                 const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
                 if(previousLastUsedAddress && (previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping)) {
+                        console.log(79, previousLastUsedAddress)
                         previousLastUsedAddress.LastUsed = false
                         previousLastUsedAddress.save()
                 }
