@@ -248,7 +248,7 @@ const webhook = async (req, res) => {
         console.log(206, "💳 Attached " + data.object.id + " to customer");
     }
 
-    res.sendStatus(200);
+    res.status(200).json({message: "SUCCEDED !!!! "});
 }
 
 module.exports = {webhook}
