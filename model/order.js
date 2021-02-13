@@ -15,7 +15,7 @@ const orderSchema = new Schema({
     },
     PaymentMethod: String,
     TotalPrice: Number,
-    CartID: String, // client sends either the sessionID (if guest) or cart document _id (if logged in user) to look up the order
+    CartID: String, 
     OrderNumber: String,
     LoggedInBuyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}]
 })
