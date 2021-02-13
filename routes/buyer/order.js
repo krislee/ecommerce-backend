@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require('passport');
+const { default: Stripe } = require('stripe');
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
 const router = express.Router();
 
@@ -9,8 +10,29 @@ passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.get('/list/orders/:id', async(req, res) => {
     const order = await Order.findOne({OrderNumber: req.params.id})
-    console.log(11, order)
-    res.status(200).json({order: order})
+    const paymentMethod = await stripe.paymentMethods.retrieve(order.PaymentMethod)
+
+    console.log(15, order)
+    console.log(16, paymentMethod)
+    
+    res.status(200).json({
+        order: order, 
+        payment: {
+            brand: paymentMethod.card.brand,
+            last4: paymentMethod.card.last4,
+            billingDetails: {
+                address: {
+                    line1: paymentMethod.billing_details.address.line1,
+                    line2: paymentMethod.billing_details.address.line2,
+                    city:  paymentMethod.billing_details.address.city,
+                    state:  paymentMethod.billing_details.address.state,
+                    postalCode:  paymentMethod.billing_details.address.postal_code,
+                    country:  paymentMethod.billing_details.address.country
+                },
+                name: paymentMethod.billing_details.name
+            }
+        }
+    })
 })
 
 // router.get('/order/payment-intent/:id', async(req, res) => {
