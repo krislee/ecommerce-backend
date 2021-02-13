@@ -83,7 +83,7 @@ const webhook = async (req, res) => {
                     console.log(83, previousLastUsedAddress._id, typeof previousLastUsedAddress._id)
                 }
                
-                if(previousLastUsedAddress && (previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping)) {
+                if(previousLastUsedAddress && (String(previousLastUsedAddress._id) !== data.object.metadata.lastUsedShipping)) {
                         previousLastUsedAddress.LastUsed = false
                         previousLastUsedAddress.save()
                         console.log(89, "make false to previous address: ", previousLastUsedAddress)
@@ -123,7 +123,7 @@ const webhook = async (req, res) => {
                     // Update inventory quantity of the items after items sold
                     electronic = await Electronic.findById(cart.Items[i].ItemId)
                     console.log(125, "before updated quantity electronic: ", electronic)
-                    
+
                     electronic.Quantity -= cart.Items[i].Quantity
                     
                 }
