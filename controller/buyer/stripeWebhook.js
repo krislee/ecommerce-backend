@@ -122,15 +122,15 @@ const webhook = async (req, res) => {
 
                     // Update inventory quantity of the items after items sold
                     electronic = await Electronic.findById(cart.Items[i].ItemId)
-
+                    console.log(125, "before updated quantity electronic: ", electronic)
+                    
                     electronic.Quantity -= cart.Items[i].Quantity
                     
-                    console.log("updated quantity electronic: ", electronic)
                 }
                 order.save()
                 electronic.save()
             
-                console.log(130, "before update electronic quantity: ", electronic)
+                console.log(130, "after update electronic quantity: ", electronic)
                 console.log(131, "added items to logged in order: ", order)
 
                 // Add the shipping address and payment method used to confirm payment at checkout to the order document, after updating shipping address to have LastUsed: true property/creating an address with LastUsed: true property, and updating customer to have a last_used_payment metadata property.
