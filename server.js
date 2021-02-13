@@ -134,6 +134,9 @@ app.use('/loginbuyer', loginCartRouter)
 app.use('/guestbuyer', guestCartRouter)
 app.use('/guest/buyer', guestCartRouter)
 
+// Order Route
+app.use('/complete', orderRouter)
+
 // Stripe Route
 app.use('/order', stripeRouter)
 app.use('/webhook', webhook)
@@ -143,9 +146,6 @@ app.use('/logged-in', stripeRouter)
 
 // Shipping Address Route
 app.use('/shipping', shippingAddressRouter)
-
-// Order Route
-app.use('/complete', orderRouter)
 
 // LISTEN TO PORT
 app.listen(process.env.PORT, () => {
