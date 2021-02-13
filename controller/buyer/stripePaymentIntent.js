@@ -58,11 +58,9 @@ const customer = async (req, res) => { // need to passportAuthenticate this cont
             if(!loggedInUser.customer) {
                 const customer = await stripe.customers.create({metadata: {last_used_payment: null}}); 
 
-                await BuyerUser.findOneAndUpdate({_id: req.user._id}, {customer: customer.id}, {new: true})
+                const updatedUser = await BuyerUser.findOneAndUpdate({_id: req.user._id}, {customer: customer.id}, {new: true})
 
-                const loggedInUser = await BuyerUser.findById(req.user._id) // delete this after it works - it is just for console logging
-
-                console.log(65, "logged in user is updated with customer ID: ", loggedInUser)
+                console.log(65, "logged in user is updated with customer ID: ", updatedUser)
 
                 return {newCustomer: true, customerId: customer.id}
             } else {
