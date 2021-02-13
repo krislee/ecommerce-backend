@@ -74,6 +74,8 @@ const webhook = async (req, res) => {
                 // Need to get the logged in user's document ID for updating last used shipping address and creating an order. To find the logged in user, use the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
                 const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
 
+                console.log(77, typeof data.object.metadata.lastUsedShipping, data.object.metadata.lastUsedShipping )
+
                 // Check if there is already a last used shipping address that is different from the one that just used, and remove it
                 const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
                 if(previousLastUsedAddress && (previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping)) {
@@ -150,7 +152,7 @@ const webhook = async (req, res) => {
                 console.log(149, "logged in cart deleted: ", deletedCart)
 
                 // Delete CachePaymentIntent document
-                const deletedCachePaymentIntent = await CachePayment.findOneAndDelete({PaymentIntentId: data.object.id})
+                const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
                 console.log(154, deletedCachePaymentIntent)
             
@@ -200,7 +202,7 @@ const webhook = async (req, res) => {
                     console.log(199, updateOrderWithShippingAndPayment)
 
                     // Delete CachePaymentIntent document
-                    const deletedCachePaymentIntent = await CachePayment.findOneAndDelete({PaymentIntentId: data.object.id})
+                    const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
                     console.log(200, deletedCachePaymentIntent)
 
