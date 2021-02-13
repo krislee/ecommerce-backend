@@ -222,7 +222,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
                 customer: customerId,
                 amount: await loggedInOrderAmount(req, res),
                 currency: "usd",
-                metadata: { order_number: loggedInCart._id }
+                metadata: { order_number: String(loggedInCart._id) }
             }, {
                 idempotencyKey: loggedInCart._id
             });
@@ -265,7 +265,7 @@ const createGuestPaymentIntent = async(req, res) => {
         // const idempotencyKey = uuidv4() // Randomly create an idempotency key value, which is used to avoid creating a duplicate payment intent
         const idempotencyKey = req.sessionID
         console.log(266, idempotencyKey)
-
+        console.log(268, typeof req.sessionID)
         // if user is not logged in, do not create a payment intent with customer property
         const paymentIntent = await stripe.paymentIntents.create({
             amount: guestOrderAmount(req, res),
