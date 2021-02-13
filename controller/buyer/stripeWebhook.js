@@ -73,18 +73,17 @@ const webhook = async (req, res) => {
                 
                 // Need to get the logged in user's document ID for updating last used shipping address and creating an order. To find the logged in user, use the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
                 const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
-
+                console.log(76,loggedInUser)
                 console.log(77, typeof data.object.metadata.lastUsedShipping, data.object.metadata.lastUsedShipping )
 
                 // Check if there is already a last used shipping address that is different from the one that just used, and remove it
-                const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
+                const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser_id})
+                console.log(84, "previous last used address: ", previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
                 if(previousLastUsedAddress && (previousLastUsedAddress._id !== data.object.metadata.lastUsedShipping)) {
-                        console.log(79, previousLastUsedAddress)
                         previousLastUsedAddress.LastUsed = false
                         previousLastUsedAddress.save()
+                        console.log(79, previousLastUsedAddress)
                 }
-
-                console.log(84, "previous last used address: ", previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
 
                 // Create new shipping address if logged in user checked Save Shipping for Future
                 console.log(87, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
