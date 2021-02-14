@@ -6,7 +6,32 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
+// const http = require('http')
 const connection = require('./db/connection')
+// const { Server } = require('ws')
+// const url = "wss://elecommerce.herokuapp.com"
+// const wss = new Server( { app })
+
+const EventEmitter = require('events')
+const ee = new EventEmitter()
+
+// LISTEN TO PORT
+const server = app.listen(process.env.PORT, () => {
+  console.log(`Listening to ${process.env.PORT}`)
+})
+const io = require('socket.io')(server)
+app.set('socketio', io)
+
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  const order = Order.findOne({Orde})
+  ee.on('order', () => {
+    socket.emit('sendOrder', order)
+  })
+  socket.on('close', () => console.log("Client disconnected"))
+})
+
+
 
 // Passport-related Dependencies
 const passport = require('passport')
@@ -43,13 +68,14 @@ const guestCartRouter = require('./routes/buyer/guestCart')
 
 // Stripe Dependencies
 const stripeRouter = require('./routes/buyer/stripe')
-const {webhook} = require('./controller/buyer/stripeWebhook')
+const {webhook} = require('./controller/buyer/stripeWebhook')(io)
 
 // Shipping Address Dependency
 const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 
 // Order Dependency
 const orderRouter = require('./routes/buyer/order')
+
 
 /* ------- CORS ------- */
 const corsOptions = {
@@ -147,10 +173,7 @@ app.use('/shipping', shippingAddressRouter)
 // Order Route
 app.use('/complete', orderRouter)
 
-// LISTEN TO PORT
-app.listen(process.env.PORT, () => {
-    console.log(`Listening to ${process.env.PORT}`)
-})
+
 
 // https://stackoverflow.com/questions/44894789/node-js-express-session-creating-new-session-id-every-time-i-refresh-or-access-t
 
