@@ -14,32 +14,32 @@ router.get('/list/orders/:id', async(req, res) => {
 
     console.log(15, order)
     console.log(16, paymentMethod)
-
-    router.get('/list/orders', passportAuthenticate, async(req, res) => {
-        const orders = await Order.find({LoggedInBuyer: req.user._id})
-        console.log(40, orders)
-        res.status(200).json({orders: orders})
-    })
-
-    res.status(200).json({
-        order: order, 
-        payment: {
-            brand: paymentMethod.card.brand,
-            last4: paymentMethod.card.last4,
-            billingDetails: {
-                address: {
-                    line1: paymentMethod.billing_details.address.line1,
-                    line2: paymentMethod.billing_details.address.line2,
-                    city:  paymentMethod.billing_details.address.city,
-                    state:  paymentMethod.billing_details.address.state,
-                    postalCode:  paymentMethod.billing_details.address.postal_code,
-                    country:  paymentMethod.billing_details.address.country
-                },
-                name: paymentMethod.billing_details.name
-            }
-        }
-    })
 })
+router.get('/list/orders', passportAuthenticate, async(req, res) => {
+    const orders = await Order.find({LoggedInBuyer: req.user._id})
+    console.log(40, orders)
+    res.status(200).json({orders: orders})
+})
+
+res.status(200).json({
+    order: order, 
+    payment: {
+        brand: paymentMethod.card.brand,
+        last4: paymentMethod.card.last4,
+        billingDetails: {
+            address: {
+                line1: paymentMethod.billing_details.address.line1,
+                line2: paymentMethod.billing_details.address.line2,
+                city:  paymentMethod.billing_details.address.city,
+                state:  paymentMethod.billing_details.address.state,
+                postalCode:  paymentMethod.billing_details.address.postal_code,
+                country:  paymentMethod.billing_details.address.country
+            },
+            name: paymentMethod.billing_details.name
+        }
+    }
+})
+
 
 
 
