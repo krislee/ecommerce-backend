@@ -15,12 +15,12 @@ router.get('/list/orders/:id', async(req, res) => {
     console.log(15, order)
     console.log(16, paymentMethod)
 
-    router.get('/list/orders', async(req, res) => {
+    router.get('/list/orders', passportAuthenticate, async(req, res) => {
         const orders = await Order.find({LoggedInBuyer: req.user._id})
         console.log(40, orders)
         res.status(200).json({orders: orders})
     })
-    
+
     res.status(200).json({
         order: order, 
         payment: {
