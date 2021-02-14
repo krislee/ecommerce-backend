@@ -6,14 +6,7 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
-// const http = require('http')
 const connection = require('./db/connection')
-// const { Server } = require('ws')
-// const url = "wss://elecommerce.herokuapp.com"
-// const wss = new Server( { app })
-
-const EventEmitter = require('events')
-const ee = new EventEmitter()
 
 // LISTEN TO PORT
 const server = app.listen(process.env.PORT, () => {
@@ -21,17 +14,14 @@ const server = app.listen(process.env.PORT, () => {
 })
 const io = require('socket.io')(server, {
   cors: {
-    origin: 'http://localhost:3000'
+    origin: 'http://localhost:3000',
+    credentials: true
   }
 })
 app.set('socketio', io)
 
 io.on('connection', (socket) => {
   console.log(26, 'Client connected');
-  // const order = Order.findOne({Orde})
-  // ee.on('order', () => {
-  //   socket.emit('sendOrder', order)
-  // })
   socket.on('close', () => console.log("Client disconnected"))
 })
 
