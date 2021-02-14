@@ -145,7 +145,8 @@ const webhook = async (req, res) => {
                     },
                     PaymentMethod: paymentMethodID,
                     TotalPrice: data.object.amount,
-                    OrderDate: new Date()
+                    OrderDate: new Date(),
+                    Complete: true
                 }, {new: true})
 
                 console.log(147, updateOrderWithShippingAndPayment)
