@@ -14,7 +14,7 @@ router.get('/list/orders/:id', async(req, res) => {
 
     console.log(15, order)
     console.log(16, paymentMethod)
-    
+
     res.status(200).json({
         order: order, 
         payment: {
@@ -35,25 +35,10 @@ router.get('/list/orders/:id', async(req, res) => {
     })
 })
 
-// router.get('/order/payment-intent/:id', async(req, res) => {
-//     console.log(17, typeof req.params.id)
-//     const succeededPaymentIntent = await stripe.paymentIntents.retrieve(req.params.id)
-//     console.log(18, succeededPaymentIntent)
-//     const paymentMethod = await stripe.paymentMethods.retrieve(succeededPaymentIntent.payment_method)
-//     console.log(20, paymentMethod)
-//     console.log(22, paymentMethod.billingDetails)
-//     res.status(200).json({
-//         orderNumber: succeededPaymentIntent.metadata.order_number,
-//         cardBrand: paymentMethod.card.brand,
-//         billingDetails: {
-//             name: paymentMethod.billing_details.name,
-//             line1: paymentMethod.billing_details.address.line1,
-//             line2: paymentMethod.billing_details.address.line2,
-//             city: paymentMethod.billing_details.address.city,
-//             state: paymentMethod.billing_details.address.state,
-//             postalCode: paymentMethod.billing_details.address.postal_code
-//         }
-//     })
-// })
+router.get('/list/orders', async(req, res) => {
+    const orders = await Order.find({LoggedInBuyer: req.user._id})
+    console.log(40, orders)
+    res.status(200).json({orders: orders})
+})
 
 module.exports = router
