@@ -17,6 +17,7 @@ const orderSchema = new Schema({
     TotalPrice: Number,
     // CartID: String, 
     OrderNumber: String,
+    OrderDate: Date,
     LoggedInBuyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}]
 })
 
