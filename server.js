@@ -19,7 +19,11 @@ const ee = new EventEmitter()
 const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+  cors: {
+    origin: 'http://localhost:3000'
+  }
+})
 app.set('socketio', io)
 
 io.on('connection', (socket) => {
