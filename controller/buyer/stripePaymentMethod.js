@@ -222,7 +222,7 @@ const defaultPaymentMethod = async(req, res) => {
             } else { // If default button is clicked and unchecked
                console.log(223)
                 // Get the user's info, which contains customer's ID		
-                const loggedInUser = await LoggedInUser.findById(req.user._id)		
+                const loggedInUser = await BuyerUser.findById(req.user._id)		
                 console.log(226, loggedInUser)
                 // Update the Stripe customer object to remove the default payment method		
                 const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {	
