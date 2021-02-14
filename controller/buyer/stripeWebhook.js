@@ -164,7 +164,21 @@ const webhook = async (req, res) => {
                 // const finalOrder = await Order.findOne({OrderNumber: cart._id})
                 // ee.emit('order')
                 const io = req.app.get('socketio')
-                io.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: paymentMethod})
+                io.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                    brand: paymentMethod.card.brand,
+                    last4: paymentMethod.card.last4,
+                    billingDetails: {
+                        address: {
+                            line1: paymentMethod.billing_details.address.line1,
+                            line2: paymentMethod.billing_details.address.line2,
+                            city:  paymentMethod.billing_details.address.city,
+                            state:  paymentMethod.billing_details.address.state,
+                            postalCode:  paymentMethod.billing_details.address.postal_code,
+                            country:  paymentMethod.billing_details.address.country
+                        },
+                        name: paymentMethod.billing_details.name
+                    }
+                }})
             
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
