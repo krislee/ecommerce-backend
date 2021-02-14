@@ -163,6 +163,8 @@ const webhook = async (req, res) => {
                 console.log(157, deletedCachePaymentIntent)
                 // const finalOrder = await Order.findOne({OrderNumber: cart._id})
                 // ee.emit('order')
+                
+                // Send back order to client via websocket 
                 const io = req.app.get('socketio')
                 io.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
                     brand: paymentMethod.card.brand,
@@ -226,10 +228,31 @@ const webhook = async (req, res) => {
                     
                     console.log(202, updateOrderWithShippingAndPayment)
 
+                    // Get the payment method details since we need to send it back to the client via websocket
+                    const paymentMethod = await stripe.paymentMethods.retrieve(data.object.payment_method)
+
                     // Delete CachePaymentIntent document
                     const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
                     console.log(207, deletedCachePaymentIntent)
+
+                    // Send back order to client via websocket 
+                    const io = req.app.get('socketio')
+                    io.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                        brand: paymentMethod.card.brand,
+                        last4: paymentMethod.card.last4,
+                        billingDetails: {
+                            address: {
+                                line1: paymentMethod.billing_details.address.line1,
+                                line2: paymentMethod.billing_details.address.line2,
+                                city:  paymentMethod.billing_details.address.city,
+                                state:  paymentMethod.billing_details.address.state,
+                                postalCode:  paymentMethod.billing_details.address.postal_code,
+                                country:  paymentMethod.billing_details.address.country
+                            },
+                            name: paymentMethod.billing_details.name
+                        }
+                    }})
 
                 } catch(error) {
                     console.log(210)
