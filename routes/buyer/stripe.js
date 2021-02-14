@@ -30,7 +30,7 @@ router.get('/show/payment/:id', passportAuthenticate, showPaymentMethod)
 router.get('/checkout/payment', passportAuthenticate, sendCheckoutPaymentMethod)
 
 // Updates the already created payment method to be the default or remove the default payment method if clicked and unchecked
-router.get('/default/payment/:id', passportAuthenticate, defaultPaymentMethod) // example: /default/payment/:id/default=true if default is checked when clicked or /default/payment/:id/default=false if default is unchecked when clicked
+router.put('/default/payment/:id', passportAuthenticate, defaultPaymentMethod) // example: /default/payment/:id/default=true if default is checked when clicked or /default/payment/:id/default=false if default is unchecked when clicked
 
 // Create a payment method with the option as default 
 router.post('/payment', passportAuthenticate, createPaymentMethod) //(include req.body: fingerprint and paymentMethodID)
