@@ -204,9 +204,10 @@ const defaultPaymentMethod = async(req, res) => {
         if(req.user.buyer) {
             // If default button is clicked and checked
             if(req.query.default === 'true') {
+                console.log(207)
                 // Get the user's info, which contains customer's ID
                 const loggedInUser = await BuyerUser.findById(req.user._id)
-                
+                console.log(210, loggedInUser)
                 // Update the Stripe customer object to include the default payment method
                 const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
                     invoice_settings: {
@@ -214,15 +215,15 @@ const defaultPaymentMethod = async(req, res) => {
                     }
                 });
 
-                console.log(210, "updated customer: ", updatedCustomer)
+                console.log(218, "updated customer: ", updatedCustomer)
 
                 // Return all payment methods back
                 indexPaymentMethods(req, res)
             } else { // If default button is clicked and unchecked
-               
+               console.log(223)
                 // Get the user's info, which contains customer's ID		
                 const loggedInUser = await LoggedInUser.findById(req.user._id)		
-    
+                console.log(226, loggedInUser)
                 // Update the Stripe customer object to remove the default payment method		
                 const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {	
                     invoice_settings: {		
