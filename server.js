@@ -23,11 +23,11 @@ const io = require('socket.io')(server)
 app.set('socketio', io)
 
 io.on('connection', (socket) => {
-  console.log('Client connected');
-  const order = Order.findOne({Orde})
-  ee.on('order', () => {
-    socket.emit('sendOrder', order)
-  })
+  console.log(26, 'Client connected');
+  // const order = Order.findOne({Orde})
+  // ee.on('order', () => {
+  //   socket.emit('sendOrder', order)
+  // })
   socket.on('close', () => console.log("Client disconnected"))
 })
 
