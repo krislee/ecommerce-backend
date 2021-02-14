@@ -18,6 +18,7 @@ const orderSchema = new Schema({
     // CartID: String, 
     OrderNumber: String,
     OrderDate: Date,
+    Complete: Boolean,
     LoggedInBuyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}]
 })
 
