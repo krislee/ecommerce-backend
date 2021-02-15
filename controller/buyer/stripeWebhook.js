@@ -163,10 +163,10 @@ const webhook = async (req, res) => {
                 console.log(157, deletedCachePaymentIntent)
                 // const finalOrder = await Order.findOne({OrderNumber: cart._id})
                 // ee.emit('order')
-                
+
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
-                io.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                io.to(String(cart._id)).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
                     brand: paymentMethod.card.brand,
                     last4: paymentMethod.card.last4,
                     billingDetails: {
@@ -238,7 +238,7 @@ const webhook = async (req, res) => {
 
                     // Send back order to client via websocket 
                     const io = req.app.get('socketio')
-                    io.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                    io.to(data.object.metadata.order_number).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
                         brand: paymentMethod.card.brand,
                         last4: paymentMethod.card.last4,
                         billingDetails: {

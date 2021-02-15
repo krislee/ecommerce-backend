@@ -21,7 +21,8 @@ const io = require('socket.io')(server, {
 app.set('socketio', io)
 
 io.on('connection', (socket) => {
-  console.log(26, 'Client connected');
+  console.log(26, 'Client connected', socket.id);
+  socket.on('join', (data) => socket.join(data.cartID))
   socket.on('close', () => console.log("Client disconnected"))
 })
 
