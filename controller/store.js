@@ -5,7 +5,7 @@ const {ElectronicReview} = require('../model/buyer/reviewElectronic')
 // Buyer will see all the electronic items made by all sellers
 const electronicIndex = async (req, res) => {
     try {
-        const {limit = 10, page = 1} = req.query // set default values to limit and page for pagination
+        const {limit = 2, page = 1} = req.query // set default values to limit and page for pagination
         const total = await Electronic.find().countDocuments() // count the number of electronic items docs made by all sellers 
 
         const allElectronic = await Electronic.find().limit(limit*1).skip((page-1) * limit)
