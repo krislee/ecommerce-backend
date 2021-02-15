@@ -166,23 +166,23 @@ const webhook = async (req, res) => {
                 // ee.emit('order')
 
                 // Send back order to client via websocket 
-                const io = req.app.get('socketio')
-                io.to(String(cart._id)).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
-                    brand: paymentMethod.card.brand,
-                    last4: paymentMethod.card.last4,
-                    billingDetails: {
-                        address: {
-                            line1: paymentMethod.billing_details.address.line1,
-                            line2: paymentMethod.billing_details.address.line2,
-                            city:  paymentMethod.billing_details.address.city,
-                            state:  paymentMethod.billing_details.address.state,
-                            postalCode:  paymentMethod.billing_details.address.postal_code,
-                            country:  paymentMethod.billing_details.address.country
-                        },
-                        name: paymentMethod.billing_details.name
-                    }
-                }})
-                io.on('end', () => io.disconnect(0))
+                // const io = req.app.get('socketio')
+                // io.to(String(cart._id)).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                //     brand: paymentMethod.card.brand,
+                //     last4: paymentMethod.card.last4,
+                //     billingDetails: {
+                //         address: {
+                //             line1: paymentMethod.billing_details.address.line1,
+                //             line2: paymentMethod.billing_details.address.line2,
+                //             city:  paymentMethod.billing_details.address.city,
+                //             state:  paymentMethod.billing_details.address.state,
+                //             postalCode:  paymentMethod.billing_details.address.postal_code,
+                //             country:  paymentMethod.billing_details.address.country
+                //         },
+                //         name: paymentMethod.billing_details.name
+                //     }
+                // }})
+                // io.on('end', () => io.disconnect(0))
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
@@ -238,22 +238,22 @@ const webhook = async (req, res) => {
                     console.log(207, deletedCachePaymentIntent)
 
                     // Send back order to client via websocket 
-                    const io = req.app.get('socketio')
-                    io.to(data.object.metadata.order_number).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
-                        brand: paymentMethod.card.brand,
-                        last4: paymentMethod.card.last4,
-                        billingDetails: {
-                            address: {
-                                line1: paymentMethod.billing_details.address.line1,
-                                line2: paymentMethod.billing_details.address.line2,
-                                city:  paymentMethod.billing_details.address.city,
-                                state:  paymentMethod.billing_details.address.state,
-                                postalCode:  paymentMethod.billing_details.address.postal_code,
-                                country:  paymentMethod.billing_details.address.country
-                            },
-                            name: paymentMethod.billing_details.name
-                        }
-                    }})
+                    // const io = req.app.get('socketio')
+                    // io.to(data.object.metadata.order_number).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                    //     brand: paymentMethod.card.brand,
+                    //     last4: paymentMethod.card.last4,
+                    //     billingDetails: {
+                    //         address: {
+                    //             line1: paymentMethod.billing_details.address.line1,
+                    //             line2: paymentMethod.billing_details.address.line2,
+                    //             city:  paymentMethod.billing_details.address.city,
+                    //             state:  paymentMethod.billing_details.address.state,
+                    //             postalCode:  paymentMethod.billing_details.address.postal_code,
+                    //             country:  paymentMethod.billing_details.address.country
+                    //         },
+                    //         name: paymentMethod.billing_details.name
+                    //     }
+                    // }})
 
                 } catch(error) {
                     console.log(210)

@@ -12,19 +12,19 @@ const connection = require('./db/connection')
 const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
-const io = require('socket.io')(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-    credentials: true
-  }, 
-})
-app.set('socketio', io)
+// const io = require('socket.io')(server, {
+//   cors: {
+//     origin: 'http://localhost:3000',
+//     credentials: true
+//   }, 
+// })
+// app.set('socketio', io)
 
-io.on('connection', (socket) => {
-  console.log(26, 'Client connected', socket.id);
-  socket.on('join', (data) => socket.join(data.cartID))
-  socket.on('close', () => console.log("Client disconnected"))
-})
+// io.on('connection', (socket) => {
+//   console.log(26, 'Client connected', socket.id);
+//   socket.on('join', (data) => socket.join(data.cartID))
+//   socket.on('close', () => console.log("Client disconnected"))
+// })
 
 
 
