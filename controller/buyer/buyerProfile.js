@@ -37,7 +37,7 @@ const update = async (req, res) => {
         if (req.user.buyer){
             if (req.body.email){
                  // Check if email is validated 
-                await emailSchema.validateAsync(req.body)
+                await emailSchema.validateAsync(req.body.email)
 
                 // Check if email exists in the database 
                 const doesExistSellerEmail = await SellerUser.findOne({email: req.body.email.toLowerCase()})
