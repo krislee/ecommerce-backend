@@ -48,7 +48,7 @@ const create = async (req,res) => {
                 const review = await ElectronicReview.findOne({Buyer: req.user._id, ElectronicItem: req.params.electronicId})
                 if(review) {
                     console.log(50, review)
-                    return res.status(200).json({msg: "You have already made a review for this item."})
+                    return res.status(200).json({secondReviewMessage: "You have already made a review for this item."})
                 } else {
                     console.log(53)
                     const electronicReview = await ElectronicReview.create({
@@ -63,7 +63,7 @@ const create = async (req,res) => {
                 }
                 
             } else {
-                return res.status(200).json({msg: 'You can not review an item you have not purchased.'})
+                return res.status(200).json({unverifiedReviewMessage: 'You can not review an item you have not purchased.'})
             }
         } else {
             return res.status(400).json({msg: "You are not authorized to create the review"})
