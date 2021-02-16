@@ -44,8 +44,9 @@ const create = async (req,res) => {
 
             const purchasedOrders = await Order.find({LoggedInBuyer: req.user._id}).populate({
                 path: 'ElectronicItem', 
-                match: {_id: req.params.electronicId}
-            })
+                match: {_id: req.params.electronicId},
+                select: 'Name Brand -_id'
+            }).exec()
             console.log(49, purchasedOrders)
 
             const purchasedOrders2 = await Order.find({LoggedInBuyer: req.user._id, Items: {_id: req.params.electronicId}})
