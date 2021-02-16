@@ -64,6 +64,7 @@ const create = async (req,res) => {
         }
     } 
     catch (error) {
+        console.log(67, error)
         return res.status(400).json({msg: error});
     }
 }
