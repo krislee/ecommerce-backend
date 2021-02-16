@@ -10,7 +10,7 @@ const indexPaymentMethods = async(req, res) => {
             const loggedInUser = await BuyerUser.findById(req.user._id)
             
             if(!loggedInUser.customer) {
-                res.status(200).json({msg: 'Need to create Stripe customer'})
+                return res.status(200).json({msg: 'Need to create Stripe customer'})
             } else {
                 const paymentMethods = await stripe.paymentMethods.list({
                     customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
@@ -67,12 +67,12 @@ const indexPaymentMethods = async(req, res) => {
                     console.log(63, "a list of payment methods to send back: ", allPaymentMethods)
                 }
 
-                res.status(200).json({paymentMethods: allPaymentMethods})
+                return res.status(200).json({paymentMethods: allPaymentMethods})
             }
         }
     } catch(error) {
         console.log(69, "error", error)
-        res.status(400).json({msg: "Error"})
+        return res.status(400).json({msg: "Error"})
     }
 }
 
@@ -84,7 +84,7 @@ const showPaymentMethod = async(req, res) => {
 
             console.log(80, "get one payment method: ", paymentMethod)
 
-            res.status(200).json({
+            return res.status(200).json({
                 paymentMethodID: paymentMethod.id,
                 brand: paymentMethod.card.brand,
                 last4: paymentMethod.card.last4,
@@ -106,7 +106,7 @@ const showPaymentMethod = async(req, res) => {
         }
     } catch(error) {
         console.log(103, "error", error)
-        res.status(400).json({msg: "Error"})
+        return res.status(400).json({msg: "Error"})
     }
 }
 
@@ -158,7 +158,7 @@ const updatePaymentMethod = async(req, res) => {
 
             // Send back the updated payment method details
             if(req.query.checkout === 'true') {
-                res.status(200).json({
+                return res.status(200).json({
                     paymentMethodID: updatedPaymentMethod.id,
                     brand: updatedPaymentMethod.card.brand,
                     last4: updatedPaymentMethod.card.last4,
@@ -183,7 +183,7 @@ const updatePaymentMethod = async(req, res) => {
         }
     } catch(error) {
         console.log(173, "error", error)
-        res.status(400).json({msg: "Error"})
+        return res.status(400).json({msg: "Error"})
     }
 }
 
@@ -199,7 +199,7 @@ const deletePaymentMethod = async(req, res) => {
         }
     } catch(error) {
         console.log(189, "error", error)
-        res.status(400).json({msg: "Error"})
+        return res.status(400).json({msg: "Error"})
     }
 }
 
@@ -244,7 +244,7 @@ const defaultPaymentMethod = async(req, res) => {
         }
     } catch(error){
         console.log(233, " default Payment method error", error)
-        res.status(400).json({msg: "Error"})
+        return res.status(400).json({msg: "Error"})
     }
 }
 
@@ -317,7 +317,7 @@ const createPaymentMethod = async(req, res) => {
                 if(req.query.checkout === 'false'){
                     indexPaymentMethods(req, res)
                 } else {
-                    res.status(200).json({
+                    return res.status(200).json({
                         paymentMethodID: attachPaymentMethod.id,
                         brand: attachPaymentMethod.card.brand,
                         last4: attachPaymentMethod.card.last4,
@@ -341,7 +341,7 @@ const createPaymentMethod = async(req, res) => {
         }
     } catch(error) {
         console.log(305, "error", error)
-        res.status(400).json({msg: "Error"})
+        return res.status(400).json({msg: "Error"})
     }
 }
 
@@ -418,12 +418,12 @@ const sendCheckoutPaymentMethod = async(req, res) => {
             // If there are no default payment method, last used, saved payment method, or saved payment methods, send back null
             if(!paymentMethod) {
                 console.log(407)
-                res.status(200).json({
+                return res.status(200).json({
                     paymentMethodID: null
                 })
             } else{
                 // Send the payment method's ID, brand, last 4, expiration date, and billing details
-                res.status(200).json({
+                return res.status(200).json({
                     paymentMethodID: paymentMethod.id,
                     brand: paymentMethod.card.brand,
                     last4: paymentMethod.card.last4,
@@ -449,7 +449,7 @@ const sendCheckoutPaymentMethod = async(req, res) => {
         }
     } catch(error){
         console.log(437, "error", error)
-        res.status(400).json({msg: "Error"})
+        return res.status(400).json({msg: "Error"})
     }
 }
 

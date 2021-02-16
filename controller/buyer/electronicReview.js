@@ -15,17 +15,17 @@ const index = async (req, res) => {
 
             const total = await allElectronicReviews.length
 
-            res.status(200).json({
+            return res.status(200).json({
                 allElectronicReviews,
                 totalPages: Math.ceil(total/limit),
                 currentPage: page
             })
         } else {
-            res.status(400).json({msg: "You are not authorized to view the reviews"})
+            return res.status(400).json({msg: "You are not authorized to view the reviews"})
         }
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -84,14 +84,14 @@ const update = async (req, res) => {
         if (req.user.buyer){
             const reviewElectronicUpdate = await ElectronicReview.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, req.body, {new: true});
             if (reviewElectronicUpdate) {
-                res.status(200).json(reviewElectronicUpdate)
+                return res.status(200).json(reviewElectronicUpdate)
             } 
         } else {
-            res.status(400).json({msg: "You are not authorized to update the review"})
+            return res.status(400).json({msg: "You are not authorized to update the review"})
         }
     }
     catch (error) {
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 
@@ -101,14 +101,14 @@ const destroy = async (req, res) => {
         if (req.user.buyer){
             const deleteElectronicReview = await ElectronicReview.findOneAndDelete({_id: req.params.id, Buyer: req.user._id});
             if(deleteElectronicReview) {
-                res.status(200).json(deleteElectronicReview)
+                return res.status(200).json(deleteElectronicReview)
             }
         } else {
-            res.status(400).json({msg: "You are not authorized to delete the review"})
+            return res.status(400).json({msg: "You are not authorized to delete the review"})
         }
     } 
     catch (error) {
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 

@@ -106,7 +106,7 @@ const updateGuestPaymentIntent = async(req, res) => {
 
         console.log(106, "updated existing payment intent: ", updatedPaymentIntent)
 
-        res.status(200).json({
+        return res.status(200).json({
             publicKey: process.env.STRIPE_PUBLIC,
             // paymentIntentId: updatedPaymentIntent.id,
             clientSecret: updatedPaymentIntent.client_secret,
@@ -117,10 +117,12 @@ const updateGuestPaymentIntent = async(req, res) => {
     } catch(error) {
         console.log(117, "error: ", error)
         if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
-            res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
+            return res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         } else if(error.type === 'StripeIdempotencyError') {
-            res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
-        } else (res.status(400).json({message: error}))
+            return res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
+        } else{
+            return res.status(400).json({message: error})
+        }
     }
 }
 
@@ -180,7 +182,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
 
         console.log(180, "updated existing payment intent: ", updatedPaymentIntent)
 
-        res.status(200).json({
+        return res.status(200).json({
             publicKey: process.env.STRIPE_PUBLIC,
             // paymentIntentId: updatedPaymentIntent.id,
             clientSecret: updatedPaymentIntent.client_secret,
@@ -190,10 +192,12 @@ const updateLoggedInPaymentIntent = async(req, res) => {
     } catch(error) {
         console.log(190, "error: ", error)
         if(error.raw.code === 'parameter_invalid_integer' && error.param === 'amount') {
-            res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
+            return res.status(400).json({customer: false, loggedIn: false, message: 'Please add an item to cart to checkout.'})
         } else if(error.type === 'StripeIdempotencyError') {
-            res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
-        }else (res.status(400).json({message: error}))
+            return res.status(400).json({message: 'Please enter the correct idempotency-key header value.'})
+        }else {
+            return res.status(400).json({message: error})
+        }
     }
 }
 
@@ -243,7 +247,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
 
             console.log(242, newOrder)
 
-            res.status(200).json({
+            return res.status(200).json({
                 publicKey: process.env.STRIPE_PUBLIC,
                 paymentIntentId: paymentIntent.id,
                 clientSecret: paymentIntent.client_secret,
@@ -254,7 +258,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
     } catch(error){
         console.log(249, "error: ", error)
  
-        res.status(400).json({message: error})
+        return res.status(400).json({message: error})
     }
 }
 
@@ -293,7 +297,7 @@ const createGuestPaymentIntent = async(req, res) => {
 
         console.log(292, newOrder)
 
-        res.status(200).json({
+        return res.status(200).json({
             publicKey: process.env.STRIPE_PUBLIC,
             paymentIntentId: paymentIntent.id,
             clientSecret: paymentIntent.client_secret,
@@ -303,7 +307,7 @@ const createGuestPaymentIntent = async(req, res) => {
         });
     } catch(error){
         console.log(303, error)
-        res.status(400).json({message: error})
+        return res.status(400).json({message: error})
     }
 }
 
@@ -336,7 +340,7 @@ const createOrUpdatePaymentIntent = async(req, res) => {
         }
     } catch(error) {
         console.log(336, "error: ", error)
-        res.status(400).json({error: error})
+        return res.status(400).json({error: error})
     }
 }
 

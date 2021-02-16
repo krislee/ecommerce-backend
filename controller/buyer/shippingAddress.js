@@ -69,16 +69,16 @@ const addShipping = async(req, res) => {
             }
 
             if (req.query.checkout === 'true'){
-                res.status(200).json({address: newAddress})
+                return res.status(200).json({address: newAddress})
             } else {
                 indexShipping(req, res)
             }    
         } else {
-            res.status(400).json({msg: "You are not authorized to add shipping address"})
+            return res.status(400).json({msg: "You are not authorized to add shipping address"})
         }
     }
     catch (error) {
-        res.status(400).json({msg: error});
+        return res.status(400).json({msg: error});
     }
   }
 
@@ -90,15 +90,15 @@ const updateShipping = async(req, res) => {
             const buyerAddress = await BuyerShippingAddress.findOneAndUpdate({Buyer:req.user._id, _id: req.params.id}, {Address: req.body.address, Name: req.body.name}, {new: true})
             console.log(91, buyerAddress)
             if(req.query.checkout === "true") {
-                res.status(200).json({address: buyerAddress})
+                return res.status(200).json({address: buyerAddress})
             } else {
                 indexShipping(req, res)
             }
         } else {
-            res.status(400).json({msg: "You are not authorized to update shipping address"})
+            return res.status(400).json({msg: "You are not authorized to update shipping address"})
         }
     } catch(error) {
-            res.status(400).json({msg: error});
+           return res.status(400).json({msg: error});
     }
 }
 
@@ -132,11 +132,11 @@ const changeDefaultShipping = async(req, res) => {
                 indexShipping(req, res)
             } 
         } else {
-            res.status(400).json({msg: "You are not authorized to update default shipping address"})
+            return res.status(400).json({msg: "You are not authorized to update default shipping address"})
         }
     } catch(error) {
         console.log(132, error)
-        res.status(400).json({msg: error});
+        return res.status(400).json({msg: error});
     }
 }
 
@@ -155,10 +155,10 @@ const updateLastUsedShipping = async(req, res) => {
             // Add the lastUsed property to the address last used to checkout
             const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, {LastUsed: true}, {new: true})			
 
-            res.status(200).json({address: lastUsedAddress})		
+            return res.status(200).json({address: lastUsedAddress})		
         }		
     } catch(error) {	
-        res.status(400).json({msg: error});		
+        return res.status(400).json({msg: error});		
     }		
 }		
 
@@ -169,12 +169,12 @@ const indexShipping = async(req, res) => {
             //  Find all the addresses that belongs to the buyer
             const buyerAddresses = await BuyerShippingAddress.find({Buyer:req.user._id})
             
-            res.status(200).json(buyerAddresses)
+            return res.status(200).json(buyerAddresses)
         } else {
-            res.status(400).json({msg: "You are not authorized to view buyer's shipping address"})
+            return res.status(400).json({msg: "You are not authorized to view buyer's shipping address"})
         }
     } catch(error) {
-        res.status(400).json({msg: error});
+        return res.status(400).json({msg: error});
     }
 }
 
@@ -185,14 +185,14 @@ const showShipping = async(req, res) => {
             //  Find all the addresses that belongs to the buyer
             const buyerAddress = await BuyerShippingAddress.findById(req.params.id)
             
-            res.status(200).json({
+            return res.status(200).json({
                 address: buyerAddress
             })
         } else {
-            res.status(400).json({msg: "You are not authorized to view buyer's shipping address"})
+            return res.status(400).json({msg: "You are not authorized to view buyer's shipping address"})
         }
     } catch(error) {
-        res.status(400).json({msg: error});
+        return res.status(400).json({msg: error});
     }
 }
 
@@ -202,12 +202,12 @@ const savedShipping = async(req, res) => {
         if(req.user.buyer) {
             const savedAddresses = await BuyerShippingAddress.find({ _id: {$ne: req.params.id}, Buyer: req.user._id})
             
-            res.status(200).json(savedAddresses)
+            return res.status(200).json(savedAddresses)
         } else {
-            res.status(400).json({msg: "You are not authorized to view buyer's saved addresses"})
+            return res.status(400).json({msg: "You are not authorized to view buyer's saved addresses"})
         }
     } catch(error) {
-        res.status(400).json({msg: error});
+        return res.status(400).json({msg: error});
     }
 }
 
@@ -222,20 +222,20 @@ const checkoutShipping = async(req, res) => {
             const allAddresses = await BuyerShippingAddress.find({Buyer: req.user._id})
 
             if(defaultAddress) {
-                res.status(200).json({address: defaultAddress})
+                return ({address: defaultAddress})
             } else if (lastUsedSavedAddress) {
-                res.status(200).json({address: lastUsedSavedAddress})
+                return res.status(200).json({address: lastUsedSavedAddress})
             } else if(allAddresses.length > 0) {
                 const lastCreatedAddress = allAddresses[allAddresses.length-1]
-                res.status(200).json({address: lastCreatedAddress})
+                return res.status(200).json({address: lastCreatedAddress})
             } else {
-                res.status(200).json({address: {Address: null}})
+                return res.status(200).json({address: {Address: null}})
             }   
         } else {
-            res.status(400).json({msg: "You are not authorized to view buyer's last used address"})
+            return res.status(400).json({msg: "You are not authorized to view buyer's last used address"})
         }
     } catch(error) {
-        res.status(400).json({msg: error});
+        return res.status(400).json({msg: error});
     }
 }
 
@@ -247,17 +247,17 @@ const deleteShipping = async(req, res) => {
 
             indexShipping(req, res)
         } else {
-            res.status(400).json({msg: "You are not authorized to delete buyer's address"})
+            return res.status(400).json({msg: "You are not authorized to delete buyer's address"})
         }
     } catch(error) {
-        res.status(400).json({msg: error});
+        return res.status(400).json({msg: error});
     }
 }
 
 // Get the address used during checkout
 const confirmPaymentShipping = async(req, res) => {
     const shipping = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: req.users._id})
-    res.status(200).json({address: shipping})
+    return res.status(200).json({address: shipping})
 }
 
 module.exports = {addShipping, updateShipping, updateLastUsedShipping, changeDefaultShipping, indexShipping, showShipping, savedShipping, checkoutShipping, deleteShipping, confirmPaymentShipping}

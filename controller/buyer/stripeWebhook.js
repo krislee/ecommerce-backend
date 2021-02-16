@@ -264,7 +264,6 @@ const webhook = async (req, res) => {
 
         } catch(error) {
             console.log(216, error)
-            // res.status(400).json({message: error})
         }
     } 
     // Customer’s payment was declined by card network or otherwise expired
