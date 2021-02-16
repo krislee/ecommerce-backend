@@ -36,15 +36,12 @@ const index = async (req, res) => {
 
 const create = async (req,res) => {
     try {
-        console.log(39)
         if (req.user.buyer){ // user needs to be logged in to review, hence req.user.buyer
             // Check if logged in reviewer actually brought the electronic item before buyer can review
-            console.log(42)
+            // To do this, get all the orders that belongs to the logged in user using the param: {LoggedInBuyer: req.user._id} & then if find any of those orders have that item based on the id of the item {'Items.ItemId': req.params.electronicId}}. req.params will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId.
             const purchasedOrders = await Order.find({LoggedInBuyer: req.user._id, 'Items.ItemId': req.params.electronicId})
             console.log(43, purchasedOrders)
  
-            // From the frontend, the req.params will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId
-            // if(purchasedOrders)
             if(purchasedOrders.length > 0) {
                 console.log(49, purchasedOrders.length)
                 const electronicReview = await ElectronicReview.create({
