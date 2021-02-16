@@ -45,7 +45,7 @@ const create = async (req,res) => {
             if(purchasedOrders.length > 0) {
                 console.log(49, purchasedOrders.length)
                 // If user did purchased the item that he/she wants to review, check if user already made a review before creating a new review
-                const review = await ElectronicReview.findOne({LoggedInBuyer: req.user._id, ElectronicItem: req.params.electronicId})
+                const review = await ElectronicReview.findOne({Buyer: req.user._id, ElectronicItem: req.params.electronicId})
                 if(review) {
                     console.log(50, review)
                     return res.status(200).json({msg: "You have already made a review for this item."})
