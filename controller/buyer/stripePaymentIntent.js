@@ -340,7 +340,7 @@ const createOrUpdatePaymentIntent = async(req, res) => {
     }
 }
 
-module.exports = {createOrUpdatePaymentIntent, createLoggedInPaymentIntent, updateLoggedInPaymentIntent}
+module.exports = {createOrUpdatePaymentIntent, createLoggedInPaymentIntent, updateLoggedInPaymentIntent, customer}
 
 
 /* Idempotency:

@@ -1,6 +1,7 @@
 require("dotenv").config()
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
 const {BuyerUser} = require('../../model/buyer/buyerUser')
+const {customer} = require('./stripePaymentIntent')
 
 // Get all payment methods attached to the Stripe customer for Payment Method component and saved cards modal during checkout
 const indexPaymentMethods = async(req, res) => {
@@ -8,13 +9,15 @@ const indexPaymentMethods = async(req, res) => {
         if(req.user.buyer) {
             const loggedInUser = await BuyerUser.findById(req.user._id)
             
+            if(!loggedInUser.customer) res.status(200).json({msg: 'Need to create Stripe customer'})
+
             const paymentMethods = await stripe.paymentMethods.list({
                 customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
                 type: 'card',
             });
 
             console.log(16, "all payment methods attached to customer: ", paymentMethods)
-            
+
             // Get the default payment method ID to display it in Payment Method component
             const customer = await stripe.customers.retrieve(loggedInUser.customer)
             defaultPaymentMethodID = customer.invoice_settings.default_payment_method
@@ -252,83 +255,87 @@ const createPaymentMethod = async(req, res) => {
         if(req.user.buyer) {
             // Get the user's info, which contains customer's ID
             const loggedInUser = await BuyerUser.findById(req.user._id)
-            // Get Stripe customer
-            const customer = await stripe.customers.retrieve(loggedInUser.customer)
-            console.log(255, "CREATING PAYMENT METHOD")
-            console.log(256, "customer: ", customer)
+            // if(!loggedInUser.customer) {
+            //     await customer(req, res)
+            // } else {
+                // Get Stripe customer
+                const customer = await stripe.customers.retrieve(loggedInUser.customer)
+                console.log(255, "CREATING PAYMENT METHOD")
+                console.log(256, "customer: ", customer)
 
-            // Get the created payment method to get the fingerprint (Stripe JS: stripe.createPaymentMethod() response does not send back a fingerprint, so we need to get the fingerprint)
-            const newlyCreatedPaymentMethod = await stripe.paymentMethods.retrieve(req.body.paymentMethodID)
-            const newlyCreatedPaymentMethodFingerprint = newlyCreatedPaymentMethod.card.fingerprint
+                // Get the created payment method to get the fingerprint (Stripe JS: stripe.createPaymentMethod() response does not send back a fingerprint, so we need to get the fingerprint)
+                const newlyCreatedPaymentMethod = await stripe.paymentMethods.retrieve(req.body.paymentMethodID)
+                const newlyCreatedPaymentMethodFingerprint = newlyCreatedPaymentMethod.card.fingerprint
 
-            // Get all the payment methods attached to the customer
-            const paymentMethods = await stripe.paymentMethods.list({
-                customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
-                type: 'card',
-            });
+                // Get all the payment methods attached to the customer
+                const paymentMethods = await stripe.paymentMethods.list({
+                    customer: loggedInUser.customer || await customer(req,res), // customer's id stored in found BuyerUser's document
+                    type: 'card',
+                });
 
-            console.log(268, "a list of payment attached attached to customer: ", paymentMethods)
+                console.log(268, "a list of payment attached attached to customer: ", paymentMethods)
 
-            let match = false
-            let matchedPaymentMethodID = ""
-            for(let i=0; i < paymentMethods.data.length; i++) {
-                const paymentMethod = paymentMethods.data[i]
-                console.log(274, paymentMethod.card.fingerprint)
-                console.log(275, newlyCreatedPaymentMethodFingerprint)
-                if(paymentMethod.card.fingerprint === newlyCreatedPaymentMethodFingerprint) {
-                    match = true
-                    matchedPaymentMethodID = paymentMethod.id // if the newly created payment method's fingerprint matches one of the payment methods already attached to the Stripe customer, then assign the matched payment method ID from the list of attached payment methods to matchedPaymentMethodID.
-                }
-            }
-            console.log(281, "match and old payment method id", match, matchedPaymentMethodID)
-
-            // If the new payment method that the user is trying to add does match to the payment method already attached to the stripe customer, first detach the older same payment method and then attach the new payment method to the Stripe customer.
-            // If the new payment method that the user is trying to add does not match any payment methods already attached to the Stripe customer, then proceed to attach the new payment method to the Stripe customer
-            if(match){
-                const removeOldMatchedPaymentMethod = await stripe.paymentMethods.detach(matchedPaymentMethodID)
-
-                console.log(282, "remove old matched payment method: ", removeOldMatchedPaymentMethod)
-            }
-            const attachPaymentMethod = await stripe.paymentMethods.attach(req.body.paymentMethodID, {
-                customer: loggedInUser.customer
-            })
-
-            // Aside from logged in user checking 'Save card for future purchases' at checkout or 'Add new card' at Payment Method component, which prompts to run this function, if user also checks Save as default Payment Method component (there would be no option to save as default at checkout), add it as default.
-            console.log(295, req.body.default, typeof req.body.default)
-            if(req.body.default) {
-                console.log(297)
-                const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
-                    invoice_settings: {
-                        default_payment_method: req.body.paymentMethodID
+                let match = false
+                let matchedPaymentMethodID = ""
+                for(let i=0; i < paymentMethods.data.length; i++) {
+                    const paymentMethod = paymentMethods.data[i]
+                    console.log(274, paymentMethod.card.fingerprint)
+                    console.log(275, newlyCreatedPaymentMethodFingerprint)
+                    if(paymentMethod.card.fingerprint === newlyCreatedPaymentMethodFingerprint) {
+                        match = true
+                        matchedPaymentMethodID = paymentMethod.id // if the newly created payment method's fingerprint matches one of the payment methods already attached to the Stripe customer, then assign the matched payment method ID from the list of attached payment methods to matchedPaymentMethodID.
                     }
-                })
-            }
-            console.log(302, "newly attached payment method: ", attachPaymentMethod)
+                }
+                console.log(281, "match and old payment method id", match, matchedPaymentMethodID)
 
-            // Return all payment methods back
-            if(req.query.checkout === 'false'){
-                indexPaymentMethods(req, res)
-            } else {
-                res.status(200).json({
-                    paymentMethodID: attachPaymentMethod.id,
-                    brand: attachPaymentMethod.card.brand,
-                    last4: attachPaymentMethod.card.last4,
-                    expDate: `${attachPaymentMethod.card.exp_month}/${attachPaymentMethod.card.exp_year}`,
-                    billingDetails: {
-                        address: {
-                            line1: attachPaymentMethod.billing_details.address.line1,
-                            line2: attachPaymentMethod.billing_details.address.line2,
-                            city:  attachPaymentMethod.billing_details.address.city,
-                            state:  attachPaymentMethod.billing_details.address.state,
-                            postalCode:  attachPaymentMethod.billing_details.address.postal_code,
-                            country:  attachPaymentMethod.billing_details.address.country
-                        },
-                        name: attachPaymentMethod.billing_details.name
-                    },
-                    recollectCVV: attachPaymentMethod.metadata.recollect_cvv,
-                    cardholderName: attachPaymentMethod.metadata.cardholder_name
+                // If the new payment method that the user is trying to add does match to the payment method already attached to the stripe customer, first detach the older same payment method and then attach the new payment method to the Stripe customer.
+                // If the new payment method that the user is trying to add does not match any payment methods already attached to the Stripe customer, then proceed to attach the new payment method to the Stripe customer
+                if(match){
+                    const removeOldMatchedPaymentMethod = await stripe.paymentMethods.detach(matchedPaymentMethodID)
+
+                    console.log(282, "remove old matched payment method: ", removeOldMatchedPaymentMethod)
+                }
+                const attachPaymentMethod = await stripe.paymentMethods.attach(req.body.paymentMethodID, {
+                    customer: loggedInUser.customer
                 })
-            }
+
+                // Aside from logged in user checking 'Save card for future purchases' at checkout or 'Add new card' at Payment Method component, which prompts to run this function, if user also checks Save as default Payment Method component (there would be no option to save as default at checkout), add it as default.
+                console.log(295, req.body.default, typeof req.body.default)
+                if(req.body.default) {
+                    console.log(297)
+                    const updatedCustomer = await stripe.customers.update(loggedInUser.customer, {
+                        invoice_settings: {
+                            default_payment_method: req.body.paymentMethodID
+                        }
+                    })
+                }
+                console.log(302, "newly attached payment method: ", attachPaymentMethod)
+
+                // Return all payment methods back
+                if(req.query.checkout === 'false'){
+                    indexPaymentMethods(req, res)
+                } else {
+                    res.status(200).json({
+                        paymentMethodID: attachPaymentMethod.id,
+                        brand: attachPaymentMethod.card.brand,
+                        last4: attachPaymentMethod.card.last4,
+                        expDate: `${attachPaymentMethod.card.exp_month}/${attachPaymentMethod.card.exp_year}`,
+                        billingDetails: {
+                            address: {
+                                line1: attachPaymentMethod.billing_details.address.line1,
+                                line2: attachPaymentMethod.billing_details.address.line2,
+                                city:  attachPaymentMethod.billing_details.address.city,
+                                state:  attachPaymentMethod.billing_details.address.state,
+                                postalCode:  attachPaymentMethod.billing_details.address.postal_code,
+                                country:  attachPaymentMethod.billing_details.address.country
+                            },
+                            name: attachPaymentMethod.billing_details.name
+                        },
+                        recollectCVV: attachPaymentMethod.metadata.recollect_cvv,
+                        cardholderName: attachPaymentMethod.metadata.cardholder_name
+                    })
+                }
+            // }
         }
     } catch(error) {
         console.log(305, "error", error)
