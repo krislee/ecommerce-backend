@@ -10,6 +10,7 @@ const { exist } = require('@hapi/joi');
 router.post('/register', async (req, res) => {
     try {
         // const { username, password, email } = req.body;
+        console.log(13)
         const result = await authSchema.validateAsync(req.body);
         console.log(14, result)
         // Check if email user is trying to register acct with is already in the db
