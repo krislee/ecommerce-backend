@@ -39,17 +39,11 @@ const create = async (req,res) => {
         // console.log(req.user)
         if (req.user.buyer){ // user needs to be logged in to review, hence req.user.buyer
             // Check if logged in reviewer actually brought the electronic item before buyer can review
-            const totalOrders = await Order.find({LoggedInBuyer: req.user._id}).countDocuments()
+            const totalOrders = await Order.find({LoggedInBuyer: req.user._id, 'Items.ItemId': req.params.electronicId})
             console.log(43, totalOrders)
 
-            const purchasedOrders = await Order.find({LoggedInBuyer: req.user._id}).populate({
-                path: 'ElectronicItem', 
-                match: {_id: req.params.electronicId},
-                select: 'Name Brand -_id'
-            }).exec()
-            console.log(49, purchasedOrders)
 
-            const purchasedOrders2 = await Order.find({LoggedInBuyer: req.user._id, Items: {_id: req.params.electronicId}})
+            const purchasedOrders2 = await Order.find({LoggedInBuyer: req.user._id, Items: {ItemId: req.params.electronicId}})
             console.log(52, purchasedOrders2)
 
         
