@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
         const doesExistEmail = await BuyerUser.findOne({email: result.email.toLowerCase()})
         const doesExistSellerEmail = await SellerUser.findOne({email: result.email.toLowerCase()})
         if (doesExistEmail || doesExistSellerEmail) {
-            res.status(400).json({success: false, msg: `${result.email} is already registered.`})
+            res.status(400).json({success: false, emailMsg: `${result.email} is already registered.`})
             return
         }
         console.log(22, doesExistEmail)
@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
         const doesExistUser = await BuyerUser.findOne({ username: result.username})
         const doesExistSellerUser = await SellerUser.findOne({username: result.username})
         if (doesExistUser || doesExistSellerUser) {
-            res.status(400).json({success: false, msg:`${result.username} is already taken. Please try a different one.`})
+            res.status(400).json({success: false, usernameMsg:`${result.username} is already taken. Please try a different one.`})
             return
         }
         console.log(31, doesExistUser)
