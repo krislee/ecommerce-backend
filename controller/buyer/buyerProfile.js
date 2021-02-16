@@ -40,11 +40,11 @@ const update = async (req, res) => {
                 await emailSchema.validateAsync(req.body)
 
                 // Check if email exists in the database 
-                const doesExistSellerEmail = await SellerUser.findOne({email: req.body.email})
-                const doesExistBuyerEmail = await BuyerUser.findOne({email: req.body.email})
+                const doesExistSellerEmail = await SellerUser.findOne({email: req.body.email.toLowerCase()})
+                const doesExistBuyerEmail = await BuyerUser.findOne({email: req.body.email.toLowerCase()})
 
                 // If email exists in the database or is the current email then return. Else update the email.
-                if (req.user.email === req.body.email) {
+                if (req.user.email === req.body.email.toLowerCase()) {
                     return res.status(200).json({msg: "This is your current email. Please change to a new email address."})
                 } else if (doesExistBuyerEmail || doesExistSellerEmail) {
                     return res.status(200).json({msg: "An account with this email is already registered."})
