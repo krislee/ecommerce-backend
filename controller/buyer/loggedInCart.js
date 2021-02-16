@@ -8,12 +8,12 @@ const loggedInAddItem = async(req, res, next) => {
     try {
         console.log(9, req.user)
         if (req.user) {
-            console.log(req.params.id, "req.params.id")
+            console.log(11, req.params.id, "req.params.id")
             const item = await Electronic.findById(req.params.id)
-            console.log(item, 'finding item')
+            console.log(13, item, 'finding item')
 
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-            console.log(cart, "logged in cart")
+            console.log(16, cart, "logged in cart")
 
             // if cart exists
             if (cart) {
@@ -34,6 +34,7 @@ const loggedInAddItem = async(req, res, next) => {
                     console.log(34, "cart quantity: ", cartItem.Quantity, typeof cartItem.Quantity, "req quantity: ",  req.body.Quantity, typeof req.body.Quantity)
                     cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
                 } else { // if the item does not exist in the cart, then add the item
+                    console.log(37)
                     cart.Items.push({
                         ItemId: item._id,
                         Name: item.Name,
@@ -42,6 +43,7 @@ const loggedInAddItem = async(req, res, next) => {
                         Quantity: req.body.Quantity,
                         TotalPrice: req.body.Quantity * item.Price
                     })
+                    console.log(46, cart)
                 }
 
                 await cart.save()
