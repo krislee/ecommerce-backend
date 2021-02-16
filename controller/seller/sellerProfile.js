@@ -12,17 +12,17 @@ const index = async (req, res) => {
 
             const sellerProfile = await SellerUser.findOne({_id: req.user._id})
 
-            res.status(200).json({
+            return res.status(200).json({
                 id: sellerProfile._id,
                 username: sellerProfile.username,
                 email: sellerProfile.email,
             });
         } else {
-            res.status(400).json({msg: "You are not authorized to view this profile."})
+            return res.status(400).json({msg: "You are not authorized to view this profile."})
         }
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -47,7 +47,7 @@ const update = async (req, res) => {
                     const updateSeller = await SellerUser.findOneAndUpdate({_id: req.user.id}, req.body, {new: true}) // {new:true} to return the document after updating
                     console.log(updateSeller)
                     if (updateSeller){
-                        res.status(200).json({
+                        return res.status(200).json({
                             id: updateSeller._id,
                             username: updateSeller.username,
                             email: updateSeller.email
@@ -109,12 +109,12 @@ const update = async (req, res) => {
                 })
             }
         } else {
-            res.status(400).json({msg: "You are not authorized to update this profile."})
+            return res.status(400).json({msg: "You are not authorized to update this profile."})
         }
     }
     catch (error) {
         console.log(error, "error")
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -135,15 +135,15 @@ const destroy = async (req, res) => {
 
                 // Runs the pre deleteOne hook in seller schema. Then deletes the seller and its electronic items
                 seller.deleteOne()
-                res.status(200).json({success: true})
+                return res.status(200).json({success: true})
             })
         
         } else {
-            res.status(400).json({msg: "You are not authorized to delete this profile."})
+            return res.status(400).json({msg: "You are not authorized to delete this profile."})
         }
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 

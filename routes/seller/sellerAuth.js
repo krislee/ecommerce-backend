@@ -15,7 +15,7 @@ router.post('/register', async (req, res) => {
         const doesExistSellerEmail = await SellerUser.findOne({email: result.email})
         const doesExistBuyerEmail = await BuyerUser.findOne({email: result.email})
         if (doesExistSellerEmail || doesExistBuyerEmail) {
-            res.status(400).json({success: false, msg: `${result.email} is already registered.`})
+            return res.status(400).json({success: false, msg: `${result.email} is already registered.`})
             return
         }
 
@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
         const doesExistSellerUser = await SellerUser.findOne({ username: result.username})
         const doesExistBuyerUser = await BuyerUser.findOne({ username: result.username})
         if (doesExistSellerUser || doesExistBuyerUser) {
-            res.status(400).json({success: false, msg:`${result.username} is already taken. Please try a different one.`})
+            return res.status(400).json({success: false, msg:`${result.username} is already taken. Please try a different one.`})
             return
         }
 
@@ -39,7 +39,7 @@ router.post('/register', async (req, res) => {
         // 3) Create JWT token for successfully registered user
         const registerToken = await issueJWT(savedUser)
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             userID: savedUser._id,
             username: savedUser.username,
@@ -49,7 +49,7 @@ router.post('/register', async (req, res) => {
         })
     } catch(err) {
         // console.log(err)
-        res.status(400).send(err)
+        return res.status(400).send(err)
     }
 });
 
@@ -70,7 +70,7 @@ router.post('/login', async (req, res) => {
             //  Create JWT token for successfully logged in user
             const loginToken = await issueJWT(existUser)
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 userID: existUser._id,
                 username: existUser.username,
@@ -79,10 +79,10 @@ router.post('/login', async (req, res) => {
                 expiresIn: loginToken.expires
             })
         } else {
-            res.status(400).json({success: false, msg: 'Wrong password'})
+            return res.status(400).json({success: false, msg: 'Wrong password'})
         }
     } catch (err) {
-        res.status(400).send(err)
+        return res.status(400).send(err)
     }
 })
 

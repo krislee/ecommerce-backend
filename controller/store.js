@@ -10,14 +10,14 @@ const electronicIndex = async (req, res) => {
 
         const allElectronic = await Electronic.find().limit(limit*1).skip((page-1) * limit)
 
-        res.status(200).json({
+        return res.status(200).json({
             allElectronic,
             totalPages: Math.ceil(total/limit),
             currentPage: page //page is received from req.query
         });
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -33,15 +33,15 @@ const electronicShow = async(req, res) => {
          const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id})
         //  console.log(electronicReview, "all electronic reviews")
 
-         res.status(200).json({
-             electronicItem: oneElectronic,
-             sellerInfo: {username: seller.username, email: seller.email},
-             review: electronicReview
-         })
+        return res.status(200).json({
+            electronicItem: oneElectronic,
+            sellerInfo: {username: seller.username, email: seller.email},
+            review: electronicReview
+        })
 
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 

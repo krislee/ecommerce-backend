@@ -24,7 +24,7 @@ const index = async (req, res) => {
         } 
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -50,7 +50,7 @@ const show = async (req, res) => {
             } 
         }
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -67,13 +67,13 @@ const create = async (req, res) => {
                 Price: req.body.Price,
                 Seller: req.user._id
             })
-            res.status(200).json(electronic);
+            return res.status(200).json(electronic);
         } else {
-            res.status(400).json({msg: "You are not authorized to create an electronic item"})
+            return res.status(400).json({msg: "You are not authorized to create an electronic item"})
         }
     } 
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -83,14 +83,14 @@ const update = async (req, res) => {
         if (req.user.seller){
             const updateElectronic = await Electronic.findOneAndUpdate({_id: req.params.id, Seller: req.user._id}, req.body, {new: true}) // {new:true} to return the document after updating
             if (updateElectronic){
-                res.status(200).json(updateElectronic)
+                return res.status(200).json(updateElectronic)
             } 
         } else {
-            res.status(400).json({msg: "You are not authorized to update the electronic item"})
+            return res.status(400).json({msg: "You are not authorized to update the electronic item"})
         }
     }
     catch (error) {
-        res.status(400).send(error);
+        return res.status(400).send(error);
     }
 }
 
@@ -104,13 +104,13 @@ const destroy = async (req, res) => {
                 // Run the deleteOne pre hook in electronic model to delete all reviews of the electronic item when deleted. Then deleteOne method will be called when next() in the pre hook is run.
                 electronic.deleteOne()
 
-                res.status(200).json({success: true})
+                return res.status(200).json({success: true})
             })
         } else {
-            res.status(400).json({msg: "You are not authorized to delete the electronic item"})
+            return res.status(400).json({msg: "You are not authorized to delete the electronic item"})
         }
     } catch (error) {
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 

@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
         const doesExistEmail = await BuyerUser.findOne({email: result.email.toLowerCase()})
         const doesExistSellerEmail = await SellerUser.findOne({email: result.email.toLowerCase()})
         if (doesExistEmail || doesExistSellerEmail) {
-            res.status(400).json({success: false, emailMsg: `${result.email} is already registered.`})
+            return res.status(400).json({success: false, emailMsg: `${result.email} is already registered.`})
             return
         }
         console.log(22, doesExistEmail)
@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
         const doesExistUser = await BuyerUser.findOne({ username: result.username})
         const doesExistSellerUser = await SellerUser.findOne({username: result.username})
         if (doesExistUser || doesExistSellerUser) {
-            res.status(400).json({success: false, usernameMsg:`${result.username} is already taken. Please try a different one.`})
+            return res.status(400).json({success: false, usernameMsg:`${result.username} is already taken. Please try a different one.`})
             return
         }
         console.log(31, doesExistUser)
@@ -43,7 +43,7 @@ router.post('/register', async (req, res) => {
         // 3) Create JWT token for successfully registered user
         const registerToken = issueJWT(savedUser)
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             user: savedUser,
             token: registerToken.token, 
@@ -70,14 +70,14 @@ router.post('/login', async (req, res, next) => {
             //  Create JWT token for successfully logged in user
             const loginToken = await issueJWT(existUser)
             console.log(68, "login token", loginToken)
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 user: existUser,
                 token: loginToken.token, 
                 expiresIn: loginToken.expires
             })
         } else {
-            res.status(400).json({success: false, msg: 'Wrong password'})
+            return res.status(400).json({success: false, msg: 'Wrong password'})
         }
 
         next() // run addItemsFromGuestToLoggedIn() so that if there were items in the cart when user was not logged in, we update the cart automatically when the user is logged back in
