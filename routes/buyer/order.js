@@ -9,11 +9,12 @@ const Order = require('../../model/order')
 passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.get('/list/orders', passportAuthenticate, async(req, res) => {
+    console.log(12)
     const totalOrders = await Order.find({LoggedInBuyer: req.user._id, Complete: true}).countDocuments() // find the orders that belong to the logged in buyer (loggedIn buyer's info resides in req.user), and then count the number of order items docs returned
-
+    console.log(14, totalOrders)
     const {limit = 5, page = 1} = req.query // set default values to limit and page for pagination
-
-    const allOrders = await Electronic.find({LoggedInBuyer: req.user._id, Complete: true}).limit(limit*1).skip((page-1) * limit)
+    console.log(16)
+    const allOrders = await Order.find({LoggedInBuyer: req.user._id, Complete: true}).limit(limit*1).skip((page-1) * limit)
 
     console.log(18, allOrders)
 
