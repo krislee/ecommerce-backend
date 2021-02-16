@@ -9,64 +9,66 @@ const indexPaymentMethods = async(req, res) => {
         if(req.user.buyer) {
             const loggedInUser = await BuyerUser.findById(req.user._id)
             
-            if(!loggedInUser.customer) res.status(200).json({msg: 'Need to create Stripe customer'})
+            if(!loggedInUser.customer) {
+                res.status(200).json({msg: 'Need to create Stripe customer'})
+            } else {
+                const paymentMethods = await stripe.paymentMethods.list({
+                    customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
+                    type: 'card',
+                });
 
-            const paymentMethods = await stripe.paymentMethods.list({
-                customer: loggedInUser.customer, // customer's id stored in found BuyerUser's document
-                type: 'card',
-            });
+                console.log(16, "all payment methods attached to customer: ", paymentMethods)
 
-            console.log(16, "all payment methods attached to customer: ", paymentMethods)
+                // Get the default payment method ID to display it in Payment Method component
+                const customer = await stripe.customers.retrieve(loggedInUser.customer)
+                defaultPaymentMethodID = customer.invoice_settings.default_payment_method
 
-            // Get the default payment method ID to display it in Payment Method component
-            const customer = await stripe.customers.retrieve(loggedInUser.customer)
-            defaultPaymentMethodID = customer.invoice_settings.default_payment_method
+                console.log(22, "default payment method: ", defaultPaymentMethodID)
 
-            console.log(22, "default payment method: ", defaultPaymentMethodID)
+                const allPaymentMethods = []
 
-            const allPaymentMethods = []
-
-            // Loop through all the payment method objects and send back only the id, brand, last4 digits, exp. date, and billing details for each payment method obj instead of just sending paymentMethods.data
-            for(let i=0; i < paymentMethods.data.length; i++) {
-                const paymentMethod = paymentMethods.data[i]
-                const onePaymentMethod = {
-                    paymentMethodID: paymentMethod.id,
-                    brand: paymentMethod.card.brand,
-                    last4: paymentMethod.card.last4,
-                    expDate: `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`,
-                    billingDetails: {
-                        address:  {
-                            line1: paymentMethod.billing_details.address.line1,
-                            line2: paymentMethod.billing_details.address.line2,
-                            city:  paymentMethod.billing_details.address.city,
-                            state:  paymentMethod.billing_details.address.state,
-                            postalCode:  paymentMethod.billing_details.address.postal_code,
-                            country:  paymentMethod.billing_details.address.country
+                // Loop through all the payment method objects and send back only the id, brand, last4 digits, exp. date, and billing details for each payment method obj instead of just sending paymentMethods.data
+                for(let i=0; i < paymentMethods.data.length; i++) {
+                    const paymentMethod = paymentMethods.data[i]
+                    const onePaymentMethod = {
+                        paymentMethodID: paymentMethod.id,
+                        brand: paymentMethod.card.brand,
+                        last4: paymentMethod.card.last4,
+                        expDate: `${paymentMethod.card.exp_month}/${paymentMethod.card.exp_year}`,
+                        billingDetails: {
+                            address:  {
+                                line1: paymentMethod.billing_details.address.line1,
+                                line2: paymentMethod.billing_details.address.line2,
+                                city:  paymentMethod.billing_details.address.city,
+                                state:  paymentMethod.billing_details.address.state,
+                                postalCode:  paymentMethod.billing_details.address.postal_code,
+                                country:  paymentMethod.billing_details.address.country
+                            },
+                            name: paymentMethod.billing_details.name
                         },
-                        name: paymentMethod.billing_details.name
-                    },
-                    cardholderName: paymentMethod.metadata.cardholder_name,
-                    recollectCVV: paymentMethod.metadata.recollect_cvv // Add the recollect_cvv property to metadata. If the payment method displayed later in checkout has a recollect_cvv: true, then the user has to enter CVV again. The CVV will be added to the stripe.confirmCardPayment() parameter on the client side. recollect_cvv in metadata will only be true if payment method was updated in Payment Method component
-                }
+                        cardholderName: paymentMethod.metadata.cardholder_name,
+                        recollectCVV: paymentMethod.metadata.recollect_cvv // Add the recollect_cvv property to metadata. If the payment method displayed later in checkout has a recollect_cvv: true, then the user has to enter CVV again. The CVV will be added to the stripe.confirmCardPayment() parameter on the client side. recollect_cvv in metadata will only be true if payment method was updated in Payment Method component
+                    }
+                    
                 
-              
-                // Add the default property to the paymentMethod obj above
-                if (onePaymentMethod.paymentMethodID === defaultPaymentMethodID) {
-                    onePaymentMethod.default = true 
-                } else {
-                    onePaymentMethod.default = false
+                    // Add the default property to the paymentMethod obj above
+                    if (onePaymentMethod.paymentMethodID === defaultPaymentMethodID) {
+                        onePaymentMethod.default = true 
+                    } else {
+                        onePaymentMethod.default = false
+                    }
+
+                    // Check if this function is being called through clicking saved cards. If it is, then do not send back the already displayed payment method, so do not push into allPaymentMethods
+                    if(req.query.save === 'true') {
+                        if(req.query.id === onePaymentMethod.paymentMethodID) continue
+                    }
+
+                    allPaymentMethods.push(onePaymentMethod)
+                    console.log(63, "a list of payment methods to send back: ", allPaymentMethods)
                 }
 
-                // Check if this function is being called through clicking saved cards. If it is, then do not send back the already displayed payment method, so do not push into allPaymentMethods
-                if(req.query.save === 'true') {
-                    if(req.query.id === onePaymentMethod.paymentMethodID) continue
-                }
-
-                allPaymentMethods.push(onePaymentMethod)
-                console.log(63, "a list of payment methods to send back: ", allPaymentMethods)
+                res.status(200).json({paymentMethods: allPaymentMethods})
             }
-
-            res.status(200).json({paymentMethods: allPaymentMethods})
         }
     } catch(error) {
         console.log(69, "error", error)
