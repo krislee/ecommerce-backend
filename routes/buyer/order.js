@@ -26,11 +26,12 @@ router.get('/list/orders', passportAuthenticate, async(req, res) => {
 })
 
 router.get('/list/orders/:id', async(req, res) => {
+    console.log(29, req.params.id)
     const order = await Order.findOne({OrderNumber: req.params.id})
     const paymentMethod = await stripe.paymentMethods.retrieve(order.PaymentMethod)
 
-    console.log(15, order)
-    console.log(16, paymentMethod)
+    console.log(30, order)
+    console.log(34, paymentMethod)
 
     return res.status(200).json({
         order: order, 

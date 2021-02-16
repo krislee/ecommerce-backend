@@ -39,29 +39,42 @@ const create = async (req,res) => {
         // console.log(req.user)
         if (req.user.buyer){ // user needs to be logged in to review, hence req.user.buyer
             // Check if logged in reviewer actually brought the electronic item before buyer can review
+            const totalOrders = await Order.find({LoggedInBuyer: req.user._id}).countDocuments()
+            console.log(43, totalOrders)
+            const totalElectronicOrder = await Order.find({LoggedInBuyer: req.user._id}).populate({
+                path: 'ElectronicItem', 
+                match: {_id: req.params.id}
+            }).countDocuments()
+            console.log(48, totalElectronicOrder)
             const purchasedOrders = await Order.find({LoggedInBuyer: req.user._id}).populate({
                 path: 'ElectronicItem', 
                 match: {_id: req.params.id}
             })
-            console.log(43, purchasedOrders)
+            console.log(53, purchasedOrders)
             
             // From the frontend, the req.params will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId
             // if(purchasedOrders)
-            const electronicReview = await ElectronicReview.create({
-                Name: req.user.username,
-                Comment: req.body.Comment,
-                Rating: req.body.Rating,
-                Buyer: req.user._id,
-                ElectronicItem: req.params.electronicId
-            }) 
+            if(purchasedOrders.length > 0) {
+                const electronicReview = await ElectronicReview.create({
+                    Name: req.user.username,
+                    Comment: req.body.Comment,
+                    Rating: req.body.Rating,
+                    Buyer: req.user._id,
+                    ElectronicItem: req.params.electronicId
+                }) 
+                return res.status(200).json(electronicReview);
+            } else {
+                return res.status(200).json({msg: 'You can not review an item you have not purchased.'})
+            }
+            
 
-            res.status(200).json(electronicReview);
+            
         } else {
-            res.status(400).json({msg: "You are not authorized to create the review"})
+            return res.status(400).json({msg: "You are not authorized to create the review"})
         }
     } 
     catch (error) {
-        res.status(400).json({msg: error});
+        return res.status(400).json({msg: error});
     }
 }
 
