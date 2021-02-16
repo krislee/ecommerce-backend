@@ -44,15 +44,22 @@ const create = async (req,res) => {
  
             if(purchasedOrders.length > 0) {
                 console.log(49, purchasedOrders.length)
-                const electronicReview = await ElectronicReview.create({
-                    Name: req.user.username,
-                    Comment: req.body.Comment,
-                    Rating: req.body.Rating,
-                    Buyer: req.user._id,
-                    ElectronicItem: req.params.electronicId
-                }) 
-                console.log(56, electronicReview)
-                return res.status(200).json(electronicReview);
+                // If user did purchased the item that he/she wants to review, check if user already made a review before creating a new review
+                const review = await ElectronicReview.findOne({LoggedInBuyer: req.user._id, ElectronicItem: req.params.electronicId})
+                if(review) {
+                    return res.status(200).json({msg: "You have already made a review for this item."})
+                } else {
+                    const electronicReview = await ElectronicReview.create({
+                        Name: req.user.username,
+                        Comment: req.body.Comment,
+                        Rating: req.body.Rating,
+                        Buyer: req.user._id,
+                        ElectronicItem: req.params.electronicId
+                    }) 
+                    console.log(56, electronicReview)
+                    return res.status(200).json(electronicReview);
+                }
+                
             } else {
                 return res.status(200).json({msg: 'You can not review an item you have not purchased.'})
             }
