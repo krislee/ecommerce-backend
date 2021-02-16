@@ -36,7 +36,7 @@ const guestAddItem = async(req, res, next) => {
             }
             req.session.save()
             console.log(36, "added item to guest cart:", req.session)
-            res.status(200).json(req.session.cart);
+            return res.status(200).json(req.session.cart);
 
         } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
             req.session.cart = 
@@ -50,13 +50,13 @@ const guestAddItem = async(req, res, next) => {
                 }]
             req.session.save()
             console.log(50, "guest cart is made to add item: ", req.session)
-            res.status(200).json(req.session.cart);
+            return res.status(200).json(req.session.cart);
         }
 
     }
     catch (error) {
         console.log(56, "error: ", error)
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 
@@ -84,12 +84,12 @@ const guestUpdateItemQuantity = async(req, res) => {
         for (let i=0; i < req.session.cart.length; i++) {
             totalCartPrice += req.session.cart[i].TotalPrice
         }
-        res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice})
+        return res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice})
         
     }
     catch (error) {
         console.log(84, "error: ", error)
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 
@@ -109,10 +109,10 @@ const guestDeleteItem = (req, res) => {
         for (let i=0; i < req.session.cart.length; i++) {
             totalCartPrice += req.session.cart[i].TotalPrice
         }
-        res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice})
+        return res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice})
     }
     catch(error) {
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 
@@ -130,18 +130,18 @@ const guestIndexCart = (req, res) => {
                 for (let i=0; i < req.session.cart.length; i++) {
                     totalCartPrice += req.session.cart[i].TotalPrice
                 }
-                res.status(200).json({
+                return res.status(200).json({
                     sessionID: req.sessionID,
                     totalCartPrice: totalCartPrice,
                     cart: req.session.cart,
                 })
             } else {
-                res.status(200).json({cart: 'No items in cart'})
+                return res.status(200).json({cart: 'No items in cart'})
             }
     }
     catch(error) {
         console.log("error", error)
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 

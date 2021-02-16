@@ -45,7 +45,7 @@ const loggedInAddItem = async(req, res, next) => {
                 }
 
                 await cart.save()
-                res.status(200).json(cart)
+                return tatus(200).json(cart)
 
             } else { // if cart does not exist create a new cart to hold the added item 
                 console.log(" new cart will be made for logged in user ")
@@ -62,12 +62,12 @@ const loggedInAddItem = async(req, res, next) => {
                 })
    
                 console.log(newCart, "new cart successfully made for logged in user")
-                res.status(200).json(newCart)
+                return res.status(200).json(newCart)
             }
         }
     }
     catch (error) {
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 
@@ -139,7 +139,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             console.log(125, "after deleting session: ", req.session)
         }
 
-        res.status(200).json({successful: "added items to OLD cart after SYNCING", cart: cart})
+        return res.status(200).json({successful: "added items to OLD cart after SYNCING", cart: cart})
     } else {
         const newCart = await Cart.create({
             LoggedInBuyer: req.user._id
@@ -169,7 +169,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
 
         console.log(165, "new cart for adding items from guest to logged in cart: ", newCart)
 
-        res.status(200).json({successful: "created a NEW cart and SYNC items", cart: newCart})
+        return res.status(200).json({successful: "created a NEW cart and SYNC items", cart: newCart})
     }
 }
 
@@ -195,11 +195,11 @@ const loggedInUpdateItemQuantity = async (req, res) => {
                     totalCartPrice += cart.Items[i].TotalPrice
                 }
             }
-            res.status(200).json({cart: cart, totalCartPrice: totalCartPrice})
+            return status(200).json({cart: cart, totalCartPrice: totalCartPrice})
         }
     }
     catch (error) {
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 } 
 
@@ -221,10 +221,10 @@ const loggedInDeleteItem = async (req, res) => {
                     totalCartPrice += cart.Items[i].TotalPrice
                 }
             }
-            res.status(200).json({cart: cart, totalCartPrice: totalCartPrice})
+            return res.status(200).json({cart: cart, totalCartPrice: totalCartPrice})
         } 
     } catch(error) {
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 
@@ -245,20 +245,20 @@ const loggedInIndexCart = async(req, res) => {
                 // console.log(cart, "logged in cart")
 
                 if(cart.Items.length !== 0) {
-                    res.status(200).json({
+                    return res.status(200).json({
                         cart: cart,
                         totalCartPrice: totalCartPrice
                     })
                 } else {
-                    res.status(200).json({cart: 'No cart available'}) // When users log in, syncing occurs so a cart is created with the possibility of no items in the cart, so we need to send 'No cart available back'.
+                    return res.status(200).json({cart: 'No cart available'}) // When users log in, syncing occurs so a cart is created with the possibility of no items in the cart, so we need to send 'No cart available back'.
                 }
             } else {
-                res.status(200).json({cart: 'No cart available'}) // Send 'No cart available' back when there is no cart, i.e. after a successful payment the old cart is deleted so there won't be any cart
+                return res.status(200).json({cart: 'No cart available'}) // Send 'No cart available' back when there is no cart, i.e. after a successful payment the old cart is deleted so there won't be any cart
             }
         }
     }
     catch(error) {
-        res.status(400).send(error)
+        return res.status(400).send(error)
     }
 }
 
@@ -268,11 +268,11 @@ const getCartID = async(req, res) => {
         console.log(req.user, 'user');
         if(req.user) {
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-            res.status(200).json({cartID: cart._id})
+            return res.status(200).json({cartID: cart._id})
         }
     }
     catch(error) {
-        res.status(400).send(error)
+       return res.status(400).send(error)
     }
 }
 
