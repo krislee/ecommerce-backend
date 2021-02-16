@@ -59,9 +59,7 @@ const update = async (req, res) => {
                         });
                     } 
                 }
-            }
-            
-            if (req.body.password) {
+            } else if (req.body.password) {
                 // Check if password is valid
                 await passwordSchema.validateAsync(req.body)
                 
