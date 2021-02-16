@@ -1,7 +1,7 @@
 require("dotenv").config()
 // const { v4: uuidv4 } = require('uuid');
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
-const LoggedInCart = require('../../model/buyer/cart')
+const Cart = require('../../model/buyer/cart')
 const {BuyerUser}= require('../../model/buyer/buyerUser')
 const {CachePaymentIntent} = require('../../model/buyer/cachePaymentIntent')
 // const {checkoutPaymentMethod} = require('./stripePaymentMethod')
@@ -207,7 +207,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
             console.log(203, "user is logged in, create payment intent")
 
             // id of logged in customer's cart will be the idempotent key in payment intent creation
-            const loggedInCart = await LoggedInCart.findOne({LoggedInBuyer: req.user._id})
+            const loggedInCart = await Cart.findOne({LoggedInBuyer: req.user._id})
             console.log(207, "logged in cart: ", loggedInCart)
             console.log(208, typeof loggedInCart._id, loggedInCart._id)
             console.log(209, typeof String(loggedInCart._id), String(loggedInCart._id)) 
