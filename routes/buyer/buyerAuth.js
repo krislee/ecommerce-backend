@@ -22,8 +22,8 @@ router.post('/register', async (req, res) => {
         console.log(22, doesExistEmail)
         console.log(23, doesExistSellerEmail)
         // Check if username is trying to register acct with is already in the db
-        const doesExistUser = await BuyerUser.findOne({ username: result.username.toLowerCase()})
-        const doesExistSellerUser = await SellerUser.findOne({username: result.username.toLowerCase()})
+        const doesExistUser = await BuyerUser.findOne({ username: result.username})
+        const doesExistSellerUser = await SellerUser.findOne({username: result.username})
         if (doesExistUser || doesExistSellerUser) {
             res.status(400).json({success: false, msg:`${result.username} is already taken. Please try a different one.`})
             return
@@ -36,11 +36,11 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         console.log(36, hashedPassword)
         // 2) Create and save the created user to db
-        const user = await BuyerUser.create({ username: req.body.username.toLowerCase(), password: hashedPassword, oldPasswords: hashedPassword, email: req.body.email.toLowerCase(), buyer: true, name: req.body.name})
+        const user = await BuyerUser.create({ username: req.body.username, password: hashedPassword, oldPasswords: hashedPassword, email: req.body.email.toLowerCase(), buyer: true, name: req.body.name})
         const savedUser = await user.save();
         console.log(36, "user: ", user)
         // 3) Create JWT token for successfully registered user
-        const registerToken = await issueJWT(savedUser)
+        const registerToken = issueJWT(savedUser)
 
         res.status(200).json({
             success: true,
