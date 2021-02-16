@@ -9,9 +9,19 @@ const Order = require('../../model/order')
 passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.get('/list/orders', passportAuthenticate, async(req, res) => {
-    const orders = await Order.find({LoggedInBuyer: req.user._id, Complete: true})
-    console.log(40, orders)
-    res.status(200).json({orders: orders})
+    const totalOrders = await Order.find({LoggedInBuyer: req.user._id, Complete: true}).countDocuments() // find the orders that belong to the logged in buyer (loggedIn buyer's info resides in req.user), and then count the number of order items docs returned
+
+    const {limit = 5, page = 1} = req.query // set default values to limit and page for pagination
+
+    const allOrders = await Electronic.find({LoggedInBuyer: req.user._id, Complete: true}).limit(limit*1).skip((page-1) * limit)
+
+    console.log(18, allOrders)
+
+    return res.status(200).json({
+        orders: allOrders,
+        totalPages: Math.ceil(totalOrders/limit),
+        currentPage: page //page is received from req.query i.e. route would be localhost:3000/complete/list/orders?page=2, and the page number is 2
+    });
 })
 
 router.get('/list/orders/:id', async(req, res) => {
@@ -21,7 +31,7 @@ router.get('/list/orders/:id', async(req, res) => {
     console.log(15, order)
     console.log(16, paymentMethod)
 
-    res.status(200).json({
+    return res.status(200).json({
         order: order, 
         payment: {
             brand: paymentMethod.card.brand,
