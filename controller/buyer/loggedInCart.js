@@ -45,7 +45,7 @@ const loggedInAddItem = async(req, res, next) => {
                 }
 
                 await cart.save()
-                return tatus(200).json(cart)
+                return res.status(200).json(cart)
 
             } else { // if cart does not exist create a new cart to hold the added item 
                 console.log(" new cart will be made for logged in user ")
@@ -195,7 +195,7 @@ const loggedInUpdateItemQuantity = async (req, res) => {
                     totalCartPrice += cart.Items[i].TotalPrice
                 }
             }
-            return status(200).json({cart: cart, totalCartPrice: totalCartPrice})
+            return res.status(200).json({cart: cart, totalCartPrice: totalCartPrice})
         }
     }
     catch (error) {
