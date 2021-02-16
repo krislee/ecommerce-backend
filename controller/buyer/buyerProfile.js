@@ -65,8 +65,8 @@ const update = async (req, res) => {
                 // Check if password is valid
                 await passwordSchema.validateAsync(req.body)
                 
-                // Grab the seller document
-                buyer = await BuyerUser.findById(req.user._id)
+                // Grab the buyer document
+                const buyer = await BuyerUser.findById(req.user._id)
 
                 // Check if the entered password seller is trying to update is the last 5 (or less) passwords. If it is, return.
                 for (let i = 0; i < buyer.oldPasswords.length; i ++) {

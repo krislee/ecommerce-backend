@@ -224,6 +224,7 @@ const webhook = async (req, res) => {
                         },
                         PaymentMethod: data.object.payment_method,
                         TotalPrice: data.object.amount,
+                        OrderDate: new Date(),
                         Complete: true
                     }, {new: true})
                     

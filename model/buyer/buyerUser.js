@@ -56,6 +56,8 @@ buyerUserSchema.pre('deleteOne', { document: true, query: true}, async function(
         // Delete cart document (if there is one) that referenced to the removed buyer
         await this.model('cart').deleteOne({LoggedInBuyer: this._id})
 
+        // Need to detach payment methods from Stripe customer
+
         // Continue running the deleteOne function in the delete buyer profile route
         next()
     }
