@@ -15,7 +15,7 @@ const loggedInOrderAmount = async (req, res) => {
         // console.log(14, req.user.buyer)
         if(req.user) {
 
-            const loggedInCart = await LoggedInCart.findOne({LoggedInBuyer: req.user._id})
+            const loggedInCart = await Cart.findOne({LoggedInBuyer: req.user._id})
             console.log(18, loggedInCart)
             for(let i=0; i<loggedInCart.Items.length; i++) {
                 totalCartPrice+= loggedInCart.Items[i].TotalPrice
