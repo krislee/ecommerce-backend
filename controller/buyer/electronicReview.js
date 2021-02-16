@@ -41,17 +41,17 @@ const create = async (req,res) => {
             // Check if logged in reviewer actually brought the electronic item before buyer can review
             const totalOrders = await Order.find({LoggedInBuyer: req.user._id}).countDocuments()
             console.log(43, totalOrders)
-            const totalElectronicOrder = await Order.find({LoggedInBuyer: req.user._id}).populate({
-                path: 'ElectronicItem', 
-                match: {_id: req.params.id}
-            }).countDocuments()
-            console.log(48, totalElectronicOrder)
+
             const purchasedOrders = await Order.find({LoggedInBuyer: req.user._id}).populate({
                 path: 'ElectronicItem', 
-                match: {_id: req.params.id}
+                match: {_id: req.params.electronicId}
             })
-            console.log(53, purchasedOrders)
-            
+            console.log(49, purchasedOrders)
+
+            const purchasedOrders2 = await Order.find({LoggedInBuyer: req.user._id, Items: {_id: req.params.electronicId}})
+            console.log(52, purchasedOrders2)
+
+        
             // From the frontend, the req.params will have the id of the electronic item. The item's id is grabbed when we click on the review button under each electronic item since each review button has an attribute id equal to the electronic item ObjectId
             // if(purchasedOrders)
             if(purchasedOrders.length > 0) {
