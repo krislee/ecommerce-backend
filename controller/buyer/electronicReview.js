@@ -33,6 +33,26 @@ const index = async (req, res) => {
     }
 }
 
+const show = async (req, res) => {
+    try {
+        console.log(38)
+        if (req.user.buyer){
+            console.log(40, "REVIEWS")
+            const singleElectronicReview = await ElectronicReview.find({ElectronicItem:req.params.id, Buyer: req.user._id})
+            console.log(42, singleElectronicReview)
+
+            return res.status(200).json({
+                singleReview: singleElectronicReview
+            })
+        } else {
+            return res.status(400).json({msg: "You are not authorized to view the reviews"})
+        }
+    }
+    catch (error) {
+        console.log(52, error)
+        return res.status(400).send(error);
+    }
+}
 // CREATE ELECTRONIC ITEM REVIEW 
 
 // Click on Review button, which has an attribute id equal to the electronic item ObjectId
@@ -113,4 +133,4 @@ const destroy = async (req, res) => {
     }
 }
 
-module.exports = {index, create, update, destroy}
+module.exports = {index, show, create, update, destroy}
