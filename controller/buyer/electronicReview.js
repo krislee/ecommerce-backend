@@ -19,7 +19,7 @@ const index = async (req, res) => {
             const total = allElectronicReviews.length
 
             return res.status(200).json({
-                allReviews: allElectronicReviews,
+                allReviews: allElectronicReviews.reverse(),
                 totalPages: Math.ceil(electronicReviewsTotal/limit),
                 currentPage: page
             })
