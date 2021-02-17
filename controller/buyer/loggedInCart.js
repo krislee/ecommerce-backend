@@ -47,8 +47,9 @@ const loggedInAddItem = async(req, res, next) => {
                 }
 
                 await cart.save()
+        
 
-                const updatedCartWithItem = await Cart.find({LoggedInBuyer: req.user._id})
+                const updatedCartWithItem = await Cart.find({LoggedInBuyer: req.user._id}, {'Items.Quantity': 1})
                 console.log(51, updatedCartWithItem)
                 return res.status(200).json(cart)
 
