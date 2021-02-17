@@ -1,6 +1,5 @@
 const {Electronic} = require('../../model/seller/electronic')
 const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
-const Buyer = require('../../model/buyer/buyerUser')
 const Order = require('../../model/order')
 
 // SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
@@ -13,6 +12,7 @@ const index = async (req, res) => {
             const {limit=2, page=1} = req.query // set default values to limit and page for pagination
             const electronicReviewsTotal = await ElectronicReview.find({Buyer: req.user._id}).countDocuments()
             // find all the reviews of one electronic item by getting the id of electronic item
+            // sort by most recent record
             // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
             const allElectronicReviews = await ElectronicReview.find({Buyer: req.user._id}).sort({ _id: -1 }).limit(limit*1).skip((page-1)*limit).populate('ElectronicItem')
             console.log(15, allElectronicReviews)
