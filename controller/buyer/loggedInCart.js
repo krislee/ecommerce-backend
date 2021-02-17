@@ -48,7 +48,7 @@ const loggedInAddItem = async(req, res, next) => {
 
                 await cart.save()
 
-                const updatedCartWithItem = Cart.findOne({LoggedInBuyer: req.buyer._id}, { "Items.Quantity": 1, "_id": 0});
+                const updatedCartWithItem = Cart.findOne({LoggedInBuyer: req.buyer._id}, { "Items.Quantity": 1});
                 console.log(51, updatedCartWithItem)
                 return res.status(200).json(cart)
 
