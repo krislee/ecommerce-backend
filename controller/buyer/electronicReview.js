@@ -11,7 +11,7 @@ const index = async (req, res) => {
         if (req.user.buyer){
             console.log(12, "REVIEWS", req.user)
             const {limit=2, page=1} = req.query // set default values to limit and page for pagination
-            console.log(14, "REVIEWS")
+            const electronicReviewsTotal = await ElectronicReview.find({Buyer: req.user._id}).countDocuments()
             // find all the reviews of one electronic item by getting the id of electronic item
             // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
             const allElectronicReviews = await ElectronicReview.find({Buyer: req.user._id}).limit(limit*1).skip((page-1)*limit).populate('ElectronicItem')
@@ -20,7 +20,7 @@ const index = async (req, res) => {
 
             return res.status(200).json({
                 allReviews: allElectronicReviews,
-                totalPages: Math.ceil(total/limit),
+                totalPages: Math.ceil(electronicReviewsTotal/limit),
                 currentPage: page
             })
         } else {
