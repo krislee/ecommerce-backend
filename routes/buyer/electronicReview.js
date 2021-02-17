@@ -5,7 +5,7 @@ const {index, create, update, destroy} = require('../../controller/buyer/electro
 const router = express.Router();
 const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
-router.get('/electronic/all-reviews', passportAuthenticate, index)
+router.get('/all/electronic/reviews', passportAuthenticate, index)
 
 router.post('/electronic/review/:electronicId', passportAuthenticate, create)
 
