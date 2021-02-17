@@ -2,7 +2,7 @@ const {Electronic} = require('../../model/seller/electronic')
 const {ElectronicReview} = require('../../model/buyer/reviewElectronic')
 const Buyer = require('../../model/buyer/buyerUser')
 const Order = require('../../model/order')
-const { all } = require('../../routes/buyer/electronicReview')
+
 // SHOW ALL REVIEWS OF ONE ELECTRONIC ITEM
 
 const index = async (req, res) => {
