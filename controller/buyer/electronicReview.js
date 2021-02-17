@@ -7,11 +7,11 @@ const Order = require('../../model/order')
 const index = async (req, res) => {
     try {
         if (req.user.buyer){
-            const {limit=10, page=1} = req.query // set default values to limit and page for pagination
+            const {limit=2, page=1} = req.query // set default values to limit and page for pagination
 
             // find all the reviews of one electronic item by getting the id of electronic item
             // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
-            const allElectronicReviews = await ElectronicReview.find({ElectronicItem:req.params.electronicId, Buyer: req.user._id}).limit(limit*1).skip((page-1)*limit)
+            const allElectronicReviews = await ElectronicReview.find({Buyer: req.user._id}).limit(limit*1).skip((page-1)*limit)
 
             const total = await allElectronicReviews.length
 
