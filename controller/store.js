@@ -23,20 +23,29 @@ const electronicIndex = async (req, res) => {
 
 const electronicShow = async(req, res) => {
     try {
-         // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
-         const oneElectronic = await  Electronic.findById(req.params.id)
+        // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
+        const oneElectronic = await  Electronic.findById(req.params.id)
 
-         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
-         const seller = await SellerUser.findById(oneElectronic.Seller[0])
+        // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
+        const seller = await SellerUser.findById(oneElectronic.Seller[0])
 
-         // Get all the reviews documents of that one electronic item
-         const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id})
-        //  console.log(electronicReview, "all electronic reviews")
+        // Get all the reviews documents of that one electronic item
+        const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id})
+        
+        // Get the item ratings to average it out
+        const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: oneElectronic._id}).select({ "Rating": 1, "_id": 0});
+        console.log(37, electronicReviewRatings)
+        const total = electronicReviewRatings.reduce((total, rating) => {
+            return total + rating['Rating']
+        }, 0)
+        console.log(41, total)
+        const avgRating = total/electronicReviewRatings.length
 
         return res.status(200).json({
             electronicItem: oneElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
-            review: electronicReview
+            review: electronicReview,
+            avgRating: avgRating
         })
 
     }
