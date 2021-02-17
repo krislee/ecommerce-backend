@@ -1,3 +1,4 @@
+const { default: CartItemPage } = require('../../../ecommerce-frontend/src/screens/Cart/CartItemPage')
 const {Electronic} = require('../../model/seller/electronic')
 
 // Guest user adds item to cart
@@ -16,27 +17,31 @@ const guestAddItem = async(req, res, next) => {
             
             // if item exists in the cart, update quantity and total price
             if (cartItem) { 
-                console.log(19, "cart item quantity: ", cartItem.Quantity,  typeof cartItem.Quantity, "req.body.quantity: ", req.body.Quantity, typeof req.body.Quantity)
-
-                // cartItem.Quantity += req.body.Quantity
+    
                 cartItem.Quantity = Number(cartItem.Quantity)
-                console.log(23, "cart item quantity: ", cartItem.Quantity,  typeof cartItem.Quantity, "req.body.quantity: ", req.body.Quantity, typeof req.body.Quantity)
+         
                 cartItem.Quantity += Number(req.body.Quantity)
-                console.log(25, "cart item quantity: ", cartItem.Quantity,  typeof cartItem.Quantity, "req.body.quantity: ", req.body.Quantity, typeof req.body.Quantity)
+
                 cartItem.TotalPrice = cartItem.Quantity * item.Price
+                req.session.totalCartPrice += (item.Price * Number(req.body.Quantity))
+                req.session.totalItems += Number(req.body.Quantity)
+
             } else { // if item does not exists, then add the item to the cart
                 req.session.cart.push({
                     ItemId: item.id,
                     Name: item.Name,
                     Brand: item.Brand,
                     Image: item.Image,
-                    Quantity: req.body.Quantity,
-                    TotalPrice: req.body.Quantity * item.Price
+                    Quantity: Number(req.body.Quantity),
+                    TotalPrice: Number(req.body.Quantity) * item.Price
                 })
+                req.session.totalCartPrice += (item.Price * Number(req.body.Quantity))
+                req.session.totalItems += Number(req.body.Quantity)
             }
+
             req.session.save()
             console.log(36, "added item to guest cart:", req.session)
-            return res.status(200).json(req.session.cart);
+            return res.status(200).json({cart: req.session.cart, totalItems: req.session.totalItems, totalCartPrice: req.session.totalCartPrice})
 
         } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
             req.session.cart = 
@@ -45,12 +50,15 @@ const guestAddItem = async(req, res, next) => {
                     Name: item.Name,
                     Image: item.Image,
                     Brand: item.Brand,
-                    Quantity: req.body.Quantity,
-                    TotalPrice: req.body.Quantity * item.Price
+                    Quantity: Number(req.body.Quantity),
+                    TotalPrice: Number(req.body.Quantity) * item.Price
                 }]
+            req.session.totalCartPrice = Number(req.body.Quantity) * item.Price
+            req.session.totalItems = Number(req.body.Quantity)
             req.session.save()
-            console.log(50, "guest cart is made to add item: ", req.session)
-            return res.status(200).json(req.session.cart);
+
+            console.log(56, "guest cart is made to add item: ", req.session)
+            return res.status(200).json({cart: req.session.cart, totalItems: req.session.totalItems, totalCartPrice:req.session.totalCartPrice});
         }
 
     }
@@ -74,17 +82,18 @@ const guestUpdateItemQuantity = async(req, res) => {
             return i.ItemId == item.id
         })
         console.log(74,  "cart item we want to update", cartItem)
-        console.log(75, "req.body: ", req.body.Quantity, "cart: ", cartItem.Quantity)
-        cartItem.Quantity = req.body.Quantity
-        console.log(77, cartItem)
-        cartItem.TotalPrice = (item.Price * req.body.Quantity)
-        console.log(79, cartItem)
+        const totalCartQuantity = req.session.cart.totalItems + (Number(req.body.Quantity) - cartItem.Quantity)
+        const totalCartPrice = req.session.totalCartPrice + ((Number(req.body.Quantity) - cartItem.Quantity)*item.Price)
+        cartItem.Quantity = Number(req.body.Quantity)
+        cartItem.TotalPrice = (item.Price * Number(req.body.Quantity))
         console.log(80, "after updating guest cart", cartItem)
-        let totalCartPrice = 0
-        for (let i=0; i < req.session.cart.length; i++) {
-            totalCartPrice += req.session.cart[i].TotalPrice
-        }
-        return res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice})
+
+        // let totalCartPrice = 0
+        // for (let i=0; i < req.session.cart.length; i++) {
+        //     totalCartPrice += req.session.cart[i].TotalPrice
+        // }
+        
+        return res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice, totalItems: totalCartQuantity})
         
     }
     catch (error) {

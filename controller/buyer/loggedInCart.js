@@ -54,7 +54,6 @@ const loggedInAddItem = async(req, res, next) => {
                     console.log(58,quantity)
                     return total + quantity['Quantity']
                 }, 0)
-                console.log(42, total)
                 // const add = await Cart.findOne({LoggedInBuyer: req.user._id}).aggregate([
                 //     { "$addFields": {
                 //         "totalQuantity": {
@@ -219,8 +218,6 @@ const loggedInUpdateItemQuantity = async (req, res) => {
                 console.log(219,quantity)
                 return total + quantity['Quantity']
             }, 0)
-            console.log(222, total)
-
 
             return res.status(200).json({cart: cart, totalCartPrice: totalCartPrice, totalItems: totalQuantity})
         }
