@@ -80,7 +80,7 @@ const loggedInAddItem = async(req, res, next) => {
                 })
    
                 console.log(newCart, "new cart successfully made for logged in user")
-                return res.status(200).json(newCart)
+                return res.status(200).json({cart: newCart, totalItems: newCart.Items.Quantity})
             }
         }
     }
