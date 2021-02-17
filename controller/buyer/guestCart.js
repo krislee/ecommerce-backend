@@ -1,4 +1,3 @@
-const { default: CartItemPage } = require('../../../ecommerce-frontend/src/screens/Cart/CartItemPage')
 const {Electronic} = require('../../model/seller/electronic')
 
 // Guest user adds item to cart
