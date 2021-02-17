@@ -36,9 +36,10 @@ const electronicShow = async(req, res) => {
         const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: oneElectronic._id}).select({ "Rating": 1, "_id": 0});
         console.log(37, electronicReviewRatings)
         const total = electronicReviewRatings.reduce((total, rating) => {
+            console.log(39,rating)
             return total + rating['Rating']
         }, 0)
-        console.log(41, total)
+        console.log(42, total)
         const avgRating = total/electronicReviewRatings.length
 
         return res.status(200).json({
