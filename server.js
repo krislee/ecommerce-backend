@@ -8,10 +8,7 @@ const cors = require('cors')
 const app = express()
 const connection = require('./db/connection')
 
-// LISTEN TO PORT
-const server = app.listen(process.env.PORT, () => {
-  console.log(`Listening to ${process.env.PORT}`)
-})
+
 // const io = require('socket.io')(server, {
 //   cors: {
 //     origin: 'http://localhost:3000',
@@ -168,7 +165,10 @@ app.use('/shipping', shippingAddressRouter)
 // Order Route
 app.use('/complete', orderRouter)
 
-
+// LISTEN TO PORT
+app.listen(process.env.PORT, () => {
+  console.log(`Listening to ${process.env.PORT}`)
+})
 
 // https://stackoverflow.com/questions/44894789/node-js-express-session-creating-new-session-id-every-time-i-refresh-or-access-t
 
