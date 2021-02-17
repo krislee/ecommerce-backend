@@ -35,10 +35,10 @@ const index = async (req, res) => {
 
 const show = async (req, res) => {
     try {
-        console.log(38)
         if (req.user.buyer){
-            console.log(40, "REVIEWS")
-            const singleElectronicReview = await ElectronicReview.find({ElectronicItem:req.params.id, Buyer: req.user._id})
+            const electronic = await Electronic.findById(req.params.id)
+            console.log(40, electronic)
+            const singleElectronicReview = await ElectronicReview.find({ElectronicItem: electronic._id, Buyer: req.user._id})
             console.log(42, singleElectronicReview)
 
             return res.status(200).json({
