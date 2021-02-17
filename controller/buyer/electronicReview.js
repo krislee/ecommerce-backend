@@ -14,7 +14,7 @@ const index = async (req, res) => {
             console.log(14, "REVIEWS")
             // find all the reviews of one electronic item by getting the id of electronic item
             // .limit(limit*1).skip((page-1)*limit) limits 10 reviews per page for pagination
-            const allElectronicReviews = await ElectronicReview.find({Buyer: req.user._id}).limit(limit*1).skip((page-1)*limit)
+            const allElectronicReviews = await ElectronicReview.find({Buyer: req.user._id}).limit(limit*1).skip((page-1)*limit).populate('ElectronicItem')
             console.log(15, allElectronicReviews)
             const total = allElectronicReviews.length
 
