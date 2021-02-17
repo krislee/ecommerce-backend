@@ -47,10 +47,10 @@ const loggedInAddItem = async(req, res, next) => {
                 }
 
                 await cart.save()
-        
 
-                const updatedCartWithItem = await Cart.findOne({LoggedInBuyer: req.user._id}, {_id: 0}).select('Items.Quantity')
-                console.log(51, updatedCartWithItem)
+                // const updatedCartWithItem = await Cart.findOne({LoggedInBuyer: req.user._id}, {_id: 0}).select('Items.Quantity')
+                const add = await Cart.findOne({LoggedInBuyer: req.user._id}).aggregate([{$group : {_id : "$Items.Quantity", total : {$sum : 1}}}])
+                console.log(70, add)
                 return res.status(200).json(cart)
 
             } else { // if cart does not exist create a new cart to hold the added item 
