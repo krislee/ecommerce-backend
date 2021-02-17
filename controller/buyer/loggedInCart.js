@@ -50,7 +50,7 @@ const loggedInAddItem = async(req, res, next) => {
 
                 const updatedCartWithItem = await Cart.findOne({LoggedInBuyer: req.user._id}, {_id: 0}).select('Items.Quantity')
                 console.log(56, updatedCartWithItem)
-                const total = updatedCartWithItem.Items.reduce((total, quantity) => {
+                const totalQuantity = updatedCartWithItem.Items.reduce((total, quantity) => {
                     console.log(58,quantity)
                     return total + quantity['Quantity']
                 }, 0)
@@ -62,8 +62,7 @@ const loggedInAddItem = async(req, res, next) => {
                 //         }
                 //     } },
                 // ]);
-                console.log(70, add)
-                return res.status(200).json({cart: cart, totalItems: total})
+                return res.status(200).json({cart: cart, totalItems: totalQuantity})
 
             } else { // if cart does not exist create a new cart to hold the added item 
                 console.log(" new cart will be made for logged in user ")
@@ -213,7 +212,17 @@ const loggedInUpdateItemQuantity = async (req, res) => {
                     totalCartPrice += cart.Items[i].TotalPrice
                 }
             }
-            return res.status(200).json({cart: cart, totalCartPrice: totalCartPrice})
+
+            const updatedCartWithItem = await Cart.findOne({LoggedInBuyer: req.user._id}, {_id: 0}).select('Items.Quantity')
+            console.log(217, updatedCartWithItem)
+            const totalQuantity = updatedCartWithItem.Items.reduce((total, quantity) => {
+                console.log(219,quantity)
+                return total + quantity['Quantity']
+            }, 0)
+            console.log(222, total)
+
+
+            return res.status(200).json({cart: cart, totalCartPrice: totalCartPrice, totalItems: totalQuantity})
         }
     }
     catch (error) {
