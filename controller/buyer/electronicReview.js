@@ -103,7 +103,7 @@ const update = async (req, res) => {
         if (req.user.buyer){
             const reviewElectronicUpdate = await ElectronicReview.findOneAndUpdate({_id: req.params.id, Buyer: req.user._id}, req.body, {new: true});
             if (reviewElectronicUpdate) {
-                return res.status(200).json(reviewElectronicUpdate)
+                index(req, res)
             } 
         } else {
             return res.status(400).json({msg: "You are not authorized to update the review"})
@@ -120,7 +120,8 @@ const destroy = async (req, res) => {
         if (req.user.buyer){
             const deleteElectronicReview = await ElectronicReview.findOneAndDelete({_id: req.params.id, Buyer: req.user._id});
             if(deleteElectronicReview) {
-                return res.status(200).json(deleteElectronicReview)
+                // return res.status(200).json(deleteElectronicReview)
+                index(req, res)
             }
         } else {
             return res.status(400).json({msg: "You are not authorized to delete the review"})
