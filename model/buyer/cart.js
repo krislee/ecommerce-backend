@@ -9,6 +9,8 @@ const cartSchema = new Schema({
         Quantity: Number,
         TotalPrice: Number
     }],
+    TotalCartPrice: Number,
+    TotalItems: Number,
     LoggedInBuyer: [{type: Schema.Types.ObjectId, ref: "BuyerUser"}],
 })
 

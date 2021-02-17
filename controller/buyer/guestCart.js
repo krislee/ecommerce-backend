@@ -81,18 +81,13 @@ const guestUpdateItemQuantity = async(req, res) => {
             return i.ItemId == item.id
         })
         console.log(74,  "cart item we want to update", cartItem)
-        const totalCartQuantity = req.session.cart.totalItems + (Number(req.body.Quantity) - cartItem.Quantity)
-        const totalCartPrice = req.session.totalCartPrice + ((Number(req.body.Quantity) - cartItem.Quantity)*item.Price)
+        req.session.totalItems += (Number(req.body.Quantity) - cartItem.Quantity)
+        req.session.totalCartPrice += ((Number(req.body.Quantity) - cartItem.Quantity)*item.Price)
         cartItem.Quantity = Number(req.body.Quantity)
         cartItem.TotalPrice = (item.Price * Number(req.body.Quantity))
         console.log(80, "after updating guest cart", cartItem)
 
-        // let totalCartPrice = 0
-        // for (let i=0; i < req.session.cart.length; i++) {
-        //     totalCartPrice += req.session.cart[i].TotalPrice
-        // }
-        
-        return res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice, totalItems: totalCartQuantity})
+        return res.status(200).json({cart: req.session.cart, totalCartPrice: req.session.totalCartPrice, totalItems: req.session.totalItems})
         
     }
     catch (error) {
