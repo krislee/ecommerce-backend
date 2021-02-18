@@ -12,28 +12,23 @@ const loggedInAddItem = async(req, res, next) => {
             const item = await Electronic.findById(req.params.id)
 
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-            console.log(cart)
+            console.log(15, cart)
             // if cart exists
             if (cart) {
-
                 // check if the cart contains the item by seeing if the item is in the Items array
                 const cartItem = cart.Items.find((i) => {
                     return i.ItemId === req.params.id
                 })
-                console.log(27, cartItem, "cartItem")
+                console.log(22, cartItem, "cartItem")
                 // if the item exists then update quantity and total price in the cart
                 if(cartItem) {
-                    // cartItem.Quantity = Number(cartItem.Quantity)
-                    console.log(27, typeof cartItem.Quantity)
+                    // Since we are adding EXTRA items, update the Items.Quantity and Items.TotalPrice field in cart document by adding
                     cartItem.Quantity += Number(req.body.Quantity)
-                    console.log(29, cartItem.Quantity)
                     cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
-                    console.log(31, cartItem.TotalPrice)
-                    cart.TotalCartPrice += (Number(req.body.Quantity) * item.Price)
-                    console.log(33, cart.TotalCartPrice)
+                    // Since we are adding EXTRA items, update the TotalCartPrice and TotalItems field in cart document by adding
+                    cart.TotalCartPrice += (Number(req.body.Quantity) * item.Price)// get price from server and not from client side to ensure charge is not made up
                     cart.TotalItems += Number(req.body.Quantity)
-                    console.log(35, cart.TotalItems)
-                } else { // if the item does not exist in the cart, then add the item
+                } else { // if the item does not exist in the cart, then add the item to Items field of cart documnet
                     cart.Items.push({
                         ItemId: item._id,
                         Name: item.Name,
@@ -42,16 +37,17 @@ const loggedInAddItem = async(req, res, next) => {
                         Quantity: (Number(req.body.Quantity)),
                         TotalPrice: Number(req.body.Quantity) * item.Price
                     })
+                    // Also, update the TotalCartPrice and TotalItems fields of cart document by adding since we are adding EXTRA items
                     cart.TotalCartPrice += (Number(req.body.Quantity) * item.Price)
                     cart.TotalItems += (Number(req.body.Quantity))
                 }
 
                 await cart.save()
-                console.log(47, cart)
+                console.log(46, cart)
 
                 return res.status(200).json({cart: cart})
 
-            } else { // if cart does not exist create a new cart to hold the added item 
+            } else { // if user is logged in and adds an item but a cart does not exist (whether it is because user is 1st time adding items or had a cart deleted after order),create a new cart to hold the added item 
                 console.log(" new cart will be made for logged in user ")
                 const newCart = await Cart.create({
                     LoggedInBuyer: req.user._id,
@@ -67,12 +63,13 @@ const loggedInAddItem = async(req, res, next) => {
                     TotalItems: Number(req.body.Quantity)
                 })
    
-                console.log(newCart, "new cart successfully made for logged in user")
+                console.log(66, newCart)
                 return res.status(200).json({cart: newCart})
             }
         }
     }
     catch (error) {
+        console.log(72, error)
         return res.status(400).send(error)
     }
 }
@@ -81,32 +78,70 @@ const loggedInAddItem = async(req, res, next) => {
 // Sync cart of logged in user in case user added items to cart when logged out and then logs back in
 // Add items from guest shopping cart to logged in shopping cart when guest logs in 
 const addItemsFromGuestToLoggedIn = async (req, res) => {
-    const sessionCart = req.session.cart
-    console.log(74, "req session: ", req.session)
-    console.log(75, "req sessionID: ", req.sessionID)
-    console.log(76, sessionCart, "sessionCart after logging in")
-    // console.log(req.user, "req.user after logging in")
+    try {
+        const sessionCart = req.session.cart
+        console.log(82, "req sessionID: ", req.sessionID)
+        console.log(83, sessionCart, "sessionCart after logging in")
+        // console.log(req.user, "req.user after logging in")
 
-    const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-    console.log(cart, "cart after logging in in the addItemsFromGuestToLoggedIn")
+        const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
+        console.log(87, cart)
 
-    if (cart) {
-        if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
-            // console.log(sessionCart[0].Id, typeof sessionCart[0].Id, "sessionCart[i].id")
-            // console.log(cart.Items[0].itemId, typeof cart.Items[0].itemId, "cart.Items[0].itemId")
-            for (let i = 0; i < sessionCart.length; i++) {
-                // check if the logged in cart already contains the item that was in the session cart
+        if (cart) {
+            if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
+                // console.log(sessionCart[0].Id, typeof sessionCart[0].Id, "sessionCart[i].id")
+                // console.log(cart.Items[0].itemId, typeof cart.Items[0].itemId, "cart.Items[0].itemId")
+                for (let i = 0; i < sessionCart.length; i++) {
 
-                const cartItem = cart.Items.find((j) => {
-                    return j.ItemId == sessionCart[i].ItemId
-                })
+                    // check if the logged in cart already contains the item that was in the session cart by finding the Items subdocument
+                    const cartItem = cart.Items.find((j) => {
+                        return j.ItemId == sessionCart[i].ItemId
+                    })
+                    // If item is already in the logged in cart, then update only the Quantity and TotalPrice of the Items subdocument
+                    if (cartItem) {
+                        cartItem.Quantity += sessionCart[i].Quantity
+                        cartItem.TotalPrice += sessionCart[i].TotalPrice
 
-                if (cartItem) {
-                    cartItem.Quantity += sessionCart[i].Quantity
-                    cartItem.TotalPrice += sessionCart[i].TotalPrice
+                    } else { // If the item from the guest cart is not in the logged in cart, then add a new Items subdocument to the cart document
+                        cart.Items.push({
+                            ItemId: sessionCart[i].ItemId,
+                            Name: sessionCart[i].Name,
+                            Brand: sessionCart[i].Brand,
+                            Image: sessionCart[i].Image,
+                            Quantity: sessionCart[i].Quantity,
+                            TotalPrice: sessionCart[i].TotalPrice
+                        })
+                    }
+                }
+                // Update the cart document's TotalCartPrice and TotalItems fields after updating existing Items subdocument or adding Items subdocument 
+                cart.TotalCartPrice += req.session.totalCartPrice
+                cart.TotalItems += req.session.totalItems
 
-                } else {
-                    cart.Items.push({
+                await cart.save()
+
+                console.log(121, "adding items from guest to logged in cart: ", cart)
+
+                // then delete the cart from the session after adding all the items from cart
+                delete req.session.cart;
+
+                console.log(126, "after deleting session: ", req.session)
+            }
+
+            return res.status(200).json({successful: "added items to OLD cart after SYNCING", cart: cart})
+        } else {
+            // If logged in user does not have a cart yet when guest user logs in, then make a cart first before we can add items from guest cart to logged in cart
+            const newCart = await Cart.create({
+                LoggedInBuyer: req.user._id,
+                TotalCartPrice: 0,
+                TotalItems: 0
+            })
+
+            console.log(136, newCart)
+
+            if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the newly created cart of a logged in user
+                for (let i = 0; i < sessionCart.length; i++) {
+                    
+                    newCart.Items.push({
                         ItemId: sessionCart[i].ItemId,
                         Name: sessionCart[i].Name,
                         Brand: sessionCart[i].Brand,
@@ -114,55 +149,27 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                         Quantity: sessionCart[i].Quantity,
                         TotalPrice: sessionCart[i].TotalPrice
                     })
-                }
-            }
-           
-            cart.TotalCartPrice += req.session.totalCartPrice
-            cart.TotalItems += req.session.totalItems
-
-            await cart.save()
-
-            console.log(120, "adding items from guest to logged in cart: ", cart)
-
-            // then delete the cart from the session after adding all the items from cart
-            delete req.session.cart;
-
-            console.log(125, "after deleting session: ", req.session)
-        }
-
-        return res.status(200).json({successful: "added items to OLD cart after SYNCING", cart: cart})
-    } else {
-        const newCart = await Cart.create({
-            LoggedInBuyer: req.user._id,
-            TotalCartPrice: req.session.totalCartPrice,
-            TotalItems: req.session.totalItems
-        })
-        console.log(140, newCart)
-        if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the newly created cart of a logged in user
-            for (let i = 0; i < sessionCart.length; i++) {
                 
-                newCart.Items.push({
-                    ItemId: sessionCart[i].ItemId,
-                    Name: sessionCart[i].Name,
-                    Brand: sessionCart[i].Brand,
-                    Image: sessionCart[i].Image,
-                    Quantity: sessionCart[i].Quantity,
-                    TotalPrice: sessionCart[i].TotalPrice
-                })
-            
+                }
+
+                newCart.TotalCartPrice = req.session.totalCartPrice
+                newCart.TotalItems = req.session.totalItems
+
+                await newCart.save()
+
+                // then delete the cart from the session after adding all the items from cart
+                delete req.session.cart
+
+                console.log(162, "after deleting session: ", req.session)
             }
 
-            await newCart.save()
+            console.log(165, "new cart for adding items from guest to logged in cart: ", newCart)
 
-            // then delete the cart from the session after adding all the items from cart
-            delete req.session.cart
-
-            console.log(162, "after deleting session: ", req.session)
+            return res.status(200).json({successful: "created a NEW cart and SYNC items", cart: newCart})
         }
-
-        console.log(165, "new cart for adding items from guest to logged in cart: ", newCart)
-
-        return res.status(200).json({successful: "created a NEW cart and SYNC items", cart: newCart})
+    } catch(error) {
+        console.log(171, error)
+        res.status(400).json({error: error})
     }
 }
 
@@ -172,21 +179,26 @@ const loggedInUpdateItemQuantity = async (req, res) => {
         if(req.user){
             const item = await Electronic.findById(req.params.id)
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id}) 
-            console.log(180, cart)
+            console.log(182, cart)
+
             const cartItem = cart.Items.find(i => {return i.ItemId == item._id})
-            console.log(182, cartItem)
-            cart.TotalItems += ( Number(req.body.Quantity) - cartItem.Quantity)
+            console.log(185, cartItem)
+
+            cart.TotalItems += ( Number(req.body.Quantity) - cartItem.Quantity) // take the difference of how many items since we are updating not adding additional items
             cart.TotalCartPrice += (item.Price * ( Number(req.body.Quantity) - cartItem.Quantity))
+
             cartItem.Quantity = Number(req.body.Quantity)
             cartItem.TotalPrice = (item.Price * Number(req.body.Quantity))
+
             await cart.save()
-            console.log(188, cart, "updated cart after save!")
+            console.log(194, cart, "updated cart after save!")
 
 
             return res.status(200).json({cart: cart})
         }
     }
     catch (error) {
+        console.log(201, error)
         return res.status(400).send(error)
     }
 } 
@@ -196,23 +208,20 @@ const loggedInDeleteItem = async (req, res) => {
     try {
         if(req.user){
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-            console.log(207, cart, "find logged in cart for delete")
+            console.log(211, cart, "find logged in cart for delete")
+
             const cartItemIndex = await cart.Items.findIndex(i => {return i.ItemId == req.params.id})
             cart.TotalItems -= cart.Items[cartItemIndex].Quantity
             cart.TotalCartPrice -= cart.Items[cartItemIndex].TotalPrice
             cart.Items.splice(cartItemIndex, 1)
-            await cart.save()
-            console.log(212, cart, "logged in cart after deleting")
 
-            let totalCartPrice = 0
-            if(cart) {
-                for (let i=0; i < cart.Items.length; i++) {
-                    totalCartPrice += cart.Items[i].TotalPrice
-                }
-            }
-            return res.status(200).json({cart: cart, totalCartPrice: totalCartPrice})
+            await cart.save()
+            console.log(219, cart, "logged in cart after deleting")
+
+            return res.status(200).json({cart: cart})
         } 
     } catch(error) {
+        console.log(224, error)
         return res.status(400).send(error)
     }
 }
@@ -225,7 +234,7 @@ const loggedInIndexCart = async(req, res) => {
         // console.log(req.user, 'user');
         if(req.user) {
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-            let totalCartPrice = 0
+
             if(cart) {
                 if(cart.Items.length !== 0) {
                     return res.status(200).json({ cart: cart })
@@ -238,6 +247,7 @@ const loggedInIndexCart = async(req, res) => {
         }
     }
     catch(error) {
+        console.log(250, error)
         return res.status(400).send(error)
     }
 }

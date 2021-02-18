@@ -6,7 +6,7 @@ const guestAddItem = async(req, res, next) => {
         console.log("guestadditem")
         
         const item = await Electronic.findById(req.params.id)
-        // console.log(item, "item in guest route")
+
         console.log(10, "req.session: ", req.session)
         console.log(11, "session id: ", req.sessionID)
 
@@ -14,14 +14,12 @@ const guestAddItem = async(req, res, next) => {
         if(req.session.cart) {
             const cartItem = req.session.cart.find(i => i.ItemId == item.id)
             
-            // if item exists in the cart, update quantity and total price
+            // if item exists in the cart, update quantity and total price of the item and the cart
             if (cartItem) { 
     
-                cartItem.Quantity = Number(cartItem.Quantity)
-         
                 cartItem.Quantity += Number(req.body.Quantity)
-
                 cartItem.TotalPrice = cartItem.Quantity * item.Price
+
                 req.session.totalCartPrice += (item.Price * Number(req.body.Quantity))
                 req.session.totalItems += Number(req.body.Quantity)
 
@@ -39,7 +37,8 @@ const guestAddItem = async(req, res, next) => {
             }
 
             req.session.save()
-            console.log(36, "added item to guest cart:", req.session)
+
+            console.log(41, "added item to guest cart:", req.session)
             return res.status(200).json({cart: req.session.cart, totalItems: req.session.totalItems, totalCartPrice: req.session.totalCartPrice})
 
         } else { // if the cart has not been made for the guest user, then make the cart with the item user is adding
@@ -56,13 +55,13 @@ const guestAddItem = async(req, res, next) => {
             req.session.totalItems = Number(req.body.Quantity)
             req.session.save()
 
-            console.log(56, "guest cart is made to add item: ", req.session)
+            console.log(58, "guest cart is made to add item: ", req.session)
             return res.status(200).json({cart: req.session.cart, totalItems: req.session.totalItems, totalCartPrice:req.session.totalCartPrice});
         }
 
     }
     catch (error) {
-        console.log(56, "error: ", error)
+        console.log(64, "error: ", error)
         return res.status(400).send(error)
     }
 }
@@ -72,26 +71,26 @@ const guestUpdateItemQuantity = async(req, res) => {
     try {
        
         const item = await Electronic.findById(req.params.id)
-        // console.log("update guest cart item: ", item)
-        console.log(67, "req.session: ", req.session)
 
-        const cartItem = req.session.cart.find(i => {
-            console.log(70, "guest i.ItemId", i.ItemId)
+        console.log(75, "req.session: ", req.session)
 
-            return i.ItemId == item.id
-        })
-        console.log(74,  "cart item we want to update", cartItem)
+        const cartItem = req.session.cart.find(i => i.ItemId == item.id)
+
+        console.log(79,  "cart item we want to update", cartItem)
+
         req.session.totalItems += (Number(req.body.Quantity) - cartItem.Quantity)
         req.session.totalCartPrice += ((Number(req.body.Quantity) - cartItem.Quantity)*item.Price)
+
         cartItem.Quantity = Number(req.body.Quantity)
         cartItem.TotalPrice = (item.Price * Number(req.body.Quantity))
-        console.log(80, "after updating guest cart", cartItem)
+
+        console.log(87, "after updating guest cart", req.session)
 
         return res.status(200).json({cart: req.session.cart, totalCartPrice: req.session.totalCartPrice, totalItems: req.session.totalItems})
         
     }
     catch (error) {
-        console.log(84, "error: ", error)
+        console.log(93, "error: ", error)
         return res.status(400).send(error)
     }
 }
@@ -105,12 +104,13 @@ const guestDeleteItem = (req, res) => {
         req.session.totalCartPrice -= req.session.cart[cartItemIndex].TotalPrice
         req.session.cart.splice(cartItemIndex, 1)
 
-        console.log(96, "guest cart after deleting item: ", req.session.cart)
+        console.log(107, "guest cart after deleting item: ", req.session.cart)
 
 
         return res.status(200).json({cart: req.session.cart, totalItems: req.session.totalItems, totalCartPrice: totalCartPrice})
     }
     catch(error) {
+        console.log(113, error)
         return res.status(400).send(error)
     }
 }
@@ -122,7 +122,7 @@ const guestIndexCart = (req, res) => {
     console.log(111, 'session object: ', req.session)
 
     try {
-            console.log(114, "guest cart", req.session.cart)
+            console.log(124, "guest cart", req.session.cart)
 
             if(req.session.cart){
                 return res.status(200).json({
@@ -136,7 +136,7 @@ const guestIndexCart = (req, res) => {
             }
     }
     catch(error) {
-        console.log("error", error)
+        console.log(139, "error", error)
         return res.status(400).send(error)
     }
 }
