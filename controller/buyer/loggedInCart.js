@@ -24,7 +24,9 @@ const loggedInAddItem = async(req, res, next) => {
                 // if the item exists then update quantity and total price in the cart
                 if(cartItem) {
                     // cartItem.Quantity = Number(cartItem.Quantity)
+                    console.log(27, typeof cartItem.Quantity)
                     cartItem.Quantity += Number(req.body.Quantity)
+                    console.log(29, cartItem.Quantity)
                     cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
                     cart.TotalCartPrice += cartItem.TotalPrice
                     cart.TotalItems += cartItem.Quantity 
@@ -112,8 +114,8 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                 }
             }
            
-            cart.TotalCartPrice += sessionCart.totalCartPrice
-            cart.Quantity += sessionCart.totalItems
+            cart.TotalCartPrice += req.session.totalCartPrice
+            cart.Quantity += req.session.totalItems
 
             await cart.save()
 
@@ -129,8 +131,8 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
     } else {
         const newCart = await Cart.create({
             LoggedInBuyer: req.user._id,
-            TotalCartPrice: sessionCart.totalCartPrice,
-            TotalItems: sessionCart.totalItems
+            TotalCartPrice: req.session.totalCartPrice,
+            TotalItems: req.session.totalItems
         })
         
         if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the newly created cart of a logged in user
