@@ -108,7 +108,7 @@ const guestDeleteItem = (req, res) => {
         console.log(96, "guest cart after deleting item: ", req.session.cart)
 
 
-        return res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice})
+        return res.status(200).json({cart: req.session.cart, totalItems: req.session.totalItems, totalCartPrice: totalCartPrice})
     }
     catch(error) {
         return res.status(400).send(error)
@@ -125,14 +125,11 @@ const guestIndexCart = (req, res) => {
             console.log(114, "guest cart", req.session.cart)
 
             if(req.session.cart){
-                let totalCartPrice = 0
-                for (let i=0; i < req.session.cart.length; i++) {
-                    totalCartPrice += req.session.cart[i].TotalPrice
-                }
                 return res.status(200).json({
                     sessionID: req.sessionID,
-                    totalCartPrice: totalCartPrice,
+                    totalCartPrice: req.session.totalCartPrice,
                     cart: req.session.cart,
+                    totalItems: req.session.totalItems
                 })
             } else {
                 return res.status(200).json({cart: 'No items in cart'})
