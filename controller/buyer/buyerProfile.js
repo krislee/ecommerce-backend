@@ -50,7 +50,7 @@ const update = async (req, res) => {
                 } else if (doesExistBuyerEmail || doesExistSellerEmail) {
                     return res.status(200).json({msg: "An account with this email is already registered."})
                 } else {
-                    const updateBuyer = await BuyerUser.findOneAndUpdate({_id: req.user.id}, email, {new: true}) // {new:true} to return the document after updating
+                    const updateBuyer = await BuyerUser.findOneAndUpdate({_id: req.user.id}, {email: email}, {new: true}) // {new:true} to return the document after updating
  
                     if (updateBuyer){
                         return res.status(200).json({
