@@ -13,11 +13,9 @@ router.get('/list/orders', passportAuthenticate, async(req, res) => {
     const totalOrders = await Order.find({LoggedInBuyer: req.user._id, Complete: true}).countDocuments() // find the orders that belong to the logged in buyer (loggedIn buyer's info resides in req.user), and then count the number of order items docs returned
     console.log(14, totalOrders)
     const {limit = 5, page = 1} = req.query // set default values to limit and page for pagination
-    console.log(16)
+ 
     const allOrders = await Order.find({LoggedInBuyer: req.user._id, Complete: true}).sort({ OrderDate: -1 }).limit(limit*1).skip((page-1) * limit)
-    const secondOrders = await Order.find({LoggedInBuyer: req.user._id, Complete: true}).sort({ OrderDate: -1 }).limit(limit*1).skip((2-1) * limit)
     console.log(18, allOrders)
-    console.log(20, secondOrders)
 
     return res.status(200).json({
         orders: allOrders,
