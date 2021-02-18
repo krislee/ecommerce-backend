@@ -193,7 +193,8 @@ const loggedInDeleteItem = async (req, res) => {
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
             console.log(207, cart, "find logged in cart for delete")
             const cartItemIndex = await cart.Items.findIndex(i => {return i.ItemId == req.params.id})
-            console.log(209, cartItemIndex, "find delete index login")
+            cart.TotalItems -= cart.Items[cartItemIndex].Quantity
+            cart.TotalCartPrice -= cart.Items[cartItemIndex].TotalPrice
             cart.Items.splice(cartItemIndex, 1)
             await cart.save()
             console.log(212, cart, "logged in cart after deleting")

@@ -101,17 +101,13 @@ const guestDeleteItem = (req, res) => {
     try {
 
         const cartItemIndex = req.session.cart.findIndex(i => i.ItemId == req.params.id)
+        req.session.totalItems -= req.session.cart[cartItemIndex].Quantity
+        req.session.totalCartPrice -= req.session.cart[cartItemIndex].TotalPrice
         req.session.cart.splice(cartItemIndex, 1)
 
         console.log(96, "guest cart after deleting item: ", req.session.cart)
 
-        // if(req.session.cart.length === 0) delete req.session.cart
-        // console.log(99, req.session.cart)
 
-        let totalCartPrice = 0
-        for (let i=0; i < req.session.cart.length; i++) {
-            totalCartPrice += req.session.cart[i].TotalPrice
-        }
         return res.status(200).json({cart: req.session.cart, totalCartPrice: totalCartPrice})
     }
     catch(error) {
