@@ -107,7 +107,7 @@ const guestDeleteItem = (req, res) => {
         console.log(107, "guest cart after deleting item: ", req.session.cart)
 
 
-        return res.status(200).json({cart: req.session.cart, totalItems: req.session.totalItems, totalCartPrice: totalCartPrice})
+        return res.status(200).json({cart: req.session.cart, totalItems: req.session.totalItems, totalCartPrice: req.session.totalCartPrice})
     }
     catch(error) {
         console.log(113, error)
