@@ -227,17 +227,8 @@ const loggedInIndexCart = async(req, res) => {
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
             let totalCartPrice = 0
             if(cart) {
-                for (let i=0; i < cart.Items.length; i++) {
-                    totalCartPrice += cart.Items[i].TotalPrice
-                }
-                
-                // console.log(cart, "logged in cart")
-
                 if(cart.Items.length !== 0) {
-                    return res.status(200).json({
-                        cart: cart,
-                        totalCartPrice: totalCartPrice
-                    })
+                    return res.status(200).json({ cart: cart })
                 } else {
                     return res.status(200).json({cart: 'No cart available'}) // When users log in, syncing occurs so a cart is created with the possibility of no items in the cart, so we need to send 'No cart available back'.
                 }
