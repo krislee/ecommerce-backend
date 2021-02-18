@@ -12,7 +12,7 @@ const loggedInAddItem = async(req, res, next) => {
             const item = await Electronic.findById(req.params.id)
 
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-
+            console.log(cart)
             // if cart exists
             if (cart) {
 
@@ -29,9 +29,9 @@ const loggedInAddItem = async(req, res, next) => {
                     console.log(29, cartItem.Quantity)
                     cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
                     console.log(31, cartItem.TotalPrice)
-                    cart.TotalCartPrice += cartItem.TotalPrice
+                    cart.TotalCartPrice += (Number(req.body.Quantity) * item.Price)
                     console.log(33, cart.TotalCartPrice)
-                    cart.TotalItems += cartItem.Quantity 
+                    cart.TotalItems += Number(req.body.Quantity)
                     console.log(35, cart.TotalItems)
                 } else { // if the item does not exist in the cart, then add the item
                     cart.Items.push({
@@ -137,7 +137,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             TotalCartPrice: req.session.totalCartPrice,
             TotalItems: req.session.totalItems
         })
-        
+        console.log(140, newCart)
         if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the newly created cart of a logged in user
             for (let i = 0; i < sessionCart.length; i++) {
                 
