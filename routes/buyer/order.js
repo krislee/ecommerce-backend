@@ -14,7 +14,7 @@ router.get('/list/orders', passportAuthenticate, async(req, res) => {
     console.log(14, totalOrders)
     const {limit = 5, page = 1} = req.query // set default values to limit and page for pagination
     console.log(16)
-    const allOrders = await Order.find({LoggedInBuyer: req.user._id, Complete: true}).limit(limit*1).skip((page-1) * limit)
+    const allOrders = await Order.find({LoggedInBuyer: req.user._id, Complete: true}).sort({ _id: -1 }).limit(limit*1).skip((page-1) * limit)
 
     console.log(18, allOrders)
 
