@@ -28,8 +28,11 @@ const loggedInAddItem = async(req, res, next) => {
                     cartItem.Quantity += Number(req.body.Quantity)
                     console.log(29, cartItem.Quantity)
                     cartItem.TotalPrice = (item.Price * cartItem.Quantity) // get price from server and not from client side to ensure charge is not made up
+                    console.log(31, cartItem.TotalPrice)
                     cart.TotalCartPrice += cartItem.TotalPrice
+                    console.log(33, cart.TotalCartPrice)
                     cart.TotalItems += cartItem.Quantity 
+                    console.log(35, cart.TotalItems)
                 } else { // if the item does not exist in the cart, then add the item
                     cart.Items.push({
                         ItemId: item._id,
