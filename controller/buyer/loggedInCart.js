@@ -183,10 +183,10 @@ const loggedInUpdateItemQuantity = async (req, res) => {
 
             const cartItem = cart.Items.find(i => {return i.ItemId == item._id})
             console.log(185, cartItem)
-
+            console.log(186, cart.TotalItems)
             cart.TotalItems += ( Number(req.body.Quantity) - cartItem.Quantity) // take the difference of how many items since we are updating not adding additional items
             cart.TotalCartPrice += (item.Price * ( Number(req.body.Quantity) - cartItem.Quantity))
-
+            console.log(189, cart.TotalItems, cart.TotalCartPrice)
             cartItem.Quantity = Number(req.body.Quantity)
             cartItem.TotalPrice = (item.Price * Number(req.body.Quantity))
 
