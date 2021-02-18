@@ -39,11 +39,11 @@ const loggedInAddItem = async(req, res, next) => {
                         Name: item.Name,
                         Brand: item.Brand,
                         Image: item.Image,
-                        Quantity: req.body.Quantity,
-                        TotalPrice: req.body.Quantity * item.Price
+                        Quantity: (Number(req.body.Quantity)),
+                        TotalPrice: Number(req.body.Quantity) * item.Price
                     })
-                    cart.TotalCartPrice += cartItem.TotalPrice
-                    cart.TotalItems += cartItem.Quantity
+                    cart.TotalCartPrice += (Number(req.body.Quantity) * item.Price)
+                    cart.TotalItems += (Number(req.body.Quantity))
                 }
 
                 await cart.save()
