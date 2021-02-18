@@ -118,7 +118,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             }
            
             cart.TotalCartPrice += req.session.totalCartPrice
-            cart.Quantity += req.session.totalItems
+            cart.TotalItems += req.session.totalItems
 
             await cart.save()
 
