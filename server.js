@@ -27,7 +27,7 @@ app.set('socketio', io)
 //   // socket.on('join', (data) => socket.join(data.cartID))
 //   socket.on('close', () => console.log("Client disconnected"))
 // })
-
+io.on('end', (socket) => socket.disconnect(0))
 
 
 // Passport-related Dependencies
@@ -73,6 +73,7 @@ const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 // Order Dependency
 const orderRouter = require('./routes/buyer/order')
 const { isValidObjectId } = require("mongoose")
+const { Socket } = require("socket.io")
 
 
 /* ------- CORS ------- */
