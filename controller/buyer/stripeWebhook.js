@@ -168,8 +168,9 @@ const webhook = async (req, res) => {
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
                 io.sockets.on('connect', (socket) => {
+                    console.log(171)
                     const socketId = socket.id
-                    console.log(172, socketId)
+                    console.log(173, socketId)
                     io.to(socketId).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
                         brand: paymentMethod.card.brand,
                         last4: paymentMethod.card.last4,
@@ -186,7 +187,7 @@ const webhook = async (req, res) => {
                         }
                     }})
                 })
-                console.log(170, io.sockets)
+                // console.log(170, io.sockets)
                 // io.sockets.socket().emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
                 //     brand: paymentMethod.card.brand,
                 //     last4: paymentMethod.card.last4,
