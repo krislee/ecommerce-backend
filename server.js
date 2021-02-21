@@ -14,15 +14,13 @@ const server = app.listen(process.env.PORT, () => {
 })
 
 
-
-
-// const io = require('socket.io')(server, {
-//   cors: {
-//     origin: 'http://localhost:3000',
-//     credentials: true
-//   }, 
-// })
-// app.set('socketio', io)
+const io = require('socket.io')(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    credentials: true
+  }, 
+})
+app.set('socketio', io)
 
 // io.on('connection', (socket) => {
 //   console.log(26, 'Client connected', socket.id);
@@ -74,12 +72,12 @@ const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 
 // Order Dependency
 const orderRouter = require('./routes/buyer/order')
+const { isValidObjectId } = require("mongoose")
 
 
 /* ------- CORS ------- */
 const corsOptions = {
   origin: 'http://localhost:3000', 
-  // origin: true, 
   // origin: 'https://elecommerce.netlify.app',
   credentials: true,
 };
@@ -169,6 +167,8 @@ app.use('/shipping', shippingAddressRouter)
 
 // Order Route
 app.use('/complete', orderRouter)
+
+
 
 // LISTEN TO PORT
 // app.listen(process.env.PORT, () => {

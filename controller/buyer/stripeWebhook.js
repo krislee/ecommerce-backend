@@ -167,7 +167,27 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
-                // io.sockets.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                io.sockets.on('connect', (socket) => {
+                    const socketId = socket.id
+                    console.log(172, socketID)
+                    io.to(socketId).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                        brand: paymentMethod.card.brand,
+                        last4: paymentMethod.card.last4,
+                        billingDetails: {
+                            address: {
+                                line1: paymentMethod.billing_details.address.line1,
+                                line2: paymentMethod.billing_details.address.line2,
+                                city:  paymentMethod.billing_details.address.city,
+                                state:  paymentMethod.billing_details.address.state,
+                                postalCode:  paymentMethod.billing_details.address.postal_code,
+                                country:  paymentMethod.billing_details.address.country
+                            },
+                            name: paymentMethod.billing_details.name
+                        }
+                    }})
+                })
+                console.log(170, io.sockets)
+                // io.sockets.socket().emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
                 //     brand: paymentMethod.card.brand,
                 //     last4: paymentMethod.card.last4,
                 //     billingDetails: {
@@ -183,23 +203,23 @@ const webhook = async (req, res) => {
                 //     }
                 // }})
                 // io.on('end', () => io.disconnect(0))
-                ws.on('message', (msg) => {
-                    ws.send(JSON.stringify({order: updateOrderWithShippingAndPayment, payment: {
-                        brand: paymentMethod.card.brand,
-                        last4: paymentMethod.card.last4,
-                        billingDetails: {
-                            address: {
-                                line1: paymentMethod.billing_details.address.line1,
-                                line2: paymentMethod.billing_details.address.line2,
-                                city:  paymentMethod.billing_details.address.city,
-                                state:  paymentMethod.billing_details.address.state,
-                                postalCode:  paymentMethod.billing_details.address.postal_code,
-                                country:  paymentMethod.billing_details.address.country
-                            },
-                            name: paymentMethod.billing_details.name
-                        }
-                    }}))
-                })
+                // ws.on('message', (msg) => {
+                //     ws.send(JSON.stringify({order: updateOrderWithShippingAndPayment, payment: {
+                //         brand: paymentMethod.card.brand,
+                //         last4: paymentMethod.card.last4,
+                //         billingDetails: {
+                //             address: {
+                //                 line1: paymentMethod.billing_details.address.line1,
+                //                 line2: paymentMethod.billing_details.address.line2,
+                //                 city:  paymentMethod.billing_details.address.city,
+                //                 state:  paymentMethod.billing_details.address.state,
+                //                 postalCode:  paymentMethod.billing_details.address.postal_code,
+                //                 country:  paymentMethod.billing_details.address.country
+                //             },
+                //             name: paymentMethod.billing_details.name
+                //         }
+                //     }}))
+                // })
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
