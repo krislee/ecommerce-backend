@@ -166,7 +166,7 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
-                io.on('connect', (socket) => {
+                io.on('connection', (socket) => {
                     console.log(171)
                     const socketId = socket.id
                     console.log(173, socketId)
