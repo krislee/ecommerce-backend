@@ -65,7 +65,7 @@ const guestCartRouter = require('./routes/buyer/guestCart')
 
 // Stripe Dependencies
 const stripeRouter = require('./routes/buyer/stripe')
-const {webhook} = require('./controller/buyer/stripeWebhook')
+const webhook = require('./controller/buyer/stripeWebhook')(io)
 
 // Shipping Address Dependency
 const shippingAddressRouter = require('./routes/buyer/shippingAddress')
@@ -158,7 +158,7 @@ app.use('/guest/buyer', guestCartRouter)
 
 // Stripe Route
 app.use('/order', stripeRouter)
-app.use('/webhook', webhook)
+app.use('/webhook', webhook.index)
 
 // Stripe Re-route for creating payment intent for LOGGED IN users 
 app.use('/logged-in', stripeRouter)

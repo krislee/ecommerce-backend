@@ -12,8 +12,9 @@ const { ws } = require('../../routes/buyer/store')
 const ee = new EventEmitter();
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
-
-const webhook = async (req, res) => {
+module.exports = function(io) {
+    const routes = {}
+    routes.index = async (req, res) => {
     // First, check if webhook signing is configured.
     let data, eventType;
     if (process.env.STRIPE_WEBHOOK_SECRET) {
@@ -326,10 +327,10 @@ const webhook = async (req, res) => {
         console.log(239, "💳 Attached " + data.object.id + " to customer");
     }
 
-    res.status(200).json({message: " WEBHOOK SUCCEDED !!!! "});
-}
+   return routes
+}}
 
-module.exports = {webhook}
+// module.exports = {webhook}
 
 
 // payment intent process webhook (happens when payment methods have delayed notification.): pending order and then if the payment intent status turns to succeed or requires payment method (the event is payment_intent.payment_failed), then do certain actions
