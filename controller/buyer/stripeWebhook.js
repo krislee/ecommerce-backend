@@ -174,7 +174,8 @@ const webhook = async (req, res) => {
                     // ee.on('order', () => {
                     //   socket.emit('sendOrder', order)
                     // })
-                    socket.on('end', (socket) => socket.disconnect(0))
+                    // socket.on('end', (socket) => socket.disconnect(0))
+                    io.to(socketId).emit("completeOrder", {hello: "world"})
                     socket.on('disconnect', () => socket.removeAllListeners())
                   })
 
