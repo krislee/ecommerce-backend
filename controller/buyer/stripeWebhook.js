@@ -166,6 +166,18 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
+                io.on('connection', (socket) => {
+                    console.log(170, 'Client connected');
+                    console.log(171, socket.id)
+                    socket.emit('socketID', socket.id)
+                    // const order = Order.findOne({Orde})
+                    // ee.on('order', () => {
+                    //   socket.emit('sendOrder', order)
+                    // })
+                    socket.on('end', (socket) => socket.disconnect(0))
+                    socket.on('disconnect', () => socket.removeAllListeners())
+                  })
+
                 // io.on('connection', (socket) => {
                 //     console.log(171)
                 //     const socketId = socket.id

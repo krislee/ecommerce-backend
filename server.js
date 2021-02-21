@@ -16,18 +16,18 @@ const server = app.listen(process.env.PORT, () => {
 const io = require('socket.io')(server)
 app.set('socketio', io)
 
-io.on('connection', (socket) => {
-  console.log(26, 'Client connected');
-  console.log(27, socket.id)
-  socket.emit('socketID', socket.id)
-  // const order = Order.findOne({Orde})
-  // ee.on('order', () => {
-  //   socket.emit('sendOrder', order)
-  // })
-  socket.on('close', () => console.log("Client disconnected"))
-  socket.on('disconnect', () => socket.removeAllListeners())
-})
-io.on('end', (socket) => socket.disconnect(0))
+// io.on('connection', (socket) => {
+//   console.log(26, 'Client connected');
+//   console.log(27, socket.id)
+//   socket.emit('socketID', socket.id)
+//   // const order = Order.findOne({Orde})
+//   // ee.on('order', () => {
+//   //   socket.emit('sendOrder', order)
+//   // })
+//   socket.on('end', (socket) => socket.disconnect(0))
+//   socket.on('disconnect', () => socket.removeAllListeners())
+// })
+
 
 
 // Passport-related Dependencies
