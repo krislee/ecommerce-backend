@@ -216,13 +216,13 @@ const checkoutShipping = async(req, res) => {
     try {
         if(req.user.buyer) {
             const defaultAddress = await BuyerShippingAddress.findOne({DefaultAddress: true, Buyer: req.user._id})
-            
+            console.log(219, defaultAddress)
             const lastUsedSavedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: req.user._id})
-
+            console.log(221, lastUsedSavedAddress)
             const allAddresses = await BuyerShippingAddress.find({Buyer: req.user._id})
-
+            console.log(223, allAddresses)
             if(defaultAddress) {
-                return ({address: defaultAddress})
+                return res.status(200).json({address: defaultAddress})
             } else if (lastUsedSavedAddress) {
                 return res.status(200).json({address: lastUsedSavedAddress})
             } else if(allAddresses.length > 0) {
