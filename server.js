@@ -65,7 +65,7 @@ const guestCartRouter = require('./routes/buyer/guestCart')
 
 // Stripe Dependencies
 const stripeRouter = require('./routes/buyer/stripe')
-const webhook = require('./controller/buyer/stripeWebhook')
+const {webhook} = require('./controller/buyer/stripeWebhook')
 
 // Shipping Address Dependency
 const shippingAddressRouter = require('./routes/buyer/shippingAddress')
