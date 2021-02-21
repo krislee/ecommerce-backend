@@ -24,9 +24,8 @@ io.on('connection', (socket) => {
   // ee.on('order', () => {
   //   socket.emit('sendOrder', order)
   // })
-  socket.on('completeOrder', (name, fn) => {
-    console.log(28, name)
-    fn('received order')
+  socket.on('completeOrder', (data) => {
+    io.emit('recievedOrder', {hello: 'world'})
   })
   socket.on('end', (socket) => socket.disconnect(0))
   socket.on('disconnect', () => socket.removeAllListeners())
