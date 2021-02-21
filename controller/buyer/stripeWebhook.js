@@ -169,7 +169,7 @@ const webhook = async (req, res) => {
                 const io = req.app.get('socketio')
                 io.sockets.on('connect', (socket) => {
                     const socketId = socket.id
-                    console.log(172, socketID)
+                    console.log(172, socketId)
                     io.to(socketId).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
                         brand: paymentMethod.card.brand,
                         last4: paymentMethod.card.last4,
