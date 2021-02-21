@@ -166,11 +166,11 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
-                io.on('connection', (socket) => {
-                    console.log(170)
-                    console.log(171, 'Client connected');
-                    console.log(172, socket.id)
-                    socket.emit('socketID', socket.id)
+                // io.on('connection', (socket) => {
+                //     console.log(170)
+                //     console.log(171, 'Client connected');
+                //     console.log(172, socket.id)
+                //     socket.emit('socketID', socket.id)
                     // const order = Order.findOne({Orde})
                     // ee.on('order', () => {
                     //   socket.emit('sendOrder', order)
