@@ -13,7 +13,7 @@ const connection = require('./db/connection')
 const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
-const io = require('socket.io').listen(server)
+const io = require('socket.io')(server)
 app.set('socketio', io)
 
 io.on('connection', (socket) => {
@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
   socket.on('close', () => console.log("Client disconnected"))
   socket.on('disconnect', () => socket.removeAllListeners())
 })
-// io.on('end', (socket) => socket.disconnect(0))
+io.on('end', (socket) => socket.disconnect(0))
 
 
 // Passport-related Dependencies
