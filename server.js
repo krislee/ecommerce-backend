@@ -7,24 +7,28 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const connection = require('./db/connection')
+const expressWs = require('express-ws')(app);
 
 const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
 
-const io = require('socket.io')(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-    credentials: true
-  }, 
-})
-app.set('socketio', io)
 
-io.on('connection', (socket) => {
-  console.log(26, 'Client connected', socket.id);
-  socket.on('join', (data) => socket.join(data.cartID))
-  socket.on('close', () => console.log("Client disconnected"))
-})
+
+
+// const io = require('socket.io')(server, {
+//   cors: {
+//     origin: 'http://localhost:3000',
+//     credentials: true
+//   }, 
+// })
+// app.set('socketio', io)
+
+// io.on('connection', (socket) => {
+//   console.log(26, 'Client connected', socket.id);
+//   // socket.on('join', (data) => socket.join(data.cartID))
+//   socket.on('close', () => console.log("Client disconnected"))
+// })
 
 
 
@@ -108,8 +112,6 @@ app.use(session({
     secure: true, 
     httpOnly:false,
     sameSite: 'none'
-    // sameSite: false
-    // path: '/guest/buyer' // post only works if '/guest/buyer/post' but none of the other routes work with '/guest/buyer/post'
   }
 }))
 

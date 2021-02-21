@@ -8,6 +8,7 @@ const {Electronic} = require('../../model/seller/electronic')
 const {BuyerShippingAddress} = require('../../model/buyer/shippingAddress');
 const {CachePaymentIntent} = require('../../model/buyer/cachePaymentIntent')
 const EventEmitter = require('events');
+const { ws } = require('../../routes/buyer/store')
 const ee = new EventEmitter();
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
@@ -166,22 +167,39 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
-                io.socket.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
-                    brand: paymentMethod.card.brand,
-                    last4: paymentMethod.card.last4,
-                    billingDetails: {
-                        address: {
-                            line1: paymentMethod.billing_details.address.line1,
-                            line2: paymentMethod.billing_details.address.line2,
-                            city:  paymentMethod.billing_details.address.city,
-                            state:  paymentMethod.billing_details.address.state,
-                            postalCode:  paymentMethod.billing_details.address.postal_code,
-                            country:  paymentMethod.billing_details.address.country
-                        },
-                        name: paymentMethod.billing_details.name
-                    }
-                }})
+                // io.sockets.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                //     brand: paymentMethod.card.brand,
+                //     last4: paymentMethod.card.last4,
+                //     billingDetails: {
+                //         address: {
+                //             line1: paymentMethod.billing_details.address.line1,
+                //             line2: paymentMethod.billing_details.address.line2,
+                //             city:  paymentMethod.billing_details.address.city,
+                //             state:  paymentMethod.billing_details.address.state,
+                //             postalCode:  paymentMethod.billing_details.address.postal_code,
+                //             country:  paymentMethod.billing_details.address.country
+                //         },
+                //         name: paymentMethod.billing_details.name
+                //     }
+                // }})
                 // io.on('end', () => io.disconnect(0))
+                ws.on('message', (msg) => {
+                    ws.send(JSON.stringify({order: updateOrderWithShippingAndPayment, payment: {
+                        brand: paymentMethod.card.brand,
+                        last4: paymentMethod.card.last4,
+                        billingDetails: {
+                            address: {
+                                line1: paymentMethod.billing_details.address.line1,
+                                line2: paymentMethod.billing_details.address.line2,
+                                city:  paymentMethod.billing_details.address.city,
+                                state:  paymentMethod.billing_details.address.state,
+                                postalCode:  paymentMethod.billing_details.address.postal_code,
+                                country:  paymentMethod.billing_details.address.country
+                            },
+                            name: paymentMethod.billing_details.name
+                        }
+                    }}))
+                })
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
