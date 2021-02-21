@@ -72,8 +72,6 @@ const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 
 // Order Dependency
 const orderRouter = require('./routes/buyer/order')
-const { isValidObjectId } = require("mongoose")
-const { Socket } = require("socket.io")
 
 
 /* ------- CORS ------- */
@@ -158,7 +156,7 @@ app.use('/guest/buyer', guestCartRouter)
 
 // Stripe Route
 app.use('/order', stripeRouter)
-app.use('/webhook', webhook.index)
+app.use('/webhook', webhook)
 
 // Stripe Re-route for creating payment intent for LOGGED IN users 
 app.use('/logged-in', stripeRouter)
