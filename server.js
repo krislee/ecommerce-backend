@@ -8,20 +8,23 @@ const cors = require('cors')
 const app = express()
 const connection = require('./db/connection')
 
+const server = app.listen(process.env.PORT, () => {
+  console.log(`Listening to ${process.env.PORT}`)
+})
 
-// const io = require('socket.io')(server, {
-//   cors: {
-//     origin: 'http://localhost:3000',
-//     credentials: true
-//   }, 
-// })
-// app.set('socketio', io)
+const io = require('socket.io')(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    credentials: true
+  }, 
+})
+app.set('socketio', io)
 
-// io.on('connection', (socket) => {
-//   console.log(26, 'Client connected', socket.id);
-//   socket.on('join', (data) => socket.join(data.cartID))
-//   socket.on('close', () => console.log("Client disconnected"))
-// })
+io.on('connection', (socket) => {
+  console.log(26, 'Client connected', socket.id);
+  socket.on('join', (data) => socket.join(data.cartID))
+  socket.on('close', () => console.log("Client disconnected"))
+})
 
 
 
@@ -166,9 +169,9 @@ app.use('/shipping', shippingAddressRouter)
 app.use('/complete', orderRouter)
 
 // LISTEN TO PORT
-app.listen(process.env.PORT, () => {
-  console.log(`Listening to ${process.env.PORT}`)
-})
+// app.listen(process.env.PORT, () => {
+//   console.log(`Listening to ${process.env.PORT}`)
+// })
 
 // https://stackoverflow.com/questions/44894789/node-js-express-session-creating-new-session-id-every-time-i-refresh-or-access-t
 
