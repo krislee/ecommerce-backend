@@ -166,7 +166,7 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
-                io.sockets.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                io.socket.emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
                     brand: paymentMethod.card.brand,
                     last4: paymentMethod.card.last4,
                     billingDetails: {
