@@ -9,27 +9,21 @@ const app = express()
 const connection = require('./db/connection')
 // const expressWs = require('express-ws')(app);
 
-app.listen(process.env.PORT, () => {
+// LISTEN TO PORT
+const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
-
-
-const io = require('socket.io').listen(process.env.PORT)
-  // , {
-  // cors: {
-  //   origin: 'http://localhost:3000',
-  //   credentials: true
-  // }, }
-// )
-// app.set('socketio', io)
+const io = require('socket.io')(server)
+app.set('socketio', io)
 
 io.on('connection', (socket) => {
-  console.log(27, "!!!!!!!!!!!!", 'Client connected')
-  console.log(28, socket.id);
-  console.log(29, socket)
-  socket.emit('id', socket.id)
-  // socket.on('join', (data) => socket.join(data.cartID))
-  socket.on('disconnect', () => console.log("Client disconnected"))
+  console.log(26, 'Client connected');
+  console.log(27, socket.id)
+  // const order = Order.findOne({Orde})
+  // ee.on('order', () => {
+  //   socket.emit('sendOrder', order)
+  // })
+  socket.on('close', () => console.log("Client disconnected"))
 })
 // io.on('end', (socket) => socket.disconnect(0))
 
