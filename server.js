@@ -20,7 +20,7 @@ const io = require('socket.io')(server)
   //   origin: 'http://localhost:3000',
   //   credentials: true
   // }, }
-)
+// )
 // app.set('socketio', io)
 
 io.on('connection', (socket) => {
