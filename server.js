@@ -7,14 +7,14 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const connection = require('./db/connection')
-const expressWs = require('express-ws')(app);
+// const expressWs = require('express-ws')(app);
 
-const server = app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
 
 
-const io = require('socket.io')(server) 
+const io = require('socket.io').listen(process.env.PORT)
   // , {
   // cors: {
   //   origin: 'http://localhost:3000',
@@ -26,6 +26,7 @@ const io = require('socket.io')(server)
 io.on('connection', (socket) => {
   console.log(27, "!!!!!!!!!!!!", 'Client connected')
   console.log(28, socket.id);
+  console.log(29, socket)
   socket.emit('id', socket.id)
   // socket.on('join', (data) => socket.join(data.cartID))
   socket.on('disconnect', () => console.log("Client disconnected"))
