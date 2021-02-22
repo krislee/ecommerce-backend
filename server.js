@@ -26,8 +26,8 @@ io.on('connection', (socket) => {
   //   socket.emit('sendOrder', order)
   // })
   socket.on('completeOrder', async (data) => {
-    const order = await Order.findById(data.cartID)
-    io.to(data.socketID).emit('recievedOrder', {order: order})
+    const completeOrder = await Order.findById(data.cartID)
+    io.to(data.socketID).emit('recievedOrder', {order: completeOrder})
   })
   // socket.on('end', (socket) => socket.disconnect(0))
   socket.on('disconnect', () => socket.removeAllListeners())
