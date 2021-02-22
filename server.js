@@ -17,7 +17,7 @@ const server = app.listen(process.env.PORT, () => {
 })
 const io = require('socket.io')(server)
 // app.set('socketio', io)
-app.locals.io = io
+// app.locals.io = io
 // io.on('connection', (socket) => {
 //   console.log(22, 'Client connected');
 //   console.log(23, socket.id)
@@ -152,6 +152,12 @@ app.use(
   })
 );
 app.use(express.urlencoded({extended: true}))
+
+
+app.use(function(req, res, next) {
+  req.io = io;
+  next();
+});
 
 /* ------- ROUTES AND ROUTER ------- */
 
