@@ -7,6 +7,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const connection = require('./db/connection')
+const Order = require('./model/order')
 // const expressWs = require('express-ws')(app);
 
 // LISTEN TO PORT
@@ -24,7 +25,7 @@ io.on('connection', (socket) => {
   // ee.on('order', () => {
   //   socket.emit('sendOrder', order)
   // })
-  socket.on('completeOrder', (data) => {
+  socket.on('completeOrder', async (data) => {
     const order = await Order.findById(data.cartID)
     io.to(data.socketID).emit('recievedOrder', {order: order})
   })
