@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
   const sessionsMap = {}
   socket.emit('socketID', socket.id)
 
-  socket.on('completeOrder', (data) => {
+  socket.on('completeOrder', async (data) => {
      const completeOrder = await Order.findOne({OrderNumber: data.cartID})
     io.sockets.emit('completeOrder', {order: completeOrder})
   })
