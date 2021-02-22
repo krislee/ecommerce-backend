@@ -18,7 +18,7 @@ const server = app.listen(process.env.PORT, () => {
 })
 const io = require('socket.io')(server)
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   socket.on('cartID', (cartID) => {
     console.log(23, cartID)
     console.log(24, socket.id)
