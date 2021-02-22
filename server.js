@@ -21,13 +21,17 @@ app.set('socketio', io)
 io.on('connection', (socket) => {
   console.log(22, 'Client connected');
   console.log(23, socket.id)
-  const sessionsMap = {}
-  socket.emit('socketID', socket.id)
 
-  socket.on('completeOrder', async (data) => {
-     const completeOrder = await Order.findOne({OrderNumber: data.cartID})
-    io.sockets.emit('completeOrder', {order: completeOrder})
+  socket.emit('socketID', socket.id, (data) => {
+    console.log(26, data)
+    const completeOrder = await Order.findOne({OrderNumber: data.cartID})
+    socket.emit('completeOrder', {order: completeOrder})
   })
+
+  // socket.on('completeOrder', async (data) => {
+  //    const completeOrder = await Order.findOne({OrderNumber: data.cartID})
+  //   io.sockets.emit('completeOrder', {order: completeOrder})
+  // })
 })
 
 //   // console.log(37, receivedData)
