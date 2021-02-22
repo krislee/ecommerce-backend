@@ -164,24 +164,28 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
-                io.emit("completeOrder", {
-                    order: updateOrderWithShippingAndPayment, 
-                    payment: {
-                        brand: paymentMethod.card.brand,
-                        last4: paymentMethod.card.last4,
-                        billingDetails: {
-                            address: {
-                                line1: paymentMethod.billing_details.address.line1,
-                                line2: paymentMethod.billing_details.address.line2,
-                                city:  paymentMethod.billing_details.address.city,
-                                state:  paymentMethod.billing_details.address.state,
-                                postalCode:  paymentMethod.billing_details.address.postal_code,
-                                country:  paymentMethod.billing_details.address.country
-                            },
-                            name: paymentMethod.billing_details.name
+                io.on('connection', (socket) => {
+                    console.log(168, socket.id)
+                    io.to(socket.id).emit("completeOrder", {
+                        order: updateOrderWithShippingAndPayment, 
+                        payment: {
+                            brand: paymentMethod.card.brand,
+                            last4: paymentMethod.card.last4,
+                            billingDetails: {
+                                address: {
+                                    line1: paymentMethod.billing_details.address.line1,
+                                    line2: paymentMethod.billing_details.address.line2,
+                                    city:  paymentMethod.billing_details.address.city,
+                                    state:  paymentMethod.billing_details.address.state,
+                                    postalCode:  paymentMethod.billing_details.address.postal_code,
+                                    country:  paymentMethod.billing_details.address.country
+                                },
+                                name: paymentMethod.billing_details.name
+                            }
                         }
-                    }
+                    })
                 })
+                
                 
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
