@@ -24,10 +24,10 @@ io.on('connection', (socket) => {
   // ee.on('order', () => {
   //   socket.emit('sendOrder', order)
   // })
-  socket.on('completeOrder', (data) => {
-    console.log(data)
-    io.emit('recievedOrder', {hello: 'world'})
-  })
+  // socket.on('completeOrder', (data) => {
+  //   console.log(data)
+  //   io.emit('recievedOrder', {hello: 'world'})
+  // })
   // socket.on('end', (socket) => socket.disconnect(0))
   // socket.on('disconnect', () => socket.removeAllListeners())
 })
