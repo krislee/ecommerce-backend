@@ -165,32 +165,32 @@ const webhook = async (req, res) => {
                 // ee.emit('order')
 
                 // Send back order to client via websocket 
-                const io = req.app.get('socketio')
-                console.log(169, io)
-                io.on('connection', (socket) => {
-                    console.log(170, 'Client connected');
-                    console.log(23, socket.id)
+                // const io = req.app.get('socketio')
+                // console.log(169, io)
+                // io.on('connection', (socket) => {
+                //     console.log(170, 'Client connected');
+                //     console.log(23, socket.id)
 
-                    socket.emit('socketID', socket.id)
-                    // const order = Order.findOne({Orde})
-                    // ee.on('order', () => {
-                    //   socket.emit('sendOrder', order)
-                    // })
-                    let completeOrder
+                //     socket.emit('socketID', socket.id)
+                //     // const order = Order.findOne({Orde})
+                //     // ee.on('order', () => {
+                //     //   socket.emit('sendOrder', order)
+                //     // })
+                //     let completeOrder
                     
-                    socket.on('completeOrder', async (data) => {
-                      completeOrder = await Order.findOne({OrderNumber: data.cartID})
-                      console.log(34, completeOrder)
-                      console.log(35, data)
-                      io.to(socket.id).emit('recievedOrder', {order: completeOrder})
-                    })
+                //     socket.on('completeOrder', async (data) => {
+                //       completeOrder = await Order.findOne({OrderNumber: data.cartID})
+                //       console.log(34, completeOrder)
+                //       console.log(35, data)
+                //       io.to(socket.id).emit('recievedOrder', {order: completeOrder})
+                //     })
                   
-                    // console.log(37, receivedData)
-                    // console.log(38, completeOrder)
-                    // io.to(receivedData.socketID).emit('recievedOrder', {order: completeOrder})
-                    // socket.on('end', (socket) => socket.disconnect(0))
-                    socket.on('disconnect', () => socket.removeAllListeners())
-                  })
+                //     // console.log(37, receivedData)
+                //     // console.log(38, completeOrder)
+                //     // io.to(receivedData.socketID).emit('recievedOrder', {order: completeOrder})
+                //     // socket.on('end', (socket) => socket.disconnect(0))
+                //     socket.on('disconnect', () => socket.removeAllListeners())
+                //   })
 
                 // io.on('connection', (socket) => {
                 //     console.log(171)
