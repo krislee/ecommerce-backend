@@ -167,7 +167,7 @@ const webhook = async (req, res) => {
                 const io = req.app.locals.io
                 io.on('connection', (socket) => {
                     console.log(168, socket.id)
-                    io.to(socket.id).emit("completeOrder", {
+                    io.emit("completeOrder", {
                         order: updateOrderWithShippingAndPayment, 
                         payment: {
                             brand: paymentMethod.card.brand,
