@@ -26,12 +26,17 @@ io.on('connection', (socket) => {
   // ee.on('order', () => {
   //   socket.emit('sendOrder', order)
   // })
+  let completeOrder
+  let receivedData
   socket.on('completeOrder', async (data) => {
-    const completeOrder = await Order.findById(mongoose.Types.ObjectId(data.cartID))
+    completeOrder = await Order.findOne({OrderNumber: data.cartID})
     console.log(30, completeOrder)
     console.log(31, data)
-    io.to(data.socketID).emit('recievedOrder', {order: completeOrder})
+    receivedData = data
   })
+  console.log(37, receivedData)
+  console.log(38, completeOrder)
+  io.to(receivedData.socketID).emit('recievedOrder', {order: completeOrder})
   // socket.on('end', (socket) => socket.disconnect(0))
   socket.on('disconnect', () => socket.removeAllListeners())
 })
