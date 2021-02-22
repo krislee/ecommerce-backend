@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
     io.emit('recievedOrder', {hello: 'world'})
   })
   socket.on('end', (socket) => socket.disconnect(0))
-  socket.on('disconnect', () => socket.removeAllListeners())
+  // socket.on('disconnect', () => socket.removeAllListeners())
 })
 
 
