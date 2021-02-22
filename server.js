@@ -18,8 +18,8 @@ const server = app.listen(process.env.PORT, () => {
 })
 const io = require('socket.io')(server)
 
-io.on('connection', async(socket) => {
-  socket.on('cartID', (cartID) => {
+io.on('connection', (socket) => {
+  socket.on('cartID', async(cartID) => {
     console.log(23, cartID)
     console.log(24, socket.id)
     const socketID = await SocketID.create({socketID: socket.id, cartID: cartID.cartID})
