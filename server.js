@@ -77,7 +77,7 @@ const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 
 // Order Dependency
 const orderRouter = require('./routes/buyer/order')
-const Order = require("./model/order")
+// const Order = require("./model/order")
 
 
 /* ------- CORS ------- */
