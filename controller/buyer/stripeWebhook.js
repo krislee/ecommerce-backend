@@ -165,10 +165,10 @@ const webhook = async (req, res) => {
                 // Send back order to client via websocket 
                 // const io = req.app.get('socketio')
                 console.log(167, req.io)
-                req.io.on('connection', (socket) => {
-                    console.log(169, 'CLIENT CONNECTED')
-                    console.log(170, socket.id)
-                    socket.emit("completeOrder", {
+                // req.io.on('connection', (socket) => {
+                //     console.log(169, 'CLIENT CONNECTED')
+                //     console.log(170, socket.id)
+                    req.io.emit("completeOrder", {
                         order: updateOrderWithShippingAndPayment, 
                         payment: {
                             brand: paymentMethod.card.brand,
@@ -186,7 +186,7 @@ const webhook = async (req, res) => {
                             }
                         }
                     })
-                })
+                // })
                 
                 
             } else {
