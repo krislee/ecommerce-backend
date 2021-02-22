@@ -8,8 +8,9 @@ const {Electronic} = require('../../model/seller/electronic')
 const {BuyerShippingAddress} = require('../../model/buyer/shippingAddress');
 const {CachePaymentIntent} = require('../../model/buyer/cachePaymentIntent')
 const EventEmitter = require('events');
-const { ws } = require('../../routes/buyer/store')
-const ee = new EventEmitter();
+const SocketID = require('../../model/socket')
+// const { ws } = require('../../routes/buyer/store')
+// const ee = new EventEmitter();
 
 // Each endpoint (the proj's endpoint is /webhook/events) listens to some events that you designate the event to listen to (designate in the Stripe Dashboard). Since Stripe optionally signs the event that is sent to the endpoint, where the signature value is stored in the Stripe-Signature header, you can check if Stripe was the one that sent the event and not some third party. Webook event signing happens by using the Stripe's library and providing the library the endpoint secret, event payload, and Stripe-Signature header.  
 const webhook = async (req, res) => {
@@ -152,41 +153,41 @@ const webhook = async (req, res) => {
 
                 console.log(147, updateOrderWithShippingAndPayment)
 
+                // Send back order to client via websocket 
+                // const io = req.app.get('socketio')
+                console.log(158, req.io)
+                const socketId = await SocketID.findOne({cartID: card._id})
+                console.log(160, socketId)
+                console.log(161, socketId.socketID)
+                req.io.to(socketId.socketID).emit("completeOrder", {
+                    order: updateOrderWithShippingAndPayment, 
+                    payment: {
+                        brand: paymentMethod.card.brand,
+                        last4: paymentMethod.card.last4,
+                        billingDetails: {
+                            address: {
+                                line1: paymentMethod.billing_details.address.line1,
+                                line2: paymentMethod.billing_details.address.line2,
+                                city:  paymentMethod.billing_details.address.city,
+                                state:  paymentMethod.billing_details.address.state,
+                                postalCode:  paymentMethod.billing_details.address.postal_code,
+                                country:  paymentMethod.billing_details.address.country
+                            },
+                            name: paymentMethod.billing_details.name
+                        }
+                    }
+                })
+            
+
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
 
-                console.log(151, "logged in cart deleted: ", deletedCart)
+                console.log(185, "logged in cart deleted: ", deletedCart)
 
                 // Delete CachePaymentIntent document
                 const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
-                console.log(157, deletedCachePaymentIntent)
-
-                // Send back order to client via websocket 
-                // const io = req.app.get('socketio')
-                console.log(167, req.io)
-                req.io.sockets.on('connection', (socket) => {
-                    console.log(169, 'CLIENT CONNECTED')
-                    console.log(170, socket.id)
-                    socket.emit("completeOrder", {
-                        order: updateOrderWithShippingAndPayment, 
-                        payment: {
-                            brand: paymentMethod.card.brand,
-                            last4: paymentMethod.card.last4,
-                            billingDetails: {
-                                address: {
-                                    line1: paymentMethod.billing_details.address.line1,
-                                    line2: paymentMethod.billing_details.address.line2,
-                                    city:  paymentMethod.billing_details.address.city,
-                                    state:  paymentMethod.billing_details.address.state,
-                                    postalCode:  paymentMethod.billing_details.address.postal_code,
-                                    country:  paymentMethod.billing_details.address.country
-                                },
-                                name: paymentMethod.billing_details.name
-                            }
-                        }
-                    })
-                })
+                console.log(190, deletedCachePaymentIntent)
                 
                 
             } else {

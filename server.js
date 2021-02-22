@@ -9,6 +9,7 @@ const app = express()
 const connection = require('./db/connection')
 const mongoose = require('mongoose');
 const Order = require('./model/order')
+const SocketID = require('./model/socket')
 // const expressWs = require('express-ws')(app);
 
 // LISTEN TO PORT
@@ -16,6 +17,15 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
 const io = require('socket.io')(server)
+
+io.on('connection', (socket) => {
+  socket.on('cartID', (cartID) => {
+    console.log(23, cartID)
+    console.log(24, socket.id)
+    const socketID = await SocketID.create({socketID: socket.id, cartID: cartID.cartID})
+    console.log(26, socketID)
+  })
+})
 // app.set('socketio', io)
 // app.locals.io = io
 // io.on('connection', (socket) => {
@@ -156,6 +166,7 @@ app.use(express.urlencoded({extended: true}))
 
 app.use(function(req, res, next) {
   req.io = io;
+  req.socketIDContainer = {}
   next();
 });
 
