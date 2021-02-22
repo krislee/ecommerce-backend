@@ -161,57 +161,28 @@ const webhook = async (req, res) => {
                 const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
                 console.log(157, deletedCachePaymentIntent)
-                // const finalOrder = await Order.findOne({OrderNumber: cart._id})
-                // ee.emit('order')
 
                 // Send back order to client via websocket 
-                // const io = req.app.get('socketio')
-                // console.log(169, io)
-                // io.on('connection', (socket) => {
-                //     console.log(170, 'Client connected');
-                //     console.log(23, socket.id)
-
-                //     socket.emit('socketID', socket.id)
-                //     // const order = Order.findOne({Orde})
-                //     // ee.on('order', () => {
-                //     //   socket.emit('sendOrder', order)
-                //     // })
-                //     let completeOrder
-                    
-                //     socket.on('completeOrder', async (data) => {
-                //       completeOrder = await Order.findOne({OrderNumber: data.cartID})
-                //       console.log(34, completeOrder)
-                //       console.log(35, data)
-                //       io.to(socket.id).emit('recievedOrder', {order: completeOrder})
-                //     })
-                  
-                //     // console.log(37, receivedData)
-                //     // console.log(38, completeOrder)
-                //     // io.to(receivedData.socketID).emit('recievedOrder', {order: completeOrder})
-                //     // socket.on('end', (socket) => socket.disconnect(0))
-                //     socket.on('disconnect', () => socket.removeAllListeners())
-                //   })
-
-                // io.on('connection', (socket) => {
-                //     console.log(171)
-                //     const socketId = socket.id
-                //     console.log(173, socketId)
-                //     io.to(socketId).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
-                //         brand: paymentMethod.card.brand,
-                //         last4: paymentMethod.card.last4,
-                //         billingDetails: {
-                //             address: {
-                //                 line1: paymentMethod.billing_details.address.line1,
-                //                 line2: paymentMethod.billing_details.address.line2,
-                //                 city:  paymentMethod.billing_details.address.city,
-                //                 state:  paymentMethod.billing_details.address.state,
-                //                 postalCode:  paymentMethod.billing_details.address.postal_code,
-                //                 country:  paymentMethod.billing_details.address.country
-                //             },
-                //             name: paymentMethod.billing_details.name
-                //         }
-                //     }})
-                // })
+                const io = req.app.get('socketio')
+                io.to(socket.id).emit("completeOrder", {
+                    order: updateOrderWithShippingAndPayment, 
+                    payment: {
+                        brand: paymentMethod.card.brand,
+                        last4: paymentMethod.card.last4,
+                        billingDetails: {
+                            address: {
+                                line1: paymentMethod.billing_details.address.line1,
+                                line2: paymentMethod.billing_details.address.line2,
+                                city:  paymentMethod.billing_details.address.city,
+                                state:  paymentMethod.billing_details.address.state,
+                                postalCode:  paymentMethod.billing_details.address.postal_code,
+                                country:  paymentMethod.billing_details.address.country
+                            },
+                            name: paymentMethod.billing_details.name
+                        }
+                    }
+                })
+                
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
@@ -363,3 +334,56 @@ module.exports = {webhook}
 //         }
 //     }}))
 // })
+
+
+// const finalOrder = await Order.findOne({OrderNumber: cart._id})
+                // ee.emit('order')
+
+                // Send back order to client via websocket 
+                // const io = req.app.get('socketio')
+                // console.log(169, io)
+                // io.on('connection', (socket) => {
+                //     console.log(170, 'Client connected');
+                //     console.log(23, socket.id)
+
+                //     socket.emit('socketID', socket.id)
+                //     // const order = Order.findOne({Orde})
+                //     // ee.on('order', () => {
+                //     //   socket.emit('sendOrder', order)
+                //     // })
+                //     let completeOrder
+                    
+                //     socket.on('completeOrder', async (data) => {
+                //       completeOrder = await Order.findOne({OrderNumber: data.cartID})
+                //       console.log(34, completeOrder)
+                //       console.log(35, data)
+                //       io.to(socket.id).emit('recievedOrder', {order: completeOrder})
+                //     })
+                  
+                //     // console.log(37, receivedData)
+                //     // console.log(38, completeOrder)
+                //     // io.to(receivedData.socketID).emit('recievedOrder', {order: completeOrder})
+                //     // socket.on('end', (socket) => socket.disconnect(0))
+                //     socket.on('disconnect', () => socket.removeAllListeners())
+                //   })
+
+                // io.on('connection', (socket) => {
+                //     console.log(171)
+                //     const socketId = socket.id
+                //     console.log(173, socketId)
+                //     io.to(socketId).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
+                //         brand: paymentMethod.card.brand,
+                //         last4: paymentMethod.card.last4,
+                //         billingDetails: {
+                //             address: {
+                //                 line1: paymentMethod.billing_details.address.line1,
+                //                 line2: paymentMethod.billing_details.address.line2,
+                //                 city:  paymentMethod.billing_details.address.city,
+                //                 state:  paymentMethod.billing_details.address.state,
+                //                 postalCode:  paymentMethod.billing_details.address.postal_code,
+                //                 country:  paymentMethod.billing_details.address.country
+                //             },
+                //             name: paymentMethod.billing_details.name
+                //         }
+                //     }})
+                // })

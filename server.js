@@ -23,7 +23,7 @@ io.on('connection', (socket) => {
   console.log(23, socket.id)
 
   socket.emit('socketID', socket.id)
-  
+  socket.on('close', () => console.log("Client disconnected"))
   // , async (data) => {
   //   console.log(26, data)
   //   const completeOrder = await Order.findOne({OrderNumber: data.cartID})
