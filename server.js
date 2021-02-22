@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
      const completeOrder = await Order.findOne({OrderNumber: data.cartID})
     io.sockets.emit('completeOrder', {order: completeOrder})
   })
- 
+})
 
 //   // console.log(37, receivedData)
 //   // console.log(38, completeOrder)
