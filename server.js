@@ -7,6 +7,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const connection = require('./db/connection')
+const mongoose = require('mongoose');
 const Order = require('./model/order')
 // const expressWs = require('express-ws')(app);
 
@@ -26,7 +27,7 @@ io.on('connection', (socket) => {
   //   socket.emit('sendOrder', order)
   // })
   socket.on('completeOrder', async (data) => {
-    const completeOrder = await Order.findById(data.cartID)
+    const completeOrder = await Order.findById(mongoose.Types.ObjectId(data.cartID))
     console.log(30, completeOrder)
     console.log(31, data)
     io.to(data.socketID).emit('recievedOrder', {order: completeOrder})
