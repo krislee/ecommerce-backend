@@ -23,10 +23,6 @@ io.on('connection', (socket) => {
   console.log(23, socket.id)
   const sessionsMap = {}
   socket.emit('socketID', socket.id)
-  // const order = Order.findOne({Orde})
-  // ee.on('order', () => {
-  //   socket.emit('sendOrder', order)
-  // })
   let completeOrder
   
   socket.on('completeOrder', async (data) => {
@@ -35,6 +31,7 @@ io.on('connection', (socket) => {
     console.log(35, data)
     io.to(socket.id).emit('recievedOrder', {order: completeOrder})
   })
+})
 
 //   // console.log(37, receivedData)
 //   // console.log(38, completeOrder)
