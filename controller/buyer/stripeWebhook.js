@@ -166,19 +166,30 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
-                // io.on('connection', (socket) => {
-                //     console.log(170)
-                //     console.log(171, 'Client connected');
-                //     console.log(172, socket.id)
-                //     socket.emit('socketID', socket.id)
+                io.on('connection', (socket) => {
+                    console.log(170, 'Client connected');
+                    console.log(23, socket.id)
+                    const sessionsMap = {}
+                    socket.emit('socketID', socket.id)
                     // const order = Order.findOne({Orde})
                     // ee.on('order', () => {
                     //   socket.emit('sendOrder', order)
                     // })
+                    let completeOrder
+                    
+                    socket.on('completeOrder', async (data) => {
+                      completeOrder = await Order.findOne({OrderNumber: data.cartID})
+                      console.log(34, completeOrder)
+                      console.log(35, data)
+                      socket.emit('recievedOrder', {order: completeOrder})
+                    })
+                  
+                    // console.log(37, receivedData)
+                    // console.log(38, completeOrder)
+                    // io.to(receivedData.socketID).emit('recievedOrder', {order: completeOrder})
                     // socket.on('end', (socket) => socket.disconnect(0))
-                    // io.to(socket.id).emit("completeOrder", {hello: "world"})
-                    // socket.on('end', () => socket.removeAllListeners())
-                //   })
+                    socket.on('disconnect', () => socket.removeAllListeners())
+                  })
 
                 // io.on('connection', (socket) => {
                 //     console.log(171)
