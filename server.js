@@ -21,8 +21,8 @@ const io = require('socket.io')(server)
 io.on('connection', (socket) => {
   console.log(22, "CLIENT CONNECTED")
   socket.on('cartID', async(cartID) => {
-    console.log(23, cartID)
-    console.log(24, socket.id)
+    console.log(23, "CARTID", cartID)
+    console.log(24, "SOCKETID", socket.id)
     const socketID = await SocketID.create({socketID: socket.id, cartID: cartID.cartID})
     console.log(26, socketID)
   })
