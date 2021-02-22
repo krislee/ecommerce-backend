@@ -18,23 +18,23 @@ const server = app.listen(process.env.PORT, () => {
 const io = require('socket.io')(server)
 app.set('socketio', io)
 
-io.on('connection', (socket) => {
-  console.log(22, 'Client connected');
-  console.log(23, socket.id)
+// io.on('connection', (socket) => {
+//   console.log(22, 'Client connected');
+//   console.log(23, socket.id)
 
-  socket.emit('socketID', socket.id)
-  socket.on('close', () => console.log("Client disconnected"))
-  // , async (data) => {
-  //   console.log(26, data)
-  //   const completeOrder = await Order.findOne({OrderNumber: data.cartID})
-  //   socket.emit('completeOrder', {order: completeOrder})
-  // })
+//   socket.emit('socketID', socket.id)
+//   socket.on('close', () => console.log("Client disconnected"))
+//   // , async (data) => {
+//   //   console.log(26, data)
+//   //   const completeOrder = await Order.findOne({OrderNumber: data.cartID})
+//   //   socket.emit('completeOrder', {order: completeOrder})
+//   // })
 
-  // socket.on('completeOrder', async (data) => {
-  //    const completeOrder = await Order.findOne({OrderNumber: data.cartID})
-  //   io.sockets.emit('completeOrder', {order: completeOrder})
-  // })
-})
+//   // socket.on('completeOrder', async (data) => {
+//   //    const completeOrder = await Order.findOne({OrderNumber: data.cartID})
+//   //   io.sockets.emit('completeOrder', {order: completeOrder})
+//   // })
+// })
 
 //   // console.log(37, receivedData)
 //   // console.log(38, completeOrder)
