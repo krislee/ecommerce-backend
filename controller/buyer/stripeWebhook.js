@@ -166,8 +166,9 @@ const webhook = async (req, res) => {
                 // const io = req.app.get('socketio')
                 console.log(167, req.io)
                 req.io.on('connection', (socket) => {
-                    console.log(168, socket.id)
-                    io.emit("completeOrder", {
+                    console.log(169, 'CLIENT CONNECTED')
+                    console.log(170, socket.id)
+                    socket.emit("completeOrder", {
                         order: updateOrderWithShippingAndPayment, 
                         payment: {
                             brand: paymentMethod.card.brand,
