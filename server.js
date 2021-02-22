@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
     completeOrder = await Order.findOne({OrderNumber: data.cartID})
     console.log(34, completeOrder)
     console.log(35, data)
-    io.to(socket.id).emit('recievedOrder', {order: completeOrder})
+    socket.emit('recievedOrder', {order: completeOrder})
   })
 })
 
