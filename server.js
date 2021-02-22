@@ -32,11 +32,12 @@ io.on('connection', (socket) => {
     completeOrder = await Order.findOne({OrderNumber: data.cartID})
     console.log(30, completeOrder)
     console.log(31, data)
-    receivedData = data
+    // receivedData = data
+    io.to(data.socketID).emit('recievedOrder', {order: completeOrder})
   })
-  console.log(37, receivedData)
-  console.log(38, completeOrder)
-  io.to(receivedData.socketID).emit('recievedOrder', {order: completeOrder})
+  // console.log(37, receivedData)
+  // console.log(38, completeOrder)
+  // io.to(receivedData.socketID).emit('recievedOrder', {order: completeOrder})
   // socket.on('end', (socket) => socket.disconnect(0))
   socket.on('disconnect', () => socket.removeAllListeners())
 })
