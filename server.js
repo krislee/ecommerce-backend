@@ -27,6 +27,8 @@ io.on('connection', (socket) => {
   // })
   socket.on('completeOrder', async (data) => {
     const completeOrder = await Order.findById(data.cartID)
+    console.log(30, completeOrder)
+    console.log(31, data)
     io.to(data.socketID).emit('recievedOrder', {order: completeOrder})
   })
   // socket.on('end', (socket) => socket.disconnect(0))
