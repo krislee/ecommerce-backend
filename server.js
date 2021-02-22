@@ -25,8 +25,8 @@ io.on('connection', (socket) => {
   //   socket.emit('sendOrder', order)
   // })
   socket.on('completeOrder', (data) => {
-    console.log(data)
-    io.emit('recievedOrder', {hello: 'world'})
+    const order = await Order.findById(data.cartID)
+    io.to(data.socketID).emit('recievedOrder', {order: order})
   })
   // socket.on('end', (socket) => socket.disconnect(0))
   socket.on('disconnect', () => socket.removeAllListeners())
@@ -76,6 +76,7 @@ const shippingAddressRouter = require('./routes/buyer/shippingAddress')
 
 // Order Dependency
 const orderRouter = require('./routes/buyer/order')
+const Order = require("./model/order")
 
 
 /* ------- CORS ------- */
