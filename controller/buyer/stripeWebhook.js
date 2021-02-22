@@ -166,10 +166,11 @@ const webhook = async (req, res) => {
 
                 // Send back order to client via websocket 
                 const io = req.app.get('socketio')
+                console.log(169, io)
                 io.on('connection', (socket) => {
                     console.log(170, 'Client connected');
                     console.log(23, socket.id)
-                    const sessionsMap = {}
+
                     socket.emit('socketID', socket.id)
                     // const order = Order.findOne({Orde})
                     // ee.on('order', () => {
@@ -181,7 +182,7 @@ const webhook = async (req, res) => {
                       completeOrder = await Order.findOne({OrderNumber: data.cartID})
                       console.log(34, completeOrder)
                       console.log(35, data)
-                      socket.emit('recievedOrder', {order: completeOrder})
+                      io.to(socket.id).emit('recievedOrder', {order: completeOrder})
                     })
                   
                     // console.log(37, receivedData)
