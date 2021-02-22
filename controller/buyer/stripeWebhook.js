@@ -163,7 +163,8 @@ const webhook = async (req, res) => {
                 console.log(157, deletedCachePaymentIntent)
 
                 // Send back order to client via websocket 
-                const io = req.app.get('socketio')
+                // const io = req.app.get('socketio')
+                const io = req.app.locals.io
                 io.on('connection', (socket) => {
                     console.log(168, socket.id)
                     io.to(socket.id).emit("completeOrder", {

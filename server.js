@@ -16,8 +16,8 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
 const io = require('socket.io')(server)
-app.set('socketio', io)
-
+// app.set('socketio', io)
+app.locals.io = io
 // io.on('connection', (socket) => {
 //   console.log(22, 'Client connected');
 //   console.log(23, socket.id)
