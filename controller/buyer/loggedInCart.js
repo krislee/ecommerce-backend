@@ -142,7 +142,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                 console.log(121, "adding items from guest to logged in cart: ", cart)
 
                 // then delete the cart from the session after adding all the items from cart
-                delete req.session.cart;
+                delete req.session;
 
                 console.log(126, "after deleting session: ", req.session)
             }
@@ -178,7 +178,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                 await newCart.save()
 
                 // then delete the cart from the session after adding all the items from cart
-                delete req.session.cart
+                delete req.session
 
                 console.log(162, "after deleting session: ", req.session)
             }
