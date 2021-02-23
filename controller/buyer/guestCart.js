@@ -146,11 +146,11 @@ const guestCartItemQuantity = async(req, res) => {
     console.log(146, "TRYING TO GET ITEM QUANTITY")
     try {
         if(req.session.cart) {
-            const cart = req.session.cart
-            console.log(149, cart)
             const item = cart.filter((item) => item.ItemId === req.params.id)
             console.log(151, item)
             res.status(200).json({item: item})
+        } else {
+            res.status(200).json({item: null, message: "No cart available"})
         }
     } 
     catch(error) {
