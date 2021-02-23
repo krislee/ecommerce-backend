@@ -269,7 +269,7 @@ const getCartID = async(req, res) => {
 const guestCartItemQuantity = async(req, res) => {
     try {
         if(req.user) {
-            const cart = await Cart.findOne({'Items.ItemId': req.params.id})
+            const cart = await Cart.findOne({'Items.ItemId': req.params.id, "Items.$": 1})
             console.log(273, cart)
             res.status(200).json({item: cart})
         }
