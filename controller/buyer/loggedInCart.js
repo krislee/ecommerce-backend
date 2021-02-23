@@ -89,19 +89,32 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
 
         if (cart) {
             if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
-                // console.log(sessionCart[0].Id, typeof sessionCart[0].Id, "sessionCart[i].id")
-                // console.log(cart.Items[0].itemId, typeof cart.Items[0].itemId, "cart.Items[0].itemId")
-                for (let i = 0; i < sessionCart.length; i++) {
 
+                for (let i = 0; i < sessionCart.length; i++) {
+                    const item = await Electronic.findById(sessionCart[i].ItemId)
                     // check if the logged in cart already contains the item that was in the session cart by finding the Items subdocument
                     const cartItem = cart.Items.find((j) => {
                         return j.ItemId == sessionCart[i].ItemId
                     })
                     // If item is already in the logged in cart, then update only the Quantity and TotalPrice of the Items subdocument
                     if (cartItem) {
-                        cartItem.Quantity += sessionCart[i].Quantity
-                        cartItem.TotalPrice += sessionCart[i].TotalPrice
+                        const totalItemQuantity = cartItem.Quantity + sessionCart[i].Quantity
+                        console.log(103, totalItemQuantity)
+                        if(totalItemQuantity > 10) {
+                            cartItem.Quantity = 10
+                            cartItem.TotalPrice = cartItem.Quantity * item.Price
+                            console.log(106, cartItem.Quantity)
+                            cart.TotalCartPrice += (req.session.totalCartPrice - ((10 - sessionCart[i].Quantity) * item.Price))
+                            cart.TotalItems += (req.session.totalItems - (10 - sessionCart[i].Quantity))
 
+                        } else {
+                            cartItem.Quantity += sessionCart[i].Quantity
+                            cartItem.TotalPrice += sessionCart[i].TotalPrice
+                            // Update the cart document's TotalCartPrice and TotalItems fields after updating existing Items subdocument or adding Items subdocument 
+                            cart.TotalCartPrice += req.session.totalCartPrice
+                            cart.TotalItems += req.session.totalItems
+                        }
+                        
                     } else { // If the item from the guest cart is not in the logged in cart, then add a new Items subdocument to the cart document
                         cart.Items.push({
                             ItemId: sessionCart[i].ItemId,
@@ -111,11 +124,12 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                             Quantity: sessionCart[i].Quantity,
                             TotalPrice: sessionCart[i].TotalPrice
                         })
+
+                        // Update the cart document's TotalCartPrice and TotalItems fields after updating existing Items subdocument or adding Items subdocument 
+                        cart.TotalCartPrice += req.session.totalCartPrice
+                        cart.TotalItems += req.session.totalItems
                     }
                 }
-                // Update the cart document's TotalCartPrice and TotalItems fields after updating existing Items subdocument or adding Items subdocument 
-                cart.TotalCartPrice += req.session.totalCartPrice
-                cart.TotalItems += req.session.totalItems
 
                 await cart.save()
 
