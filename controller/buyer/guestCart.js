@@ -143,6 +143,7 @@ const guestIndexCart = (req, res) => {
 
 // Get Quantity of a specific item (used to check how many items have already been added)
 const guestCartItemQuantity = async(req, res) => {
+    console.log(146, "TRYING TO GET ITEM QUANTITY")
     try {
         if(req.session.cart) {
             const cart = req.session.cart
