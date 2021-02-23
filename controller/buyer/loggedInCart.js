@@ -90,8 +90,8 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
             if (sessionCart) { // if there is a cart in the session because the user was not logged in when adding items, then add the items to the cart of a logged in user
 
                 for (let i = 0; i < sessionCart.length; i++) {
-                    // const item = await Electronic.findById(sessionCart[i].ItemId)
-                    // console.log(95, "ITEM", item.Name, item.Price)
+                    const item = await Electronic.findById(sessionCart[i].ItemId)
+                    console.log(95, "ITEM", item.Name, item.Price)
                     // check if the logged in cart already contains the item that was in the session cart by finding the Items subdocument
                     const cartItem = cart.Items.find((j) => {
                         return j.ItemId == sessionCart[i].ItemId
@@ -103,12 +103,11 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                         console.log(103, totalItemQuantity)
                         if(totalItemQuantity > 10) {
                             console.log(105, 10-cartItem.Quantity)
-                            console.log(106, sessionCart[i].TotalPrice)
-                            console.log(107, (10-cartItem.Quantity) * sessionCart[i].TotalPrice)
-                            cart.TotalCartPrice += ((10-cartItem.Quantity) * sessionCart[i].TotalPrice)
-                            console.log(109, cart.TotalCartPrice)
+                            console.log(106, (10-cartItem.Quantity) * item.Price)
+                            cart.TotalCartPrice += ((10-cartItem.Quantity) * item.Price)
+                            console.log(108, cart.TotalCartPrice)
                             cart.TotalItems += (10-cartItem.Quantity)
-                            console.log(111, cart.TotalItems)
+                            console.log(110, cart.TotalItems)
                             cartItem.Quantity = 10
                             cartItem.TotalPrice = 10 * sessionCart[i].TotalPrice
                             
@@ -116,7 +115,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                             cartItem.Quantity += sessionCart[i].Quantity
                             cartItem.TotalPrice += sessionCart[i].TotalPrice
                             cartItem.TotalItems += sessionCart[i].Quantity
-                            cartItem.TotalCartPrice += (sessionCart[i].Quantity * sessionCart[i].TotalPrice)
+                            cartItem.TotalCartPrice += sessionCart[i].TotalPrice
                         }
                         
                     } else { // If the item from the guest cart is not in the logged in cart, then add a new Items subdocument to the cart document
@@ -129,7 +128,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                             TotalPrice: sessionCart[i].TotalPrice
                         })
                         cartItem.TotalItems += sessionCart[i].Quantity
-                        cartItem.TotalCartPrice += (sessionCart[i].Quantity * sessionCart[i].TotalPrice)
+                        cartItem.TotalCartPrice += sessionCart[i].TotalPrice
                     }
                 }
 
