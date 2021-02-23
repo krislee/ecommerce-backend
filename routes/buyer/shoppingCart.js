@@ -44,6 +44,14 @@ router.get('/cart', (req, res) => {
 
 router.get('/cartID', passportAuthenticate, getCartID)
 
+router.get('/cart-item/:id', (req, res) => {
+    if(!req.headers.authorization) {
+        res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
+    } else {
+        res.redirect(307, `/loginbuyer/quantity/${req.params.id}`)
+    }
+})
+
 module.exports = router
 
 // Resources:

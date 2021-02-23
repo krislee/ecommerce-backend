@@ -141,4 +141,21 @@ const guestIndexCart = (req, res) => {
     }
 }
 
+// Get Quantity of a specific item (used to check how many items have already been added)
+const getCartItemQuantity = async(req, res) => {
+    try {
+        if(req.user) {
+            const cart = req.session.cart
+            console.log(149, cart)
+            const item = cart.filter((item) => item.ItemId === req.params.id)
+            console.log(151, item)
+            res.status(200).json({itemID: item.ItemId, name: item.Name, quantity: item.Quantity})
+        }
+    } 
+    catch(error) {
+        console.log(278, error)
+        return res.status(400).send(error)
+     }
+}
+
 module.exports = {guestAddItem, guestUpdateItemQuantity, guestDeleteItem, guestIndexCart}

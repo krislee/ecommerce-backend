@@ -255,7 +255,6 @@ const loggedInIndexCart = async(req, res) => {
 // Get cart ID
 const getCartID = async(req, res) => {
     try {
-        console.log(req.user, 'user');
         if(req.user) {
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
             return res.status(200).json({cartID: cart._id})
@@ -266,8 +265,22 @@ const getCartID = async(req, res) => {
     }
 }
 
+// Get Quantity of a specific item (used to check how many items have already been added)
+const getCartItemQuantity = async(req, res) => {
+    try {
+        if(req.user) {
+            const cart = await Cart.findOne({'Items.ItemId': req.params.id})
+            console.log(273, cart)
+            res.status(200).json({item: cart})
+        }
+    } 
+    catch(error) {
+        console.log(278, error)
+        return res.status(400).send(error)
+     }
+}
 
-module.exports = {loggedInAddItem, addItemsFromGuestToLoggedIn, loggedInUpdateItemQuantity, loggedInDeleteItem, loggedInIndexCart, getCartID}
+module.exports = {loggedInAddItem, addItemsFromGuestToLoggedIn, loggedInUpdateItemQuantity, loggedInDeleteItem, loggedInIndexCart, getCartID, getCartItemQuantity}
 
 
  // const updatedCartWithItem = await Cart.findOne({LoggedInBuyer: req.user._id}, {_id: 0}).select('Items.Quantity')
