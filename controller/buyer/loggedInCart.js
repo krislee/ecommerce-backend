@@ -114,8 +114,8 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                         } else {
                             cartItem.Quantity += sessionCart[i].Quantity
                             cartItem.TotalPrice += sessionCart[i].TotalPrice
-                            cartItem.TotalItems += sessionCart[i].Quantity
-                            cartItem.TotalCartPrice += sessionCart[i].TotalPrice
+                            cart.TotalItems += sessionCart[i].Quantity
+                            cart.TotalCartPrice += sessionCart[i].TotalPrice
                         }
                         
                     } else { // If the item from the guest cart is not in the logged in cart, then add a new Items subdocument to the cart document
@@ -127,8 +127,8 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                             Quantity: sessionCart[i].Quantity,
                             TotalPrice: sessionCart[i].TotalPrice
                         })
-                        cartItem.TotalItems += sessionCart[i].Quantity
-                        cartItem.TotalCartPrice += sessionCart[i].TotalPrice
+                        cart.TotalItems += sessionCart[i].Quantity
+                        cart.TotalCartPrice += sessionCart[i].TotalPrice
                     }
                 }
 
