@@ -102,8 +102,13 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                         totalItemQuantity = cartItem.Quantity + sessionCart[i].Quantity
                         console.log(103, totalItemQuantity)
                         if(totalItemQuantity > 10) {
+                            console.log(105, 10-cartItem.Quantity)
+                            console.log(106, sessionCart[i].TotalPrice)
+                            console.log(107, (10-cartItem.Quantity) * sessionCart[i].TotalPrice)
                             cart.TotalCartPrice += ((10-cartItem.Quantity) * sessionCart[i].TotalPrice)
+                            console.log(109, cart.TotalCartPrice)
                             cart.TotalItems += (10-cartItem.Quantity)
+                            console.log(111, cart.TotalItems)
                             cartItem.Quantity = 10
                             cartItem.TotalPrice = 10 * sessionCart[i].TotalPrice
                             
