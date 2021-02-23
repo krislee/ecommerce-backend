@@ -92,6 +92,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
 
                 for (let i = 0; i < sessionCart.length; i++) {
                     const item = await Electronic.findById(sessionCart[i].ItemId)
+                    console.log(95, "ITEM", item.Name, item.Price)
                     // check if the logged in cart already contains the item that was in the session cart by finding the Items subdocument
                     const cartItem = cart.Items.find((j) => {
                         return j.ItemId == sessionCart[i].ItemId
@@ -105,8 +106,10 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                             cartItem.TotalPrice = cartItem.Quantity * item.Price
                             console.log(106, cartItem.Quantity)
                             cart.TotalCartPrice += (req.session.totalCartPrice - ((10 - sessionCart[i].Quantity) * item.Price))
+                            console.log(109, "CART TOTAL", cart.TotalCartPrice, "total cart price: ", req.session.totalCartPrice, " difference: ", ((10 - sessionCart[i].Quantity) * item.Price))
+                            console.log(110, req.session.totalItems)
                             cart.TotalItems += (req.session.totalItems - (10 - sessionCart[i].Quantity))
-
+                            console.log(112, cart.TotalItems)
                         } else {
                             cartItem.Quantity += sessionCart[i].Quantity
                             cartItem.TotalPrice += sessionCart[i].TotalPrice
