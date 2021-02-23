@@ -129,8 +129,8 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                 }
 
                 // Update the cart document's TotalCartPrice and TotalItems fields after updating existing Items subdocument or adding Items subdocument 
-                cart.TotalCartPrice += req.session.totalCartPrice
-                cart.TotalItems += req.session.totalItems
+                // cart.TotalCartPrice += req.session.totalCartPrice
+                // cart.TotalItems += req.session.totalItems
 
 
                 await cart.save()
