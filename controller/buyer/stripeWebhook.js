@@ -176,7 +176,6 @@ const webhook = async (req, res) => {
                         } 
                     }
                 })
-                console.log(179, "AFTER EMITTING ORDER VIA SOCKET")
                 
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
@@ -187,7 +186,10 @@ const webhook = async (req, res) => {
                 const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
                 console.log(194, deletedCachePaymentIntent)
-                
+
+                const deletedSockets = await SocketID.deleteMany({socketID: socketID})
+                console.log(191, "DELETED SOCKETS", deletedSockets)
+                console.log(192, "DELETING AFTER EMITTING ORDER VIA SOCKET")
                 
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
@@ -275,6 +277,10 @@ const webhook = async (req, res) => {
                     const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
                     console.log(282, deletedCachePaymentIntent)
+
+                    const deletedSockets = await SocketID.deleteMany({socketID: socketID})
+                    console.log(282, "DELETED SOCKETS", deletedSockets)
+                    console.log(283, "DELETING AFTER EMITTING ORDER VIA SOCKET")
 
                 } catch(error) {
                     console.log(285)

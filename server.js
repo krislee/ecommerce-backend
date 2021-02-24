@@ -28,11 +28,9 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', async (socket) => {
     try {
-      console.log(31, "DISCONNECTING SOCKET ID", socket.id)
-      const deletedSockets = await SocketID.deleteMany({socketID: socket.id}, () => console.log("DELETED SOCKETS"))
-      console.log(33, "AFTER DELETING SOCKET")
+      console.log(33, "DISCONNECTING")
       // handle disconnect
-      // socket.disconnect(true);
+      socket.disconnect(true);
     } catch(error) {
       console.log(error)
     }
