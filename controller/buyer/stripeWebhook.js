@@ -176,7 +176,7 @@ const webhook = async (req, res) => {
                     }
                 })
                 // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
-                req.io.on('end', (socket) => {
+                req.io.on('end', async (socket) => {
                     await SocketID.findOneAndDelete({socketId: socketID})
                     socket.disconnect(0)
                 })
@@ -265,7 +265,7 @@ const webhook = async (req, res) => {
                         }
                     })
                     // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
-                    req.io.on('end', (socket) => {
+                    req.io.on('end', async (socket) => {
                         await SocketID.findOneAndDelete({socketId: socketID})
                         socket.disconnect(0)
                     })
