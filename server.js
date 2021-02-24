@@ -27,11 +27,15 @@ io.on('connection', (socket) => {
   })
 
   socket.on('disconnect', async (socket) => {
-    const deletedSockets = await SocketID.deleteMany({socketID: socket.id})
-    console.log(32, "AFTER DELETING SOCKET", deletedSockets)
-    // handle disconnect
-    socket.disconnect();
-    socket.close();
+    try {
+      const deletedSockets = await SocketID.deleteMany({socketID: socket.id})
+      console.log(32, "AFTER DELETING SOCKET", deletedSockets)
+      // handle disconnect
+      socket.disconnect(true);
+    } catch(error) {
+      console.log(error)
+    }
+    
   })
 
   // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
