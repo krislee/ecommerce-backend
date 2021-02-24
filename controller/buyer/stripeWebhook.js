@@ -187,9 +187,9 @@ const webhook = async (req, res) => {
 
                 console.log(194, deletedCachePaymentIntent)
 
-                const deletedSockets = await SocketID.deleteMany({socketID: socketID})
-                console.log(191, "DELETED SOCKETS", deletedSockets)
-                console.log(192, "DELETING AFTER EMITTING ORDER VIA SOCKET")
+                // const deletedSockets = await SocketID.deleteMany({socketID: socketID})
+                // console.log(191, "DELETED SOCKETS", deletedSockets)
+                // console.log(192, "DELETING AFTER EMITTING ORDER VIA SOCKET")
                 
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
@@ -278,9 +278,9 @@ const webhook = async (req, res) => {
 
                     console.log(282, deletedCachePaymentIntent)
 
-                    const deletedSockets = await SocketID.deleteMany({socketID: socketID})
-                    console.log(282, "DELETED SOCKETS", deletedSockets)
-                    console.log(283, "DELETING AFTER EMITTING ORDER VIA SOCKET")
+                    // const deletedSockets = await SocketID.deleteMany({socketID: socketID})
+                    // console.log(282, "DELETED SOCKETS", deletedSockets)
+                    // console.log(283, "DELETING AFTER EMITTING ORDER VIA SOCKET")
 
                 } catch(error) {
                     console.log(285)

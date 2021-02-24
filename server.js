@@ -26,16 +26,13 @@ io.on('connection', (socket) => {
     console.log(26, socketID)
   })
 
-  socket.on('disconnect', async (socket) => {
-    try {
-      console.log(33, "DISCONNECTING")
-      // handle disconnect
-      socket.disconnect(true);
-    } catch(error) {
-      console.log(error)
-    }
-    
+  socket.on('end', async(cartID) => {
+    console.log(30, "AFTER COMPLETE ORDER CART ID")
+    const deletedSockets = await SocketID.deleteMany({cartID: cartID})
+    console.log(32, "DELETED SOCKETS", deletedSockets)
   })
+
+  socket.on('disconnect', () => console.log(35, "DISCONNECTING"))
 
   // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
   // socket.on('end', async (socket) => {
