@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
 
   socket.on('end', async(cartID) => {
     console.log(30, "AFTER COMPLETE ORDER CART ID", cartID)
-    const deletedSockets = await SocketID.deleteMany({cartID: cartID})
+    const deletedSockets = await SocketID.deleteMany({cartID: cartID.cartID})
     console.log(32, "DELETED SOCKETS", deletedSockets)
   })
 
