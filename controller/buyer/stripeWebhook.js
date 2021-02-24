@@ -61,7 +61,7 @@ const webhook = async (req, res) => {
                 const updatedCustomer = await stripe.customers.update(data.object.customer, {
                     metadata: {last_used_payment: paymentMethodID}
                 })
-                console.log(61, "updated customer after successful payment: ", updatedCustomer)
+                console.log(64, "updated customer after successful payment: ", updatedCustomer)
 
                 // Check if the payment method object that was just used to pay had to recollect CVV because user updated the payment method in payment method component. If CVV was recollected, then change it back to false. Since the updated payment method succeeded in making the payment, we no longer need to recollect the CVV.
                 const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodID)
@@ -69,30 +69,30 @@ const webhook = async (req, res) => {
                     const updatedPaymentMethod = await stripe.paymentMethods.update(paymentMethodID, {
                         metadata: {recollect_cvv: false}
                     })
-                    console.log(69, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
+                    console.log(72, "updated recollect_cvv payment method after successful payment: ", updatedPaymentMethod)
 
                 }
                 
                 // Need to get the logged in user's document ID for updating last used shipping address and creating an order. To find the logged in user, use the Stripe customer's ID that was attached to logged in user's document during payment intent creation.
                 const loggedInUser = await BuyerUser.findOne({customer: data.object.customer})
 
-                console.log(77, typeof data.object.metadata.lastUsedShipping, data.object.metadata.lastUsedShipping )
+                console.log(79, typeof data.object.metadata.lastUsedShipping, data.object.metadata.lastUsedShipping )
 
                 // Check if there is already a last used shipping address that is different from the one that just used, and remove it
                 const previousLastUsedAddress = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
-                console.log(81, previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
+                console.log(83, previousLastUsedAddress) // null if logged in user has no last used address or any saved addresses
                 if(previousLastUsedAddress) {
-                    console.log(83, previousLastUsedAddress._id, typeof previousLastUsedAddress._id)
+                    console.log(85, previousLastUsedAddress._id, typeof previousLastUsedAddress._id)
                 }
                
                 if(previousLastUsedAddress && (String(previousLastUsedAddress._id) !== data.object.metadata.lastUsedShipping)) {
                         previousLastUsedAddress.LastUsed = false
                         previousLastUsedAddress.save()
-                        console.log(89, "make false to previous address: ", previousLastUsedAddress)
+                        console.log(91, "make false to previous address: ", previousLastUsedAddress)
                 }
 
                 // Create new shipping address if logged in user checked Save Shipping for Future
-                console.log(94, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
+                console.log(95, "save shipping or not?", data.object.metadata.saveShipping, typeof data.object.metadata.saveShipping)
                 // console.log(88, "shipping in web hook", data.object.shipping)
                
                 const shippingAddress = data.object.shipping.address
@@ -108,14 +108,14 @@ const webhook = async (req, res) => {
                     
                     // Add the lastUsed property to the address last used to checkout if the address just used is not the same as the previous order's shipping address
                     const lastUsedAddress = await BuyerShippingAddress.findOneAndUpdate({_id: data.object.metadata.lastUsedShipping, Buyer: loggedInUser._id}, {LastUsed: true}, {new: true})
-                    console.log(106, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
+                    console.log(111, "new last used address: ", lastUsedAddress) // null for logged in users who did not click Save Shipping in shipping form
                     
                 }
 
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 const cart = await Cart.findOne({LoggedInBuyer: loggedInUser._id})
                 const order = await Order.findOne({OrderNumber: cart._id})
-                console.log(113, "create logged in order: ", order)
+                console.log(118, "create logged in order: ", order)
 
                 let electronic
                 for(let i=0; i < cart.Items.length; i++){
@@ -124,7 +124,7 @@ const webhook = async (req, res) => {
 
                     // Update inventory quantity of the items after items sold
                     electronic = await Electronic.findById(cart.Items[i].ItemId)
-                    console.log(125, "before updated quantity electronic: ", electronic)
+                    console.log(127, "before updated quantity electronic: ", electronic)
 
                     electronic.Quantity -= cart.Items[i].Quantity
                     
@@ -132,13 +132,13 @@ const webhook = async (req, res) => {
                 await order.save()
                 await electronic.save()
             
-                console.log(130, "after update electronic quantity: ", electronic)
-                console.log(131, "added items to logged in order: ", order)
+                console.log(135, "after update electronic quantity: ", electronic)
+                console.log(136, "added items to logged in order: ", order)
 
                 // Add the shipping address and payment method used to confirm payment at checkout to the order document, after updating shipping address to have LastUsed: true property/creating an address with LastUsed: true property, and updating customer to have a last_used_payment metadata property.
                 const orderLastUsedShipping = await BuyerShippingAddress.findOne({LastUsed: true, Buyer: loggedInUser._id})
 
-                console.log(136, "find saved last used saved shipping: ", orderLastUsedShipping)
+                console.log(141, "find saved last used saved shipping: ", orderLastUsedShipping)
 
                 const updateOrderWithShippingAndPayment = await Order.findOneAndUpdate({_id: order._id}, {
                     Shipping: {
@@ -151,13 +151,14 @@ const webhook = async (req, res) => {
                     Complete: true
                 }, {new: true})
 
-                console.log(147, updateOrderWithShippingAndPayment)
+                console.log(154, updateOrderWithShippingAndPayment)
 
                 // Send back order to client via websocket. The socket is stored on req.io object from server middleware.
-                const socketId = await SocketID.find({cartID: cart._id})
-                console.log(160, socketId)
-                console.log(161, socketId[socketId.length-1].socketID)
-                req.io.to(socketId.socketID).emit("completeOrder", {
+                const socketDoc = await SocketID.find({cartID: cart._id})
+                console.log(158, socketDoc)
+                console.log(159, socketDoc[socketDoc.length-1].socketID)
+                const socketID = socketDoc[socketDoc.length-1].socketID
+                req.io.to(socketID).emit("completeOrder", {
                     order: updateOrderWithShippingAndPayment, 
                     payment: {
                         brand: paymentMethod.card.brand,
@@ -172,34 +173,35 @@ const webhook = async (req, res) => {
                                 country:  paymentMethod.billing_details.address.country
                             },
                             name: paymentMethod.billing_details.name
-                        }
+                        } 
                     }
                 })
+                console.log(179, "AFTER EMITTING ORDER VIA SOCKET")
                 // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
                 req.io.on('end', async (socket) => {
-                    await SocketID.deleteMany({socketId: socketID})
+                    await SocketID.deleteMany({socketID: socketID})
                     socket.disconnect(0)
                 })
-
+                console.log(185, "AFTER DELETING SOCKET")
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
 
-                console.log(185, "logged in cart deleted: ", deletedCart)
+                console.log(189, "logged in cart deleted: ", deletedCart)
 
                 // Delete CachePaymentIntent document
                 const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
-                console.log(190, deletedCachePaymentIntent)
+                console.log(194, deletedCachePaymentIntent)
                 
                 
             } else {
                 // Fulfill order by retrieving the items from the Cart document before deleting the cart later. While retrieving the Cart items, update the Electronic item quantity.
                 try {
                     const order = await Order.findOne({OrderNumber: data.object.metadata.order_number})
-                    console.log(163, "create order: ", order)
+                    console.log(201, "create order: ", order)
             
                     const session = await req.sessionStore.get(data.object.metadata.order_number)
-                    console.log(166, session)
+                    console.log(204, session)
                     
                     let electronic
                     for(let i=0; i < session.cart.length; i++) {
@@ -210,16 +212,16 @@ const webhook = async (req, res) => {
                         electronic = await Electronic.findById(session.cart[i].ItemId)
                         electronic.Quantity -= session.cart[i].Quantity
                         electronic.save()
-                        console.log(177, "updated quantity in electronic: ", electronic)
+                        console.log(215, "updated quantity in electronic: ", electronic)
                     } 
 
-                    console.log(180, "updated quantity in electronic: ", electronic)
-                    console.log(181, "added items in guest order: ", order)
+                    console.log(218, "updated quantity in electronic: ", electronic)
+                    console.log(219, "added items in guest order: ", order)
 
                     // Since there is a new cart for each order, delete guest's session after fulfilling order.
                     await req.sessionStore.destroy(data.object.metadata.order_number, async function() {
                         const deletedSession = await req.sessionStore.get(data.object.metadata.order_number)
-                        console.log(186, deletedSession)
+                        console.log(224, deletedSession)
                     })
 
                     // Add the shipping address and payment method used to confirm payment at checkout to the order document.
@@ -237,16 +239,17 @@ const webhook = async (req, res) => {
                         Complete: true
                     }, {new: true})
                     
-                    console.log(202, updateOrderWithShippingAndPayment)
+                    console.log(242, updateOrderWithShippingAndPayment)
 
                     // Get the payment method details since we need to send it back to the client via websocket
                     const paymentMethod = await stripe.paymentMethods.retrieve(data.object.payment_method)
 
                     // Send back order to client via websocket. The socket is stored on req.io object from server middleware.
-                    const socketId = await SocketID.find({cartID: data.object.metadata.order_number})
-                    console.log(247, "SOCKET ID DOC", socketId)
-                    console.log(248, "SOCKET ID", socketId[socketId.length-1].socketID)
-                    req.io.to(socketId.socketID).emit("completeOrder", {
+                    const socketDoc = await SocketID.find({cartID: cart._id})
+                    console.log(249, socketDoc)
+                    console.log(250, socketDoc[socketDoc.length-1].socketID)
+                    const socketID = socketDoc[socketDoc.length-1].socketID
+                    req.io.to(socketID).emit("completeOrder", {
                         order: updateOrderWithShippingAndPayment, 
                         payment: {
                             brand: paymentMethod.card.brand,
@@ -264,25 +267,28 @@ const webhook = async (req, res) => {
                             }
                         }
                     })
+                    console.log(270, "AFTER EMITTING ORDER VIA SOCKET")
                     // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
                     req.io.on('end', async (socket) => {
-                        await SocketID.deleteMany({socketId: socketID})
+                        await SocketID.deleteMany({socketID: socketID})
                         socket.disconnect(0)
                     })
+
+                    console.log(277, "AFTER DELETING SOCKET")
 
                     // Delete CachePaymentIntent document
                     const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
-                    console.log(207, deletedCachePaymentIntent)
+                    console.log(282, deletedCachePaymentIntent)
 
                 } catch(error) {
-                    console.log(210)
+                    console.log(285)
                     console.log(error)
                 }
             }
 
         } catch(error) {
-            console.log(216, error)
+            console.log(291, error)
         }
     } 
     // Customer’s payment was declined by card network or otherwise expired
