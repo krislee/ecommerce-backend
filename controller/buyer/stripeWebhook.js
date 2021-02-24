@@ -240,7 +240,7 @@ const webhook = async (req, res) => {
                     const paymentMethod = await stripe.paymentMethods.retrieve(data.object.payment_method)
 
                     // Send back order to client via websocket. The socket is stored on req.io object from server middleware.
-                    const socketDoc = await SocketID.find({cartID: cart._id})
+                    const socketDoc = await SocketID.find({cartID: data.object.metadata.order_number})
                     console.log(249, socketDoc)
                     console.log(250, socketDoc[socketDoc.length-1].socketID)
                     const socketID = socketDoc[socketDoc.length-1].socketID
