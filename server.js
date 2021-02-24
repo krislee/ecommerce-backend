@@ -18,6 +18,7 @@ const io = require('socket.io')(server)
 
 io.on('connection', (socket) => {
   console.log(20, "CLIENT CONNECTED")
+
   socket.on('cartID', async(cartID) => {
     console.log(22, "CARTID", cartID)
     console.log(23, "SOCKETID", socket.id)
@@ -25,14 +26,25 @@ io.on('connection', (socket) => {
     console.log(26, socketID)
   })
 
-  // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
-  socket.on('end', async (socket) => {
-    await SocketID.deleteMany({socketID: socketID})
-    socket.disconnect(0)
+  socket.on('disconnect', async (socket) => {
+    const deletedSockets = await SocketID.deleteMany({socketID: socket.id})
+    console.log(32, "AFTER DELETING SOCKET", deletedSockets)
+    // handle disconnect
+    socket.disconnect();
+    socket.close();
   })
+  });
 
-  console.log(185, "AFTER DELETING SOCKET")
+  // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
+  // socket.on('end', async (socket) => {
+  //   await SocketID.deleteMany({socketID: socket.id})
+  //   // socket.disconnect(0)
+  //   console.log(32, "AFTER DELETING SOCKET")
+  // })
+
 })
+
+
 // app.set('socketio', io)
 // app.locals.io = io
 // io.on('connection', (socket) => {
