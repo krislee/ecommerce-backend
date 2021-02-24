@@ -7,22 +7,20 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const connection = require('./db/connection')
-const mongoose = require('mongoose');
-const Order = require('./model/order')
 const SocketID = require('./model/socket')
-// const expressWs = require('express-ws')(app);
 
 // LISTEN TO PORT
 const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
+// SET UP WEBSOCKET
 const io = require('socket.io')(server)
 
 io.on('connection', (socket) => {
-  console.log(22, "CLIENT CONNECTED")
+  console.log(20, "CLIENT CONNECTED")
   socket.on('cartID', async(cartID) => {
-    console.log(23, "CARTID", cartID)
-    console.log(24, "SOCKETID", socket.id)
+    console.log(22, "CARTID", cartID)
+    console.log(23, "SOCKETID", socket.id)
     const socketID = await SocketID.create({socketID: socket.id, cartID: cartID.cartID})
     console.log(26, socketID)
   })
@@ -164,10 +162,10 @@ app.use(
 );
 app.use(express.urlencoded({extended: true}))
 
-
+// Store the websocket object, io, on the request object by creating any key name, i.e. io; io is stored on so req.io object
 app.use(function(req, res, next) {
   req.io = io;
-  req.socketIDContainer = {}
+  // req.socketIDContainer = {}
   next();
 });
 

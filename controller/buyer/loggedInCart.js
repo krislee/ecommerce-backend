@@ -102,15 +102,12 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                         totalItemQuantity = cartItem.Quantity + sessionCart[i].Quantity
                         console.log(103, totalItemQuantity)
                         if(totalItemQuantity > 10) {
-                            console.log(105, 10-cartItem.Quantity)
-                            console.log(106, (10-cartItem.Quantity) * item.Price)
                             cart.TotalCartPrice += ((10-cartItem.Quantity) * item.Price)
-                            console.log(108, cart.TotalCartPrice)
                             cart.TotalItems += (10-cartItem.Quantity)
-                            console.log(110, cart.TotalItems)
+
                             cartItem.Quantity = 10
                             cartItem.TotalPrice = 10 * item.Price
-                            console.log(113, cartItem.TotalPrice)  
+
                         } else {
                             cartItem.Quantity += sessionCart[i].Quantity
                             cartItem.TotalPrice += sessionCart[i].TotalPrice
@@ -131,11 +128,6 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                         cart.TotalCartPrice += sessionCart[i].TotalPrice
                     }
                 }
-
-                // Update the cart document's TotalCartPrice and TotalItems fields after updating existing Items subdocument or adding Items subdocument 
-                // cart.TotalCartPrice += req.session.totalCartPrice
-                // cart.TotalItems += req.session.totalItems
-
 
                 await cart.save()
 

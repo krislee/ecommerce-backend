@@ -153,9 +153,7 @@ const webhook = async (req, res) => {
 
                 console.log(147, updateOrderWithShippingAndPayment)
 
-                // Send back order to client via websocket 
-                // const io = req.app.get('socketio')
-                console.log(158, req.io)
+                // Send back order to client via websocket. The socket is stored on req.io object from server middleware.
                 const socketId = await SocketID.findOne({cartID: cart._id})
                 console.log(160, socketId)
                 console.log(161, socketId.socketID)
@@ -177,7 +175,11 @@ const webhook = async (req, res) => {
                         }
                     }
                 })
-            
+                // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
+                req.io.on('end', (socket) => {
+                    await SocketID.findOneAndDelete({socketId: socketID})
+                    socket.disconnect(0)
+                })
 
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
@@ -240,28 +242,38 @@ const webhook = async (req, res) => {
                     // Get the payment method details since we need to send it back to the client via websocket
                     const paymentMethod = await stripe.paymentMethods.retrieve(data.object.payment_method)
 
+                    // Send back order to client via websocket. The socket is stored on req.io object from server middleware.
+                    const socketId = await SocketID.findOne({cartID: data.object.metadata.order_number})
+                    console.log(247, "SOCKET ID DOC", socketId)
+                    console.log(248, "SOCKET ID", socketId.socketID)
+                    req.io.to(socketId.socketID).emit("completeOrder", {
+                        order: updateOrderWithShippingAndPayment, 
+                        payment: {
+                            brand: paymentMethod.card.brand,
+                            last4: paymentMethod.card.last4,
+                            billingDetails: {
+                                address: {
+                                    line1: paymentMethod.billing_details.address.line1,
+                                    line2: paymentMethod.billing_details.address.line2,
+                                    city:  paymentMethod.billing_details.address.city,
+                                    state:  paymentMethod.billing_details.address.state,
+                                    postalCode:  paymentMethod.billing_details.address.postal_code,
+                                    country:  paymentMethod.billing_details.address.country
+                                },
+                                name: paymentMethod.billing_details.name
+                            }
+                        }
+                    })
+                    // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
+                    req.io.on('end', (socket) => {
+                        await SocketID.findOneAndDelete({socketId: socketID})
+                        socket.disconnect(0)
+                    })
+
                     // Delete CachePaymentIntent document
                     const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
                     console.log(207, deletedCachePaymentIntent)
-
-                    // Send back order to client via websocket 
-                    // const io = req.app.get('socketio')
-                    // io.to(data.object.metadata.order_number).emit("completeOrder", {order: updateOrderWithShippingAndPayment, payment: {
-                    //     brand: paymentMethod.card.brand,
-                    //     last4: paymentMethod.card.last4,
-                    //     billingDetails: {
-                    //         address: {
-                    //             line1: paymentMethod.billing_details.address.line1,
-                    //             line2: paymentMethod.billing_details.address.line2,
-                    //             city:  paymentMethod.billing_details.address.city,
-                    //             state:  paymentMethod.billing_details.address.state,
-                    //             postalCode:  paymentMethod.billing_details.address.postal_code,
-                    //             country:  paymentMethod.billing_details.address.country
-                    //         },
-                    //         name: paymentMethod.billing_details.name
-                    //     }
-                    // }})
 
                 } catch(error) {
                     console.log(210)
