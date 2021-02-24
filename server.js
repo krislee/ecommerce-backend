@@ -165,7 +165,7 @@ app.use(express.urlencoded({extended: true}))
 // Store the websocket object, io, on the request object by creating any key name, i.e. io; io is stored on so req.io object
 app.use(function(req, res, next) {
   req.io = io;
-  // req.socketIDContainer = {}
+  req.socketIDContainer = {}
   next();
 });
 
