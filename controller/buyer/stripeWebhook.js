@@ -154,6 +154,7 @@ const webhook = async (req, res) => {
                 console.log(154, updateOrderWithShippingAndPayment)
 
                 // Send back order to client via websocket. The socket is stored on req.io object from server middleware.
+                console.log(157, cart._id)
                 const socketDoc = await SocketID.find({cartID: cart._id})
                 console.log(158, socketDoc)
                 console.log(159, socketDoc[socketDoc.length-1].socketID)
