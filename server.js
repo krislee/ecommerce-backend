@@ -33,7 +33,6 @@ io.on('connection', (socket) => {
     socket.disconnect();
     socket.close();
   })
-  });
 
   // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
   // socket.on('end', async (socket) => {
