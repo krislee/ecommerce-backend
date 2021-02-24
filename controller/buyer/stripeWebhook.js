@@ -154,9 +154,9 @@ const webhook = async (req, res) => {
                 console.log(147, updateOrderWithShippingAndPayment)
 
                 // Send back order to client via websocket. The socket is stored on req.io object from server middleware.
-                const socketId = await SocketID.findOne({cartID: cart._id})
+                const socketId = await SocketID.find({cartID: cart._id})
                 console.log(160, socketId)
-                console.log(161, socketId.socketID)
+                console.log(161, socketId[socketId.length-1].socketID)
                 req.io.to(socketId.socketID).emit("completeOrder", {
                     order: updateOrderWithShippingAndPayment, 
                     payment: {
@@ -177,7 +177,7 @@ const webhook = async (req, res) => {
                 })
                 // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
                 req.io.on('end', async (socket) => {
-                    await SocketID.findOneAndDelete({socketId: socketID})
+                    await SocketID.deleteMany({socketId: socketID})
                     socket.disconnect(0)
                 })
 
@@ -243,9 +243,9 @@ const webhook = async (req, res) => {
                     const paymentMethod = await stripe.paymentMethods.retrieve(data.object.payment_method)
 
                     // Send back order to client via websocket. The socket is stored on req.io object from server middleware.
-                    const socketId = await SocketID.findOne({cartID: data.object.metadata.order_number})
+                    const socketId = await SocketID.find({cartID: data.object.metadata.order_number})
                     console.log(247, "SOCKET ID DOC", socketId)
-                    console.log(248, "SOCKET ID", socketId.socketID)
+                    console.log(248, "SOCKET ID", socketId[socketId.length-1].socketID)
                     req.io.to(socketId.socketID).emit("completeOrder", {
                         order: updateOrderWithShippingAndPayment, 
                         payment: {
@@ -266,7 +266,7 @@ const webhook = async (req, res) => {
                     })
                     // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
                     req.io.on('end', async (socket) => {
-                        await SocketID.findOneAndDelete({socketId: socketID})
+                        await SocketID.deleteMany({socketId: socketID})
                         socket.disconnect(0)
                     })
 
