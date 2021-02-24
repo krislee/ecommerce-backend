@@ -177,12 +177,7 @@ const webhook = async (req, res) => {
                     }
                 })
                 console.log(179, "AFTER EMITTING ORDER VIA SOCKET")
-                // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
-                req.io.on('end', async (socket) => {
-                    await SocketID.deleteMany({socketID: socketID})
-                    socket.disconnect(0)
-                })
-                console.log(185, "AFTER DELETING SOCKET")
+                
                 // Since there is a new cart for each order, delete cart after fulfilling order.
                 const deletedCart = await Cart.findOneAndDelete({LoggedInBuyer: loggedInUser._id})
 
@@ -269,12 +264,12 @@ const webhook = async (req, res) => {
                     })
                     console.log(270, "AFTER EMITTING ORDER VIA SOCKET")
                     // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
-                    req.io.on('end', async (socket) => {
-                        await SocketID.deleteMany({socketID: socketID})
-                        socket.disconnect(0)
-                    })
+                    // req.io.on('end', async (socket) => {
+                    //     await SocketID.deleteMany({socketID: socketID})
+                    //     socket.disconnect(0)
+                    // })
 
-                    console.log(277, "AFTER DELETING SOCKET")
+                    // console.log(277, "AFTER DELETING SOCKET")
 
                     // Delete CachePaymentIntent document
                     const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})

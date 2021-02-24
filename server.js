@@ -24,6 +24,14 @@ io.on('connection', (socket) => {
     const socketID = await SocketID.create({socketID: socket.id, cartID: cartID.cartID})
     console.log(26, socketID)
   })
+
+  // Disconnect the socket and delete the socket info in db since we have done the job of sending the info immediately after confirming payment
+  socket.on('end', async (socket) => {
+    await SocketID.deleteMany({socketID: socketID})
+    socket.disconnect(0)
+  })
+
+  console.log(185, "AFTER DELETING SOCKET")
 })
 // app.set('socketio', io)
 // app.locals.io = io
