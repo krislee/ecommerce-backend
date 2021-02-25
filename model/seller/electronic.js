@@ -3,7 +3,7 @@ const buyerUser = require('../buyer/buyerUser')
 const {ElectronicReview} = require('../buyer/reviewElectronic')
 const electronicsSchema = new Schema ({
     Name: {type: String, required: true},
-    Image: String,
+    Image: [String],
     Brand: String,
     Description: [{
         Heading: String,
