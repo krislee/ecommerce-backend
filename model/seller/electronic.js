@@ -4,8 +4,8 @@ const {ElectronicReview} = require('../buyer/reviewElectronic')
 const electronicsSchema = new Schema ({
     Name: {type: String, required: true},
     Image: [String],
-    Brand: String,
-    Quantity: Number,
+    Brand: {type: String, required: true},
+    Quantity: {type: Number, required: true},
     Description: [{
         Heading: String,
         Paragraph: String
