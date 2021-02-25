@@ -170,7 +170,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                 await newCart.save()
 
                 // then delete the cart from the session after adding all the items from cart
-                delete req.session
+                req.sessionStore.destroy(req.sessionID)
 
                 console.log(162, "after deleting session: ", req.session)
             }
