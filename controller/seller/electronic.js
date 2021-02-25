@@ -34,8 +34,8 @@ const show = async (req, res) => {
         if (req.user.seller){
 
             // Find one electronic item that belongs to the logged in seller. The query, _id: req.params.id, will only get one electronic item with that id and the query, Seller: req.user_id, will only get the one electronic item of the logged in user
-            const oneElectronic = await Electronic.findOne({_id: req.params.id, Seller: req.user._id})
-
+            const oneElectronic = await Electronic.findOne({_id: req.params.id, Seller: req.user._id, "Description[Own Page]": true})
+            console.log(38, oneElectronic)
             // If the electronic item document cannot be found because the database does not contain a document with the combination of the item's id and seller's id, then return message
             if (!oneElectronic) return res.status(400).json({msg: "Electronic is not found"})
 
