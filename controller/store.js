@@ -26,7 +26,8 @@ const electronicShow = async(req, res) => {
         console.log(26, req.params.id)
         // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
         const oneElectronic = await  Electronic.findById(req.params.id)
-        console.log(28, oneElectronic)
+        const ownPageElectronic = await Electronic.find({_id: req.params.id, "Description[Own Page": true})
+        console.log(30, "OWN ELECTRONIC" ownElectronic)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(oneElectronic.Seller[0])
 
@@ -45,6 +46,7 @@ const electronicShow = async(req, res) => {
 
         return res.status(200).json({
             electronicItem: oneElectronic,
+            ownPage: ownPageElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
             review: electronicReview,
             avgRating: avgRating
