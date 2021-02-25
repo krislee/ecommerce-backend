@@ -45,7 +45,7 @@ const electronicShow = async(req, res) => {
         ]
         const first = await Electronic.aggregate(pipeline)
         console.log(47, first)
-        const second = await Electronic.findOne({_id: req.params.id}).populate('Description', 'OwnPage')
+        const second = await Electronic.findOne({_id: req.params.id}).populate('Description.OwnPage')
         console.log(31, "OWN ELECTRONIC", second)
 
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
