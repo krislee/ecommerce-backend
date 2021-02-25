@@ -65,6 +65,7 @@ const create = async (req, res) => {
                 Image: req.body.Image,
                 Description: req.body.Description,
                 Price: req.body.Price,
+                Quantity: req.body.Quantity,
                 Seller: req.user._id
             })
             return res.status(200).json(electronic);
