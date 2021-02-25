@@ -5,7 +5,10 @@ const electronicsSchema = new Schema ({
     Name: {type: String, required: true},
     Image: String,
     Brand: String,
-    Description: {type: String, required: true},
+    Description: [{
+        Heading: String,
+        Paragraph: String
+    }],
     Price: {type: Number, required: true},
     Rating: Number,
     // Review: [{type: Schema.Types.ObjectId, ref: "reviewElectronic"}],
