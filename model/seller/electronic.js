@@ -6,11 +6,11 @@ const electronicsSchema = new Schema ({
     Image: [String],
     Brand: {type: String, required: true},
     Quantity: {type: Number, required: true},
-    "General Description": {type: String, required: true},
+    GeneralDescription: {type: String, required: true},
     Description: [{
             Heading: String,
             Paragraph: String,
-            "Own Page": Boolean,
+            OwnPage: Boolean,
             Image: String
     }],
     Price: {type: Number, required: true},
