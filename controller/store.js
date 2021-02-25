@@ -31,7 +31,7 @@ const electronicShow = async(req, res) => {
         })
         
         console.log(33, "OWN ELECTRONIC", ownPageElectronic)
-
+        console.log(34)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(oneElectronic.Seller[0])
 
