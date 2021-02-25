@@ -7,8 +7,11 @@ const electronicsSchema = new Schema ({
     Brand: {type: String, required: true},
     Quantity: {type: Number, required: true},
     Description: [{
+        "General Description": String,
         Heading: String,
-        Paragraph: String
+        Paragraph: String,
+        "Own Page": Boolean,
+        Image: [String]
     }],
     Price: {type: Number, required: true},
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]
