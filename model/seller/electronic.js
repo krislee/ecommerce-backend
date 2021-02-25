@@ -6,13 +6,13 @@ const electronicsSchema = new Schema ({
     Image: [String],
     Brand: {type: String, required: true},
     Quantity: {type: Number, required: true},
-    Description: [{
-        "General Description": String,
-        Heading: String,
+    Description: [
+        {"General Description": String},
+        {Heading: String,
         Paragraph: String,
         "Own Page": Boolean,
-        Image: [String]
-    }],
+        Image: [String]}
+    ],
     Price: {type: Number, required: true},
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]
 })
