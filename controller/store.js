@@ -27,7 +27,26 @@ const electronicShow = async(req, res) => {
         // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
         const oneElectronic = await  Electronic.find({_id: req.params.id, "Description.OwnPage":true})
         
-        console.log(31, "OWN ELECTRONIC", oneElectronic)
+        const pipeline = [
+            { '$match': {
+                '_id': req.params.id, 
+                'Description.OwnPage': false
+            } },
+            { '$project': {
+                'Description': {
+                    '$filter': {
+                        'input': '$Description',
+                        'cond': {
+                            '$eq': ['$$this.OwnPage', false]
+                        }
+                    }
+                }
+            } } 
+        ]
+        const first = await Electronic.aggregate(pipeline)
+        console.log(47, first)
+        const second = await Electronic.findOne({_id: req.params.id}).populate('Description', 'OwnPage')
+        console.log(31, "OWN ELECTRONIC", second)
 
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(oneElectronic.Seller[0])
@@ -47,7 +66,6 @@ const electronicShow = async(req, res) => {
 
         return res.status(200).json({
             electronicItem: oneElectronic,
-            // ownPage: ownPageElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
             review: electronicReview,
             avgRating: avgRating
