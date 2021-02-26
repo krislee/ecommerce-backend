@@ -11,7 +11,8 @@ const electronicsSchema = new Schema ({
         Heading: String,
         Paragraph: String,
         OwnPage: Boolean,
-        Image: String
+        Image: String,
+        Bullet: Boolean
     }],
     Price: {type: Number, required: true},
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]

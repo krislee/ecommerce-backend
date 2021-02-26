@@ -37,6 +37,7 @@ const show = async (req, res) => {
     try {
         if (req.user.buyer){
             const singleElectronic = await ElectronicReview.findById(req.params.id)
+            console.log(40, singleElectronic)
             const singleElectronicReview = await ElectronicReview.findById(req.params.id).populate('ElectronicItem')
             console.log(42, singleElectronicReview)
 
