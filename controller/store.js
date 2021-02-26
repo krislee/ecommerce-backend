@@ -40,7 +40,7 @@ const electronicShow = async(req, res) => {
 
         // Find the electronic item by its id which will be found in the routes params. 
         const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
-    
+        console.log(43, electronic)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.find(electronic.Seller[0])
 
