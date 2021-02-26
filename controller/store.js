@@ -37,22 +37,20 @@ const electronicShow = async(req, res) => {
 
         const electronicTrial = await Electronic.aggregate([
             {
-                $match: {_id: mongoose.Types.ObjectId(req.params.id)}
-            },
-            {
-                $addFields: {
-                    Description: {
-                        $filter: {
-                            $input: "$Description",
-                            cond: {
-                                $eq: ["$$this.OwnPage", true]
-                            }
-                        }
-                    }
-                }
+                $match: {_id: mongoose.Types.ObjectId(`${req.params.id}`)}
             }
         ])
-        console.log(55, electronicTrial)
+        console.log(43, electronicTrial)
+
+        const electronicTrialTwo = await Electronic.aggregate([
+            {
+                $match: {_id: mongoose.Types.ObjectId(`${req.params.id}`)}
+            },
+            { $unwind: '$Description' },
+            { $match: { 'Description.OwnPage': true }},
+            { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
+        ])
+        console.log(50, electronicTrialTwo)
         const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
         console.log(33, electronic)
         
