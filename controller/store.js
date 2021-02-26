@@ -37,10 +37,10 @@ const electronicShow = async(req, res) => {
         const seller = await SellerUser.findById(oneElectronic.Seller[0])
 
         // Get all the reviews documents of that one electronic item
-        const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id}).sort({ _id: -1 })
+        const electronicReview = await ElectronicReview.find({ElectronicItem: req.params._id}).sort({ _id: -1 })
         console.log(38, electronicReview)
         // Get the item ratings to average it out
-        const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: oneElectronic._id}).select({ "Rating": 1, "_id": 0});
+        const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: req.params._id}).select({ "Rating": 1, "_id": 0});
         console.log(37, electronicReviewRatings)
         const total = electronicReviewRatings.reduce((total, rating) => {
             console.log(39,rating)
@@ -51,6 +51,7 @@ const electronicShow = async(req, res) => {
 
         return res.status(200).json({
             electronicItem: oneElectronic,
+            second: secondElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
             review: electronicReview,
             avgRating: avgRating
