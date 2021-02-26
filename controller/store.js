@@ -31,10 +31,11 @@ const electronicShow = async(req, res) => {
 
         const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
         console.log(33, electronic)
-        const tryElectronic = await Electronic.aggregate([
+        const tryElectronic = await Electronic.findOne({_id: req.params.id}).aggregate([
             { $unwind: '$Description' },
-            { $match: { 'Description.OwnPage': true, _id: mongoose.Types.ObjectId(`${req.params.id}`) }},
-            { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
+            { $match: { 'Description.OwnPage': true }},
+            { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }},
+           
         ])
         console.log(35, tryElectronic)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
