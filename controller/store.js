@@ -33,7 +33,7 @@ const electronicShow = async(req, res) => {
         console.log(33, electronic)
         const tryElectronic = await Electronic.aggregate([
             { $unwind: '$Description' },
-            { $match: { 'Description.OwnPage': 'true' }},
+            { $match: { 'Description.OwnPage': true }},
             { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
         ])
         console.log(35, tryElectronic)
