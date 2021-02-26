@@ -28,8 +28,9 @@ const electronicShow = async(req, res) => {
         // const oneElectronic = await Electronic.findOne({_id: req.params.id}).elemMatch("Description",{"OwnPage": true})
         // const oneElectronic = await Electronic.findOne({_id: req.params.id, 'Description': {$elemMatch: {OwnPage: true}}})
         const oneElectronic = await Electronic.findOne({_id: req.params.id})
+        console.log(31, oneElectronic)
         const trueElectronicPage = await oneElectronic.findOne({OwnPage: true})
-        console.log(30, trueElectronicPage)
+        console.log(33, trueElectronicPage)
 
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(oneElectronic.Seller[0])
@@ -48,7 +49,7 @@ const electronicShow = async(req, res) => {
         const avgRating = total/electronicReviewRatings.length
 
         return res.status(200).json({
-            electronicItem: oneElectronic,
+            electronicItem: trueElectronicPage,
             sellerInfo: {username: seller.username, email: seller.email},
             review: electronicReview,
             avgRating: avgRating
