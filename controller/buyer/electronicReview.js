@@ -36,10 +36,12 @@ const index = async (req, res) => {
 const show = async (req, res) => {
     try {
         if (req.user.buyer){
+            const singleElectronic = await ElectronicReview.findById(req.params.id)
             const singleElectronicReview = await ElectronicReview.findById(req.params.id).populate('ElectronicItem')
             console.log(42, singleElectronicReview)
 
             return res.status(200).json({
+                single: singleElectronic,
                 singleReview: singleElectronicReview
             })
         } else {
