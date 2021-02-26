@@ -27,28 +27,26 @@ const electronicShow = async(req, res) => {
         // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
         // const oneElectronic = await Electronic.findOne({_id: req.params.id}).elemMatch("Description",{"OwnPage": true})
         // const oneElectronic = await Electronic.findOne({_id: req.params.id, 'Description': {$elemMatch: {OwnPage: true}}})
-        const electronic = await Electronic.findById(req.params.id)
-        console.log(31, electronic)
-        const oneElectronic = await Electronic.find({_id: req.params.id}).select({'Description': 1, "_id": 0})
-        console.log(33, oneElectronic)
+        // const secondElectronic = await Electronic.find({_id: req.params.id}, {Description: {$elemMatch: {'OwnPage': 'true'}}}) // returns only the first match doc
 
-        const secondElectronic = await Electronic.find({_id: req.params.id}, {Description: {$elemMatch: {'OwnPage': 'true'}}})
-        console.log(36, "SECOND", secondElectronic[0])
-
+        const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
+        console.log(33, electronic)
+        const tryElectronic = await Electronic.find({_id: req.params.id, "Description.OwnPage": "true"}).select({'Description': 1})
+        console.log(35, tryElectronic)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(electronic.Seller[0])
 
         // Get all the reviews documents of that one electronic item
         const electronicReview = await ElectronicReview.find({ElectronicItem: electronic._id}).sort({ _id: -1 })
-        console.log(38, electronicReview)
+        console.log(43, electronicReview)
         // Get the item ratings to average it out
         const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: electronic._id}).select({ "Rating": 1, "_id": 0});
-        console.log(37, electronicReviewRatings)
+        console.log(46, electronicReviewRatings)
         const total = electronicReviewRatings.reduce((total, rating) => {
             console.log(39,rating)
             return total + rating['Rating']
         }, 0)
-        console.log(42, total)
+        console.log(51, total)
         const avgRating = total/electronicReviewRatings.length
 
         return res.status(200).json({
