@@ -39,7 +39,7 @@ const electronicShow = async(req, res) => {
                 $match: {_id: mongoose.Types.ObjectId(`${req.params.id}`)}
             },
             { $unwind: '$Description' },
-            { $match: { 'Description.OwnPage': true }},
+            { $match: { 'Description.OwnPage': "true" }},
             { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
         ])
         console.log(50, electronicTrialTwo)
