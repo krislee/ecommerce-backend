@@ -35,7 +35,7 @@ const electronicShow = async(req, res) => {
 
         // Get all the reviews documents of that one electronic item
         const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id}).sort({ _id: -1 })
-        
+        console.log(38, electronicReview)
         // Get the item ratings to average it out
         const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: oneElectronic._id}).select({ "Rating": 1, "_id": 0});
         console.log(37, electronicReviewRatings)
