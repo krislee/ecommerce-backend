@@ -24,9 +24,6 @@ const electronicIndex = async (req, res) => {
 
 const electronicShow = async(req, res) => {
     try {
-        console.log(26, req.params.id)
-        // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
- 
         // const secondElectronic = await Electronic.find({_id: req.params.id}, {Description: {$elemMatch: {'OwnPage': 'true'}}}) // returns only the first match doc
         /* const tryElectronic = await Electronic.aggregate([
             { $unwind: '$Description' },
@@ -34,36 +31,45 @@ const electronicShow = async(req, res) => {
             { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }},    
         ]) */ // gives all the Description.OwnPage docs - not one query and its matching subdocs
 
-        const electronicTrialTwo = await Electronic.aggregate([
-            { $match: {_id: new mongoose.Types.ObjectId(req.params.id)} },
-            { $unwind: '$Description' },
-            { $match: { 'Description.OwnPage': true }},
-            { $project: { Seller: Seller[0], Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
-        ])
-        console.log(50, electronicTrialTwo)
+        // const ownPageDescriptions = await Electronic.aggregate([
+        //     { $match: {_id: new mongoose.Types.ObjectId(req.params.id)} },
+        //     { $unwind: '$Description' },
+        //     { $match: { 'Description.OwnPage': true }},
+        //     { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
+        // ]) // this works!!!
+
+        // Find the electronic item by its id which will be found in the routes params. 
         const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
     
-
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
-        const seller = await SellerUser.findById(electronic.Seller[0])
+        const seller = await SellerUser.find(electronic.Seller[0])
 
         // Get all the reviews documents of that one electronic item
         const electronicReview = await ElectronicReview.find({ElectronicItem: electronic._id}).sort({ _id: -1 })
-        console.log(43, electronicReview)
+
         // Get the item ratings to average it out
         const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: electronic._id}).select({ "Rating": 1, "_id": 0});
-        console.log(46, electronicReviewRatings)
         const total = electronicReviewRatings.reduce((total, rating) => {
-            console.log(39,rating)
             return total + rating['Rating']
         }, 0)
-        console.log(51, total)
         const avgRating = total/electronicReviewRatings.length
+
+        // Separate ownPage and nonOwnPage electronic Descriptions
+        const ownPageElectronic = []
+        const nonOwnPageElectronic = []
+
+        for(let i=0; i < electronic.length; i++) {
+            if(electronic.Description[i].OwnPage) {
+                ownPageElectronic.push(electronic.Description[i])
+            } else {
+                nonOwnPageElectronic.push(electronic.Description[i])
+            }
+        }
 
         return res.status(200).json({
             // electronicItem: electronic,
             ownPageElectronic: ownPageElectronic,
-            notOwnPageElectronic: notOwnPageElectronic,
+            notOwnPageElectronic: nonOwnPageElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
             review: electronicReview,
             avgRating: avgRating
