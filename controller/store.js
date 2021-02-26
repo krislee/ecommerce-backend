@@ -39,7 +39,7 @@ const electronicShow = async(req, res) => {
         // ]) // this works!!!
 
         // Find the electronic item by its id which will be found in the routes params. 
-        const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
+        const electronic = await Electronic.findOne({_id: req.params.id})
         console.log(43, electronic)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.find(electronic.Seller[0])
@@ -58,7 +58,7 @@ const electronicShow = async(req, res) => {
         const ownPageElectronic = []
         const nonOwnPageElectronic = []
 
-        for(let i=0; i < electronic.length; i++) {
+        for(let i=0; i < electronic.Description.length; i++) {
             if(electronic.Description[i].OwnPage) {
                 ownPageElectronic.push(electronic.Description[i])
             } else {
@@ -67,7 +67,7 @@ const electronicShow = async(req, res) => {
         }
 
         return res.status(200).json({
-            // electronicItem: electronic,
+            electronicItem: electronic,
             ownPageElectronic: ownPageElectronic,
             notOwnPageElectronic: nonOwnPageElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
