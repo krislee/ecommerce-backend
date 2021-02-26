@@ -29,7 +29,7 @@ const electronicShow = async(req, res) => {
         // const oneElectronic = await Electronic.findOne({_id: req.params.id, 'Description': {$elemMatch: {OwnPage: true}}})
         const oneElectronic = await Electronic.where({_id: req.params.id})
         console.log(31, oneElectronic)
-        const trueElectronicPage = await oneElectronic.findOne({OwnPage: true})
+        const trueElectronicPage = await oneElectronic.findOne({'Description.OwnPage': true})
         console.log(33, trueElectronicPage)
 
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
