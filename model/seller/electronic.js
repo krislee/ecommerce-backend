@@ -8,10 +8,10 @@ const electronicsSchema = new Schema ({
     Quantity: {type: Number, required: true},
     GeneralDescription: {type: String, required: true},
     Description: [{
-            Heading: String,
-            Paragraph: String,
-            OwnPage: Boolean,
-            Image: String
+        Heading: String,
+        Paragraph: String,
+        OwnPage: Boolean,
+        Image: String
     }],
     Price: {type: Number, required: true},
     Seller: [{type: Schema.Types.ObjectId, ref: "SellerUser"}]
@@ -31,6 +31,8 @@ electronicsSchema.pre('deleteMany', { document: false, query: true }, async func
 
         // Delete all the electronic review documents from reviewElectronic model that has the electronic document id
         await ElectronicReview.deleteMany({ElectronicItem: {$in: electronicItems}})
+
+        // Need to Delete all the electronic descriptions
     }
     catch (error) {
         next(error)
@@ -42,6 +44,8 @@ electronicsSchema.pre('deleteOne',  { document: false, query: true }, async func
         
         // Delete reviews that have a reference to the id of the electronic item
         await ElectronicReview.deleteMany({ElectronicItem: this._id})
+
+        // Need to Delete all the electronic descriptions
 
         // Continue running the delete electronic route 
         next()

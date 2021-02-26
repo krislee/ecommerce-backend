@@ -27,10 +27,8 @@ const electronicShow = async(req, res) => {
         // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
         // const oneElectronic = await Electronic.findOne({_id: req.params.id}).elemMatch("Description",{"OwnPage": true})
         // const oneElectronic = await Electronic.findOne({_id: req.params.id, 'Description': {$elemMatch: {OwnPage: true}}})
-        const oneElectronic = await Electronic.where({_id: req.params.id})
+        const oneElectronic = await Electronic.findOne({_id: req.params.id}).select('Description')
         console.log(31, oneElectronic)
-        const trueElectronicPage = await oneElectronic.find({'Description.OwnPage': true})
-        console.log(33, trueElectronicPage)
 
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(oneElectronic.Seller[0])
@@ -49,7 +47,7 @@ const electronicShow = async(req, res) => {
         const avgRating = total/electronicReviewRatings.length
 
         return res.status(200).json({
-            electronicItem: trueElectronicPage,
+            electronicItem: oneElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
             review: electronicReview,
             avgRating: avgRating

@@ -63,7 +63,7 @@ const create = async (req, res) => {
                 Name: req.body.Name,
                 Brand: req.body.Brand,
                 Image: req.body.Image,
-                "General Description": req.body["General Description"],
+                GeneralDescription: req.body.GeneralDescription,
                 Description: req.body.Description,
                 Price: req.body.Price,
                 Quantity: req.body.Quantity,
