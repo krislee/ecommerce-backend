@@ -34,7 +34,7 @@ const electronicShow = async(req, res) => {
         const tryElectronic = await Electronic.aggregate([
             { $unwind: '$Description' },
             { $match: { 'Description.OwnPage': 'true' }},
-            { $project: { Heading: 'Description.Heading' }}
+            { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
         ])
         console.log(35, tryElectronic)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
