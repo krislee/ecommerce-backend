@@ -36,22 +36,14 @@ const electronicShow = async(req, res) => {
 
         const electronicTrialTwo = await Electronic.aggregate([
             { $match: {_id: new mongoose.Types.ObjectId(req.params.id)} },
+            { $project: { Seller: '$Seller[0]'}},
             { $unwind: '$Description' },
             { $match: { 'Description.OwnPage': true }},
             { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
         ])
         console.log(50, electronicTrialTwo)
         const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
-        
-        let ownPageElectronic = []
-        let notOwnPageElectronic = []
-        for(let i=0; i < electronic.Description.length; i++){
-            if(electronic.Description[i].OwnPage === true) {
-                ownPageElectronic.push(electronic.Description[i])
-            } else {
-                notOwnPageElectronic.push(electronic.Description[i])
-            }
-        }
+    
 
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(electronic.Seller[0])
