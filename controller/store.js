@@ -1,7 +1,7 @@
 const {Electronic} = require('../model/seller/electronic')
 const {SellerUser} = require('../model/seller/sellerUser')
 const {ElectronicReview} = require('../model/buyer/reviewElectronic')
-const { Mongoose } = require('mongoose')
+const mongoose = require('mongoose')
 
 // Buyer will see all the electronic items made by all sellers
 const electronicIndex = async (req, res) => {
@@ -31,16 +31,8 @@ const electronicShow = async(req, res) => {
         /* const tryElectronic = await Electronic.aggregate([
             { $unwind: '$Description' },
             { $match: { 'Description.OwnPage': true }},
-            { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }},
-           
+            { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }},    
         ]) */ // gives all the Description.OwnPage docs - not one query and its matching subdocs
-
-        const electronicTrial = await Electronic.aggregate([
-            {
-                $match: {_id: ObjectId('60385033d1916800151f6938')}
-            }
-        ])
-        console.log(43, electronicTrial)
 
         const electronicTrialTwo = await Electronic.aggregate([
             {
