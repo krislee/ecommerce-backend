@@ -31,7 +31,11 @@ const electronicShow = async(req, res) => {
 
         const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
         console.log(33, electronic)
-        const tryElectronic = await Electronic.find({_id: req.params.id, "Description.OwnPage": "true"}).select({'Description': 1})
+        const tryElectronic = await Electronic.aggregate([
+            { $unwind: '$Description' },
+            { $match: { 'Description.OwnPage': 'true' }},
+            { $project: { Heading: 'Description.Heading' }}
+        ])
         console.log(35, tryElectronic)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(electronic.Seller[0])
@@ -50,8 +54,7 @@ const electronicShow = async(req, res) => {
         const avgRating = total/electronicReviewRatings.length
 
         return res.status(200).json({
-            electronicItem: oneElectronic,
-            second: secondElectronic,
+            electronicItem: electronic,
             sellerInfo: {username: seller.username, email: seller.email},
             review: electronicReview,
             avgRating: avgRating
