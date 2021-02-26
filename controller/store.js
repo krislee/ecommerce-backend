@@ -28,14 +28,15 @@ const electronicShow = async(req, res) => {
         // const oneElectronic = await Electronic.findOne({_id: req.params.id}).elemMatch("Description",{"OwnPage": true})
         // const oneElectronic = await Electronic.findOne({_id: req.params.id, 'Description': {$elemMatch: {OwnPage: true}}})
         const electronic = await Electronic.findById(req.params.id)
+        console.log(31, electronic)
         const oneElectronic = await Electronic.find({_id: req.params.id}).select({'Description': 1, "_id": 0})
-        console.log(31, oneElectronic)
+        console.log(33, oneElectronic)
 
         const secondElectronic = await Electronic.find({_id: req.params.id}, {Description: {$elemMatch: {'OwnPage': 'true'}}})
-        console.log(36, "SECOND", secondElectronic.Description)
+        console.log(36, "SECOND", secondElectronic[0])
 
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
-        const seller = await SellerUser.findById(oneElectronic.Seller[0])
+        const seller = await SellerUser.findById(electronic.Seller[0])
 
         // Get all the reviews documents of that one electronic item
         const electronicReview = await ElectronicReview.find({ElectronicItem: electronic._id}).sort({ _id: -1 })
