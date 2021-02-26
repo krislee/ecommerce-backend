@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose')
+const stripe = require("stripe")(`${process.env.STRIPE_SECRET}`)
 
 const buyerUserSchema = new Schema({
     username: {
@@ -57,6 +58,17 @@ buyerUserSchema.pre('deleteOne', { document: true, query: true}, async function(
         await this.model('cart').deleteOne({LoggedInBuyer: this._id})
 
         // Need to detach payment methods from Stripe customer
+        const user = await this.model.findOne('this._id')
+        const customer = user.customer
+        console.log(63, customer)
+        const paymentMethods = await stripe.paymentMethods.list({
+            customer: customer,
+            type: 'card',
+        });
+        for(let i = 0; i < paymentMethods.length; i++) {
+            await stripe.paymentMethods.detach(paymentMethods[i].id);
+        }
+        console.log(71, await stripe.paymentMethods.list({customer: customer, type: 'card'}))
 
         // Continue running the deleteOne function in the delete buyer profile route
         next()

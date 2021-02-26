@@ -33,7 +33,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
         // 2) Create and save the created user to db
-        const user = await SellerUser.create({ username: req.body.username, password: hashedPassword, oldPasswords: hashedPassword, email: req.body.email, seller: true})
+        const user = await SellerUser.create({ username: req.body.username, password: hashedPassword, oldPasswords: hashedPassword, email: req.body.email, seller: true, name: req.body.email})
         const savedUser = await user.save();
 
         // 3) Create JWT token for successfully registered user
