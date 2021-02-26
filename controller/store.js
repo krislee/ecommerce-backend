@@ -37,7 +37,7 @@ const electronicShow = async(req, res) => {
 
         const electronicTrial = await Electronic.aggregate([
             {
-                $match: {_id: mongoose.Types.ObjectId(`${req.params.id}`)}
+                $match: {_id: ObjectId(`${req.params.id}`)}
             }
         ])
         console.log(43, electronicTrial)
