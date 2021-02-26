@@ -28,16 +28,26 @@ const electronicShow = async(req, res) => {
         // const oneElectronic = await Electronic.findOne({_id: req.params.id}).elemMatch("Description",{"OwnPage": true})
         // const oneElectronic = await Electronic.findOne({_id: req.params.id, 'Description': {$elemMatch: {OwnPage: true}}})
         // const secondElectronic = await Electronic.find({_id: req.params.id}, {Description: {$elemMatch: {'OwnPage': 'true'}}}) // returns only the first match doc
-
-        const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
-        console.log(33, electronic)
-        const tryElectronic = await Electronic.findOne({_id: req.params.id}).aggregate([
+        /* const tryElectronic = await Electronic.aggregate([
             { $unwind: '$Description' },
             { $match: { 'Description.OwnPage': true }},
             { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }},
            
-        ])
-        console.log(35, tryElectronic)
+        ]) */ // gives all the Description.OwnPage docs - not one query and its matching subdocs
+
+        const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
+        console.log(33, electronic)
+        
+        let ownPageElectronic = []
+        let notOwnPageElectronic = []
+        for(let i=0; i < electronic.Description.length; i++){
+            if(electronic.Description[i].OwnPage === true) {
+                ownPageElectronic.push(electronic.Description)
+            } else {
+                notOwnPageElectronic.push(electronic.Description)
+            }
+        }
+
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(electronic.Seller[0])
 
@@ -55,7 +65,9 @@ const electronicShow = async(req, res) => {
         const avgRating = total/electronicReviewRatings.length
 
         return res.status(200).json({
-            electronicItem: electronic,
+            // electronicItem: electronic,
+            ownPageElectronic: ownPageElectronic,
+            notOwnPageElectronic: notOwnPageElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
             review: electronicReview,
             avgRating: avgRating
