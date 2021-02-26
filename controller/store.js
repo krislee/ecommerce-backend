@@ -35,9 +35,7 @@ const electronicShow = async(req, res) => {
         ]) */ // gives all the Description.OwnPage docs - not one query and its matching subdocs
 
         const electronicTrialTwo = await Electronic.aggregate([
-            {
-                $match: {_id: mongoose.Types.ObjectId(`${req.params.id}`)}
-            },
+            { $match: {_id: new mongoose.Types.ObjectId(`${req.params.id}`)} },
             { $unwind: '$Description' },
             { $match: { 'Description.OwnPage': "true" }},
             { $project: { Heading: '$Description.Heading', Paragraph: '$Description.Paragraph', Image: '$Description.Image', OwnPage: '$Description.OwnPage' }}
