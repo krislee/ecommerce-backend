@@ -27,7 +27,7 @@ const electronicShow = async(req, res) => {
         // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
         // const oneElectronic = await Electronic.findOne({_id: req.params.id}).elemMatch("Description",{"OwnPage": true})
         // const oneElectronic = await Electronic.findOne({_id: req.params.id, 'Description': {$elemMatch: {OwnPage: true}}})
-        const oneElectronic = await Electronic.findOne({_id: req.params.id})
+        const oneElectronic = await Electronic.where({_id: req.params.id})
         console.log(31, oneElectronic)
         const trueElectronicPage = await oneElectronic.findOne({OwnPage: true})
         console.log(33, trueElectronicPage)
