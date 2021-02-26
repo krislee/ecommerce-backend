@@ -46,7 +46,7 @@ const electronicShow = async(req, res) => {
         let ownPageElectronic = []
         let notOwnPageElectronic = []
         for(let i=0; i < electronic.Description.length; i++){
-            if(electronic.Description[i].OwnPage === "true") {
+            if(electronic.Description[i].OwnPage === true) {
                 ownPageElectronic.push(electronic.Description[i])
             } else {
                 notOwnPageElectronic.push(electronic.Description[i])
