@@ -1,6 +1,7 @@
 const {Electronic} = require('../model/seller/electronic')
 const {SellerUser} = require('../model/seller/sellerUser')
 const {ElectronicReview} = require('../model/buyer/reviewElectronic')
+const { Mongoose } = require('mongoose')
 
 // Buyer will see all the electronic items made by all sellers
 const electronicIndex = async (req, res) => {
@@ -25,8 +26,7 @@ const electronicShow = async(req, res) => {
     try {
         console.log(26, req.params.id)
         // Find the electronic item by its id which will be found in the routes params. Do not need to find an electronic item that is for a specific seller since buyer can view all electronic items from all sellers
-        // const oneElectronic = await Electronic.findOne({_id: req.params.id}).elemMatch("Description",{"OwnPage": true})
-        // const oneElectronic = await Electronic.findOne({_id: req.params.id, 'Description': {$elemMatch: {OwnPage: true}}})
+ 
         // const secondElectronic = await Electronic.find({_id: req.params.id}, {Description: {$elemMatch: {'OwnPage': 'true'}}}) // returns only the first match doc
         /* const tryElectronic = await Electronic.aggregate([
             { $unwind: '$Description' },
@@ -35,16 +35,34 @@ const electronicShow = async(req, res) => {
            
         ]) */ // gives all the Description.OwnPage docs - not one query and its matching subdocs
 
+        const electronicTrial = await Electronic.aggregate([
+            {
+                $match: {_id: mongoose.Types.ObjectId(req.params.id)}
+            },
+            {
+                $addFields: {
+                    Description: {
+                        $filter: {
+                            $input: "$Description",
+                            cond: {
+                                $eq: ["$$this.OwnPage", true]
+                            }
+                        }
+                    }
+                }
+            }
+        ])
+        console.log(55, electronicTrial)
         const electronic = await Electronic.findOne({_id: req.params.id}).select({'Description': 1, 'Seller': 1})
         console.log(33, electronic)
         
         let ownPageElectronic = []
         let notOwnPageElectronic = []
         for(let i=0; i < electronic.Description.length; i++){
-            if(electronic.Description[i].OwnPage === true) {
-                ownPageElectronic.push(electronic.Description)
+            if(electronic.Description[i].OwnPage === "true") {
+                ownPageElectronic.push(electronic.Description[i])
             } else {
-                notOwnPageElectronic.push(electronic.Description)
+                notOwnPageElectronic.push(electronic.Description[i])
             }
         }
 
