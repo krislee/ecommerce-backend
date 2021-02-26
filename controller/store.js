@@ -30,6 +30,9 @@ const electronicShow = async(req, res) => {
         const oneElectronic = await Electronic.find({_id: req.params.id}).select({'Description': 1, "_id": 0})
         console.log(31, oneElectronic)
 
+        const secondElectronic = await Electronic.find({_id: req.params.id}, {Description: {$elemMatch: {'OwnPage': 'true'}}})
+        console.log(36, "SECOND", secondElectronic)
+
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
         const seller = await SellerUser.findById(oneElectronic.Seller[0])
 

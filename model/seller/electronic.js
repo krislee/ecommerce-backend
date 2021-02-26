@@ -10,7 +10,7 @@ const electronicsSchema = new Schema ({
     Description: [{
         Heading: String,
         Paragraph: String,
-        OwnPage: Boolean,
+        OwnPage: String,
         Image: String
     }],
     Price: {type: Number, required: true},
