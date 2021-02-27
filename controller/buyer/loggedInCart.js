@@ -9,7 +9,7 @@ const loggedInAddItem = async(req, res, next) => {
         if (req.user) {
 
             const item = await Electronic.findById(req.params.id)
-
+            console.log(12, item)
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
             console.log(15, cart)
             // if cart exists
@@ -27,7 +27,8 @@ const loggedInAddItem = async(req, res, next) => {
                     // Since we are adding EXTRA items, update the TotalCartPrice and TotalItems field in cart document by adding
                     cart.TotalCartPrice += (Number(req.body.Quantity) * item.Price)// get price from server and not from client side to ensure charge is not made up
                     cart.TotalItems += Number(req.body.Quantity)
-                } else { // if the item does not exist in the cart, then add the item to Items field of cart documnet
+                } else { // if the item does not exist in the cart, then add the item to Items field of cart document
+
                     cart.Items.push({
                         ItemId: item._id,
                         Name: item.Name,
