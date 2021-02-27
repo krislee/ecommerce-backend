@@ -33,11 +33,11 @@ const loggedInAddItem = async(req, res, next) => {
                         ItemId: item._id,
                         Name: item.Name,
                         Brand: item.Brand,
+                        Image: item.Image[0],
                         Quantity: (Number(req.body.Quantity)),
                         TotalPrice: Number(req.body.Quantity) * item.Price
                     })
 
-                    cart.Items.Image = item.Image
                     // Also, update the TotalCartPrice and TotalItems fields of cart document by adding since we are adding EXTRA items
                     cart.TotalCartPrice += (Number(req.body.Quantity) * item.Price)
                     cart.TotalItems += (Number(req.body.Quantity))
@@ -55,15 +55,15 @@ const loggedInAddItem = async(req, res, next) => {
                     Items: [{
                         ItemId: item._id,
                         Name: item.Name,
-                        Image: item.Image,
                         Brand: item.Brand,
+                        Image: item.Image[0],
                         Quantity: req.body.Quantity,
                         TotalPrice: Number(req.body.Quantity) * item.Price
                     }],
                     TotalCartPrice: Number(req.body.Quantity) * item.Price,
                     TotalItems: Number(req.body.Quantity)
                 })
-   
+        
                 console.log(66, newCart)
                 return res.status(200).json({cart: newCart})
             }
