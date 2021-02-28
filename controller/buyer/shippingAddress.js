@@ -42,6 +42,7 @@ const addShipping = async(req, res) => {
                         Address: req.body.address,
                         DefaultAddress: true,
                         Buyer: req.user._id,
+                        Phone: req.body.phone,
                         Name: req.body.name,
                     })
                 // }
@@ -63,6 +64,7 @@ const addShipping = async(req, res) => {
                     newAddress = await BuyerShippingAddress.create({
                         Address: req.body.address,
                         Buyer: req.user._id,
+                        Phone: req.body.phone,
                         Name: req.body.name,
                     })
                 // }
@@ -87,7 +89,7 @@ const addShipping = async(req, res) => {
 const updateShipping = async(req, res) => {
     try {
         if(req.user.buyer) {
-            const buyerAddress = await BuyerShippingAddress.findOneAndUpdate({Buyer:req.user._id, _id: req.params.id}, {Address: req.body.address, Name: req.body.name}, {new: true})
+            const buyerAddress = await BuyerShippingAddress.findOneAndUpdate({Buyer:req.user._id, _id: req.params.id}, {Address: req.body.address, Name: req.body.name, Phone: req.body.phone}, {new: true})
             console.log(91, buyerAddress)
             if(req.query.checkout === "true") {
                 return res.status(200).json({address: buyerAddress})
