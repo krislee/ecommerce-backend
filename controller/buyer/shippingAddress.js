@@ -45,6 +45,7 @@ const addShipping = async(req, res) => {
                         Phone: req.body.phone,
                         Name: req.body.name,
                     })
+                    console.log(48, 'NEW ADDRESS !!!!!!', newAddress)
                 // }
             } else { // default is not checked
                 // if(req.query.lastUsed === 'true') {  // If the address is created during checkout, then also include the LastUsed property.
@@ -68,6 +69,7 @@ const addShipping = async(req, res) => {
                         Name: req.body.name,
                     })
                 // }
+                console.log(72, 'NEW ADDRESS !!!!!!', newAddress)
             }
 
             if (req.query.checkout === 'true'){
