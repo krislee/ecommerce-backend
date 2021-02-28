@@ -99,7 +99,8 @@ const updateGuestPaymentIntent = async(req, res) => {
                         postal_code: address ? address.postalCode: "",
                         country : 'US'
                     },
-                    name: address ? address.name : ""
+                    name: address ? address.name : "",
+                    phone: address.phone
                 },
                 metadata: {saveShipping: req.body.saveShipping},
             })
@@ -158,7 +159,8 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                         postal_code: address ? address.postalCode: "",
                         country : 'US'
                     },
-                    name: address ? address.name : ""
+                    name: address ? address.name : "",
+                    phone: address.phone
                 },
                 metadata: {saveShipping: req.body.saveShipping, lastUsedShipping: req.body.lastUsedShipping}
             })
@@ -174,7 +176,8 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                         postal_code: address ? address.postalCode: "",
                         country : 'US'
                     },
-                    name: address ? address.name : ""
+                    name: address ? address.name : "",
+                    phone: address.phone
                 },
                 metadata: {saveShipping: req.body.saveShipping, lastUsedShipping: req.body.lastUsedShipping}
             })
