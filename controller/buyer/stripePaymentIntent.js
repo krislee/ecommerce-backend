@@ -100,7 +100,7 @@ const updateGuestPaymentIntent = async(req, res) => {
                         country : 'US'
                     },
                     name: address ? address.name : "",
-                    phone: address.phone ? address.phone: ""
+                    phone: address ? address.phone: ""
                 },
                 metadata: {saveShipping: req.body.saveShipping},
             })
@@ -160,7 +160,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                         country : 'US'
                     },
                     name: address ? address.name : "",
-                    phone: address.phone ? address.phone: ""
+                    phone: address ? address.phone: ""
                 },
                 metadata: {saveShipping: req.body.saveShipping, lastUsedShipping: req.body.lastUsedShipping}
             })
@@ -177,7 +177,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
                         country : 'US'
                     },
                     name: address ? address.name : "",
-                    phone: address.phone ? address.phone: ""
+                    phone: address ? address.phone: ""
                 },
                 metadata: {saveShipping: req.body.saveShipping, lastUsedShipping: req.body.lastUsedShipping}
             })
