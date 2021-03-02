@@ -39,7 +39,7 @@ const guestOrderAmount = (req, res) => {
     }
 
     console.log(40, "total cart price: ", totalCartPrice)
-    console.log(42, "TOTAL PRICE", totalCartPrice*=100)
+    // console.log(42, "TOTAL PRICE", totalCartPrice*=100)
     return totalCartPrice*=100 // total cart price in cents
 }
 
