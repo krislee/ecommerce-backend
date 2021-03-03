@@ -122,7 +122,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                             ItemId: sessionCart[i].ItemId,
                             Name: sessionCart[i].Name,
                             Brand: sessionCart[i].Brand,
-                            Image: sessionCart[i].Image,
+                            Image: sessionCart[i].Image[0],
                             Quantity: sessionCart[i].Quantity,
                             TotalPrice: sessionCart[i].TotalPrice
                         })
@@ -159,7 +159,7 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                         ItemId: sessionCart[i].ItemId,
                         Name: sessionCart[i].Name,
                         Brand: sessionCart[i].Brand,
-                        Image: sessionCart[i].Image,
+                        Image: sessionCart[i].Image[0],
                         Quantity: sessionCart[i].Quantity,
                         TotalPrice: sessionCart[i].TotalPrice
                     })
