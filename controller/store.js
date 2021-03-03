@@ -14,7 +14,8 @@ const electronicIndex = async (req, res) => {
         return res.status(200).json({
             allElectronic,
             totalPages: Math.ceil(total/limit),
-            currentPage: page //page is received from req.query
+            currentPage: page, //page is received from req.query
+            pageLimit: limit
         });
     }
     catch (error) {
