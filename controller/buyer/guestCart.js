@@ -28,7 +28,7 @@ const guestAddItem = async(req, res, next) => {
                     ItemId: item.id,
                     Name: item.Name,
                     Brand: item.Brand,
-                    Image: item.Image,
+                    Image: item.Image[0],
                     Quantity: Number(req.body.Quantity),
                     TotalPrice: Number(req.body.Quantity) * item.Price
                 })
@@ -46,7 +46,7 @@ const guestAddItem = async(req, res, next) => {
                 [{
                     ItemId: item.id,
                     Name: item.Name,
-                    Image: item.Image,
+                    Image: item.Image[0],
                     Brand: item.Brand,
                     Quantity: Number(req.body.Quantity),
                     TotalPrice: Number(req.body.Quantity) * item.Price
