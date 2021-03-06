@@ -204,23 +204,16 @@ const webhook = async (req, res) => {
                     let electronic
                     for(let i=0; i < session.cart.length; i++) {
                         order.Items.push(session.cart[i])
-                        order.save()
 
                         // Update inventory quantity of the items sold
                         electronic = await Electronic.findById(session.cart[i].ItemId)
                         electronic.Quantity -= session.cart[i].Quantity
-                        electronic.save()
-                        console.log(215, "updated quantity in electronic: ", electronic)
                     } 
+                    await order.save()
+                    await electronic.save()
 
                     console.log(218, "updated quantity in electronic: ", electronic)
                     console.log(219, "added items in guest order: ", order)
-
-                    // Since there is a new cart for each order, delete guest's session after fulfilling order.
-                    await req.sessionStore.destroy(data.object.metadata.order_number, async function() {
-                        const deletedSession = await req.sessionStore.get(data.object.metadata.order_number)
-                        console.log(224, deletedSession)
-                    })
 
                     // Add the shipping address and payment method used to confirm payment at checkout to the order document.
                     // Get the shipping address from Payment Intent
@@ -274,6 +267,11 @@ const webhook = async (req, res) => {
 
                     // console.log(277, "AFTER DELETING SOCKET")
 
+                    // Since there is a new cart for each order, delete guest's session after fulfilling order.
+                    await req.sessionStore.destroy(data.object.metadata.order_number, async function() {
+                        const deletedSession = await req.sessionStore.get(data.object.metadata.order_number)
+                        console.log(224, deletedSession)
+                    })
                     // Delete CachePaymentIntent document
                     const deletedCachePaymentIntent = await CachePaymentIntent.findOneAndDelete({PaymentIntentId: data.object.id})
 
