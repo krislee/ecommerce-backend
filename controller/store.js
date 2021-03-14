@@ -47,6 +47,8 @@ const electronicShow = async(req, res) => {
 
         // Get all the reviews documents of that one electronic item
         const electronicReview = await ElectronicReview.find({ElectronicItem: electronic._id}).sort({ _id: -1 })
+        const totalElectronicReviews = await electronicReviews.length()
+        const paginateElectronicReview = await electronicReview.limit(1*1)
 
         // Get the item ratings to average it out
         const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: electronic._id}).select({ "Rating": 1, "_id": 0});
@@ -72,7 +74,8 @@ const electronicShow = async(req, res) => {
             ownPageElectronic: ownPageElectronic,
             notOwnPageElectronic: nonOwnPageElectronic,
             sellerInfo: {username: seller.username, email: seller.email},
-            review: electronicReview,
+            review: paginateElectronicReview,
+            totalReviews: totalElectronicReviews,
             avgRating: avgRating
         })
 
