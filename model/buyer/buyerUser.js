@@ -70,6 +70,9 @@ buyerUserSchema.pre('deleteOne', { document: true, query: true}, async function(
         }
         console.log(71, await stripe.paymentMethods.list({customer: customer, type: 'card'}))
 
+        // Need to delete shipping addresses
+
+        
         // Continue running the deleteOne function in the delete buyer profile route
         next()
     }

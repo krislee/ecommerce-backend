@@ -135,4 +135,16 @@ const destroy = async (req, res) => {
     }
 }
 
-module.exports = {index, show, create, update, destroy}
+const allStoreItemReviews = async(req, res) => {
+    try {
+        const {limit=1, page=1} = req.query // set default values to limit and page for pagination
+        const electronicReviewsTotal = await ElectronicReview.find({ElectronicItem: req.params.id}).countDocuments()
+        const electronicReview = await ElectronicReview.find({ElectronicItem: req.params.id}).sort({ _id: -1 }).limit(limit*1).skip((page-1)*limit)
+        return res.status(200).json({allReviews: electronicReview, totalReviews: electronicReviewsTotal})
+    }
+    catch (error) {
+        return res.status(400).send(error)
+    }
+}
+
+module.exports = {index, show, create, update, destroy, allStoreItemReviews}

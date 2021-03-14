@@ -40,7 +40,7 @@ const show = async (req, res) => {
             if (!oneElectronic) return res.status(400).json({msg: "Electronic is not found"})
 
             // Find all the electronic reviews for the one electronic item, and sort the newest review, and send only 5 back
-            const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id}).sort({ _id: -1 }).limit(5*1)
+            const electronicReview = await ElectronicReview.find({ElectronicItem: oneElectronic._id}).sort({ _id: -1 }).limit(1*1)
            
             if (oneElectronic) {
                 return res.status(200).json({
