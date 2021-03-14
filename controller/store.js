@@ -43,12 +43,14 @@ const electronicShow = async(req, res) => {
         const electronic = await Electronic.findOne({_id: req.params.id})
         console.log(43, electronic)
         // Get seller's document to send back general information about the seller for the item (i.e. username, email for contact)
-        const seller = await SellerUser.find(electronic.Seller[0])
+        const seller = await SellerUser.findOne(electronic.Seller[0])
 
         // Get all the reviews documents of that one electronic item
         const electronicReview = await ElectronicReview.find({ElectronicItem: electronic._id}).sort({ _id: -1 })
         const totalElectronicReviews = await electronicReview.length()
+        console.log(51, totalElectronicReviews)
         const paginateElectronicReview = await electronicReview.limit(1*1)
+        console.log(53, paginateElectronicReview)
 
         // Get the item ratings to average it out
         const electronicReviewRatings = await ElectronicReview.find({ElectronicItem: electronic._id}).select({ "Rating": 1, "_id": 0});
