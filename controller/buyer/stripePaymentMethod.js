@@ -183,7 +183,11 @@ const updatePaymentMethod = async(req, res) => {
         }
     } catch(error) {
         console.log(173, "error", error)
-        return res.status(400).json({msg: "Error"})
+        if (error.code === 'invalid_expiry_year') {
+            return res.status(400).json({invalid_card_year: "Invalid Card Expiration Year"})
+        } else {
+            return res.status(400).json({msg: error})
+        }
     }
 }
 
@@ -199,11 +203,7 @@ const deletePaymentMethod = async(req, res) => {
         }
     } catch(error) {
         console.log(189, "error", error)
-        if (error.code === 'invalid_expiry_year') {
-            return res.status(400).json({invalid_card_year: "Invalid Card Expiration Year"})
-        } else {
             return res.status(400).json({msg: error})
-        } 
     }
 }
 
