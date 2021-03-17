@@ -19,7 +19,6 @@ mongoURI='mongodb://localhost:27017/<some_database_name>' // substitute some_dat
 SESSION_SECRET=create_some_session_secret_key // create any secret key for the session store
 STRIPE_SECRET=some_Stripe_secret_key // find Stripe's API secret key in your Stripe's dashboard (requires you to have a Stripe account)
 STRIPE_WEBHOOK_SECRET=some_Stripe_webhook_secret_key // find Stripe's webhook secret key in your Stripe's dashboard
-CLIENT_URL='localhost:3000'
 ```
 4. For both user profile's payment methods and checkout functionalities, the client-side code is required. Set up the client-side locally.
     
@@ -27,6 +26,46 @@ CLIENT_URL='localhost:3000'
     2. Follow steps [here](https://github.com/krislee/ecommerce-frontend/blob/main/README.md#run-locally) to set up client-side code locally.
     3. Open the client's .env file and add the following:
         ```REACT_APP_server_URL='https://localhost:3000'```
+5. Open ```server.js```
+    1. Change the value of ```corsOptions.origin``` from ```https://elecommerce.netlify.app"``` to ```http://localhost:3000```:
+
+    <b>Before</b>
+     ```js
+    const corsOptions = {
+        origin: "https://elecommerce.netlify.app",
+        credentials: true,
+    };
+     ```
+    <b>After</b>
+    ```js
+    const corsOptions = {
+        origin: "http://localhost:3000",
+        credentials: true,
+    };
+    ```
+    2. Change ```Access-Control-Allow-Origin``` from ```https://elecommerce.netlify.app``` to ```http://localhost:3000```
+
+    <b>Before</b>
+    ```js
+    app.use(function(req, res, next) {
+        res.setHeader('Access-Control-Allow-Credentials', true);
+        res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
+        res.setHeader("Access-Control-Allow-Origin", "https://elecommerce.netlify.app");
+        res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie, X-Forwarded-Proto");
+        next();
+    });
+    ```
+    <b>After</b>
+    ```js
+    app.use(function(req, res, next) {
+        res.setHeader('Access-Control-Allow-Credentials', true);
+        res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Set-Cookie, Cookie, X-Forwarded-Proto");
+        next();
+    });
+    ```
+
 5. Run ```npm start``` or ```nodemon start```.
 
 ## Database
