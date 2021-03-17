@@ -26,7 +26,7 @@ CLIENT_URL='localhost:3000'
     1. Clone the [client-side repository](https://github.com/krislee/ecommerce-frontend).
     2. Follow steps [here](https://github.com/krislee/ecommerce-frontend/blob/main/README.md#run-locally) to set up client-side code locally.
     3. Open the client's .env file and add the following:
-        REACT_APP_server_URL='https://localhost:3000'
+        ```REACT_APP_server_URL='https://localhost:3000'```
 5. Run ```npm start``` or ```nodemon start```.
 
 ## Database
