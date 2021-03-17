@@ -109,7 +109,7 @@ const updateGuestPaymentIntent = async(req, res) => {
         console.log(106, "updated existing payment intent: ", updatedPaymentIntent)
 
         return res.status(200).json({
-            publicKey: process.env.STRIPE_PUBLIC,
+            // publicKey: process.env.STRIPE_PUBLIC,
             // paymentIntentId: updatedPaymentIntent.id,
             clientSecret: updatedPaymentIntent.client_secret,
             returningCustomer: false,
@@ -187,7 +187,7 @@ const updateLoggedInPaymentIntent = async(req, res) => {
         console.log(180, "updated existing payment intent: ", updatedPaymentIntent)
 
         return res.status(200).json({
-            publicKey: process.env.STRIPE_PUBLIC,
+            // publicKey: process.env.STRIPE_PUBLIC,
             // paymentIntentId: updatedPaymentIntent.id,
             clientSecret: updatedPaymentIntent.client_secret,
             returningCustomer: !newCustomer,
@@ -252,7 +252,7 @@ const createLoggedInPaymentIntent = async(req, res) => {
             console.log(242, newOrder)
 
             return res.status(200).json({
-                publicKey: process.env.STRIPE_PUBLIC,
+                // publicKey: process.env.STRIPE_PUBLIC,
                 paymentIntentId: paymentIntent.id,
                 clientSecret: paymentIntent.client_secret,
                 returningCustomer: !newCustomer,
@@ -302,7 +302,7 @@ const createGuestPaymentIntent = async(req, res) => {
         console.log(292, newOrder)
 
         return res.status(200).json({
-            publicKey: process.env.STRIPE_PUBLIC,
+            // publicKey: process.env.STRIPE_PUBLIC,
             paymentIntentId: paymentIntent.id,
             clientSecret: paymentIntent.client_secret,
             returningCustomer: false,
