@@ -20,6 +20,7 @@ const options = {
 // When making the passport jwt strategy (new JWTStrategy), the passport jwt strategy has already verified the JWT token by going through the options. So as indicated in the options it will grab the JWT token from the Auth HTTP header and grab the public key. The token and public key are passed into the verify function found in jsonwebtoken library. After verifying, the payload obj is passed into verify callback and the verify callback is called.
 const strategy = new JWTStrategy(options, async (payload, done) => { 
     try {
+        if(err) console.log(23, 'ERROR FROM PASSPORT STRATEGY\n----------------\n', err)
         console.log(21, "TOKEN in strategy", payload.sub)
         const seller = await SellerUser.findById(payload.sub)
         // console.log(seller, 'seller from passport')
@@ -33,9 +34,8 @@ const strategy = new JWTStrategy(options, async (payload, done) => {
 
         return done(27, 38) // if there were no errors from verifying JWT (i.e. correct signature and data not tampered) but no user is found from the payload
     } catch (err) {
-        console.log('ERROR FROM PASSPORT STRATEGY\n----------------')
-        console.log(36, err)
-        done(err, false)
+        console.log(36, 'ERROR FROM PASSPORT STRATEGY\n----------------\nERROR: ', err)
+        done(err, false, info)
     }
 })
 
