@@ -16,6 +16,6 @@ router.delete('/delete/:id', passportAuthenticate, loggedInDeleteItem)
 
 router.get('/cart', passportAuthenticate, loggedInIndexCart)
 
-router.get('/quantity/:id', passportAuthenticate, loggedInCartItemQuantity)
+router.get('/quantity/:id', loggedInCartItemQuantity)
 
 module.exports = router
