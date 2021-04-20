@@ -36,7 +36,7 @@ function issueJWT(user){
     
     return {
         // token: "Bearer " + signedToken,
-        token: "bearer " + signedToken,
+        token: "Bearer " + signedToken,
         expires: expiresIn
     }
 }

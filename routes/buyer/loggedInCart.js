@@ -1,6 +1,9 @@
 const router = require('express').Router();
 const passport = require('passport');
-const passportAuthenticate = passport.authenticate('jwt', {session: false})
+const passportAuthenticate = passport.authenticate('jwt', {session: false}, async(error, token) => {
+    if (error) console.log("ERROR in passport authenticate", error)
+    console.log(5, "TOKEN in passport authenticate", token)
+})
 
 const {loggedInAddItem, loggedInUpdateItemQuantity, loggedInDeleteItem, loggedInIndexCart, loggedInCartItemQuantity} = require('../../controller/buyer/loggedInCart')
 
