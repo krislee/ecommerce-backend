@@ -10,7 +10,7 @@ const pathToKey = path.join(__dirname, '.', 'id_rsa_pub.pem')
 const PUB_KEY = fs.readFileSync(pathToKey, 'utf8')
 
 const options = {
-    jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('Bearer '),
+    jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('Bearer'),
     secretOrKey: PUB_KEY,
     algorithms: ['RS256']
 }
