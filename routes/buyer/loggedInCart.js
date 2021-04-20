@@ -14,7 +14,7 @@ router.put('/update/:id', passportAuthenticate, loggedInUpdateItemQuantity)
 
 router.delete('/delete/:id', passportAuthenticate, loggedInDeleteItem)
 
-router.get('/cart', loggedInIndexCart)
+router.get('/cart', passportAuthenticate, loggedInIndexCart)
 
 router.get('/quantity/:id', loggedInCartItemQuantity)
 

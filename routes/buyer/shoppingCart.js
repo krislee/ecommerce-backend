@@ -45,12 +45,13 @@ router.get('/cart', (req, res) => {
 router.get('/cartID', passportAuthenticate, getCartID)
 
 router.get('/cart-item/:id', (req, res) => {
-    console.log(48, "AUTHORIZATION IN SHOPPING CART ROUTE", req.headers.authorization)
+    // console.log(48, "AUTHORIZATION IN SHOPPING CART ROUTE", req.headers.authorization)
     // console.log(49, "AUTHORIZATION", req.headers)
+    console.log(50, "REQ.QUERY.TOKEN: ", req.query.token)
     if(!req.headers.authorization) {
         res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
     } else {
-        res.redirect(307, `/loginbuyer/quantity/${req.params.id}`)
+        res.redirect(307, `/loginbuyer/quantity/${req.params.id}?token=${req.query.token}`)
     }
 })
 
