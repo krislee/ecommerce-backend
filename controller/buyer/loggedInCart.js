@@ -282,7 +282,9 @@ const getCartID = async(req, res) => {
 // Get Quantity of a specific item (used to check how many items have already been added)
 const loggedInCartItemQuantity = async(req, res) => {
     try {
-        console.log(285, "REQ AUTH---------: ", req.headers.authorization)
+        console.log(285, "REQ HEADERS -----: ", req.headers)
+        console.log(286, "REQ AUTH---------: ", req.headers.authorization)
+        console.log(287, "REQ USER--------: ", req.user)
         if(req.user) {
             const cart = await Cart.findOne({"Items.ItemId": req.params.id}, {'Items.$': 1})
             res.status(200).json({item: cart})
