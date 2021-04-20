@@ -6,7 +6,7 @@ const {index, update, destroy} = require('../../controller/buyer/buyerProfile');
 
 passportAuthenticate = passport.authenticate('jwt', {session: false}, async(req, res) => {
     console.log(8, "PASSPORT AUTHENTICATE REQ PROFILE\n------------\n", req)
-    console.log(9, "PASSPORT AUTHENTICATE RES PROFILE\n------------\n", res)
+    console.log(9, "PASSPORT AUTHENTICATE RES PROFILE\n------------\nRES:", res)
 })
 
 
