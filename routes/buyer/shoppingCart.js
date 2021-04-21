@@ -44,7 +44,8 @@ router.delete('/electronic/cart/:id', (req, res) => {
 
 router.get('/cart', (req, res) => {
     if(!req.headers.authorization) {
-        res.redirect(`/guest/buyer/cart`)
+        // res.redirect(`/guest/buyer/cart`)
+        guestIndexCart(req, res)
 
     } else {
         let token = req.headers.authorization
@@ -61,7 +62,8 @@ router.get('/cart-item/:id', (req, res) => {
     // console.log(50, "-----: ", req.body)
     // console.log(51, "req.body.auth: ", req.body.Authorization)
     if(!req.headers.authorization) {
-        res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
+        // res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
+        guestCartItemQuantity(req, res)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
