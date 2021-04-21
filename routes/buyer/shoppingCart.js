@@ -10,7 +10,7 @@ const passportAuthenticate = passport.authenticate('jwt', {session: false})
 router.post('/electronic/cart/:id', (req, res) => {
     console.log(10, req.headers.authorization)
     if(!req.headers.authorization) {
-        // res.redirect(307, `/guest/buyer/post/${req.params.id}`)
+        res.redirect(307, `/guest/buyer/post/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -44,9 +44,7 @@ router.delete('/electronic/cart/:id', (req, res) => {
 
 router.get('/cart', (req, res) => {
     if(!req.headers.authorization) {
-        // res.redirect(`/guest/buyer/cart`)
-        guestIndexCart(req, res)
-
+        res.redirect(`/guest/buyer/cart`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -62,8 +60,7 @@ router.get('/cart-item/:id', (req, res) => {
     // console.log(50, "-----: ", req.body)
     // console.log(51, "req.body.auth: ", req.body.Authorization)
     if(!req.headers.authorization) {
-        // res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
-        guestCartItemQuantity(req, res)
+        res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -74,6 +71,9 @@ router.get('/cart-item/:id', (req, res) => {
     
 })
 
+router.get('/cart-item/1/:id', guestCartItemQuantity)
+
+router.post('/electronic/cart/1/:id', guestAddItem)
 
 
 module.exports = router
