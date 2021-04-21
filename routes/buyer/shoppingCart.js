@@ -10,10 +10,7 @@ const passportAuthenticate = passport.authenticate('jwt', {session: false})
 router.post('/electronic/cart/:id', (req, res) => {
     console.log(10, req.headers.authorization)
     if(!req.headers.authorization) {
-        req.session.save((err) => {
-            if (14, "shopping cart routes ----", err) console.log(err)
-            res.redirect(307, `/guest/buyer/post/${req.params.id}`)
-        })
+       res.redirect(307, `/guest/buyer/post/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -63,11 +60,7 @@ router.get('/cart-item/:id', (req, res) => {
     // console.log(50, "-----: ", req.body)
     // console.log(51, "req.body.auth: ", req.body.Authorization)
     if(!req.headers.authorization) {
-        req.session.save((err) => {
-            if (err) console.log(67, "shopping cart routes -----: ", err)
-            res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
-        })
-        
+        res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -77,6 +70,7 @@ router.get('/cart-item/:id', (req, res) => {
     }
     
 })
+
 
 
 
