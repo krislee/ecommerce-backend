@@ -47,7 +47,7 @@ router.get('/cart', (req, res) => {
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
-        res.redirect(`/loginbuyer/cart?token=${token}`)
+        res.redirect(`/loginbuyer/cart?token=${token[1]}`)
     }
 })
 
