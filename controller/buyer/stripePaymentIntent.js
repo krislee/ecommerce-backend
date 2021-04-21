@@ -330,14 +330,16 @@ const createOrUpdatePaymentIntent = async(req, res) => {
 
         if (existingPaymentIntent) {
             if(req.headers.authorization) {
-                res.redirect(307, '/logged-in/update/payment-intent') 
+                let token = req.headers.authorization.split("Bearer ")[1]
+                res.redirect(307, `/logged-in/update/payment-intent?token=${token}`) 
             } else {
                 updateGuestPaymentIntent(req, res)
             }
             
         } else { // When user does not enter idempotency, idempotency value is underfined but the database appears to still find an existing payment intent. If the user enters a wrong idempotency, then existing payment intent is null. Either scenario, we should create a new payment intent
             if(req.headers.authorization) {
-                res.redirect(307, '/logged-in/create/payment-intent')
+                let token = req.headers.authorization.split("Bearer ")[1]
+                res.redirect(307, `/logged-in/create/payment-intent?token=${token}`)
             } else if(!req.headers.authorization) {
                 createGuestPaymentIntent(req, res)
             }
