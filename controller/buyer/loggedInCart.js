@@ -286,7 +286,8 @@ const loggedInCartItemQuantity = async(req, res) => {
         console.log(286, "REQ AUTH---------: ", req.headers.authorization)
         console.log(287, "REQ USER--------: ", req.user)
         console.log(288, "REQ QUERY TOKEN-----: ", req.query.token)
-        console.log(289, "REQ.PARAMS ID-----", req.params)
+        console.log(289, "REQ QUERY ----: ", req.query)
+        console.log(290, "REQ.PARAMS ID-----", req.params)
         if(req.user) {
             const cart = await Cart.findOne({LoggedInBuyer: req.user.id}) // "Items.ItemId": req.params.id,
             console.log(291, "CART-------", cart)
