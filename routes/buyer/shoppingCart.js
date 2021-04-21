@@ -45,7 +45,7 @@ router.get('/cart', (req, res) => {
 
 router.get('/cartID', passportAuthenticate, getCartID)
 
-router.post('/cart-item/:id', passportAuthenticate, loggedInCartItemQuantity)
+router.get('/cart-item/:id', passportAuthenticate, loggedInCartItemQuantity)
     // console.log(48, "AUTHORIZATION IN SHOPPING CART ROUTE", req.headers.authorization)
     // console.log(49, "AUTHORIZATION", req.headers)
     // console.log(50, "-----: ", req.body)
