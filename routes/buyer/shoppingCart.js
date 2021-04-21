@@ -47,7 +47,7 @@ router.get('/cartID', passportAuthenticate, getCartID)
 
 router.get('/cart-item/:id', (req, res) => {
     console.log(48, "AUTHORIZATION IN SHOPPING CART ROUTE", req.headers.authorization)
-    const token = req.headers.authorization
+    let token = req.headers.authorization
     token = token.split("Bearer ")
     console.log(token)
     console.log(token[1])
