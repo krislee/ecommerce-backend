@@ -14,7 +14,7 @@ router.post('/electronic/cart/:id', (req, res) => {
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
-        res.redirect(307, `/loginbuyer/${req.params.id}?token=${token}`)
+        res.redirect(307, `/loginbuyer/${req.params.id}?token=${token[1]}`)
     }
 });
 
@@ -27,7 +27,7 @@ router.put('/electronic/cart/:id', (req, res) => {
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
-        res.redirect(307, `/loginbuyer/update/${req.params.id}?token=${token}`)
+        res.redirect(307, `/loginbuyer/update/${req.params.id}?token=${token[1]}`)
     }
 })
 
@@ -37,7 +37,7 @@ router.delete('/electronic/cart/:id', (req, res) => {
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
-        res.redirect(307, `/loginbuyer/delete/${req.params.id}?token=${token}`)
+        res.redirect(307, `/loginbuyer/delete/${req.params.id}?token=${token[1]}`)
     }
 })
 
