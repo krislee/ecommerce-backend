@@ -45,20 +45,18 @@ router.get('/cart', (req, res) => {
 
 router.get('/cartID', passportAuthenticate, getCartID)
 
-router.get('/cart-item/:id', passportAuthenticate, loggedInCartItemQuantity)
+router.get('/cart-item/:id', (req, res) => {
     // console.log(48, "AUTHORIZATION IN SHOPPING CART ROUTE", req.headers.authorization)
     // console.log(49, "AUTHORIZATION", req.headers)
     // console.log(50, "-----: ", req.body)
     // console.log(51, "req.body.auth: ", req.body.Authorization)
-    // if(!req.body.Authorization) {
-    //     res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
-    // } else {
-    //     // const token = req.headers.authorization.split("Bearer ")
-    //     console.log(55, "req.body.auth token: ", token[1])
-    //     res.redirect(307, `/loginbuyer/quantity/${req.params.id}?token=${req.body.Authorization}`)
-    // }
+    if(!req.headers.Authorization) {
+        res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
+    } else {
+        res.redirect(307, `/loginbuyer/quantity/${req.params.id}`)
+    }
     
-// })
+})
 
 module.exports = router
 
