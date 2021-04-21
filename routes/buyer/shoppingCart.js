@@ -47,7 +47,8 @@ router.get('/cartID', passportAuthenticate, getCartID)
 router.post('/cart-item/:id', (req, res) => {
     // console.log(48, "AUTHORIZATION IN SHOPPING CART ROUTE", req.headers.authorization)
     // console.log(49, "AUTHORIZATION", req.headers)
-    console.log(50, "req.body.auth: ", req.body.Authorization)
+    console.log(50, "-----: ", req.body)
+    console.log(51, "req.body.auth: ", req.body.Authorization)
     if(!req.body.Authorization) {
         res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
     } else {
