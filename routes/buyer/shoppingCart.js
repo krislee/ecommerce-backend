@@ -53,7 +53,9 @@ router.get('/cart-item/:id', (req, res) => {
     if(!req.headers.authorization) {
         res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
     } else {
+        console.log(56, res)
         res.header('Authorization', req.headers.authorization)
+        console.log(58, res)
         res.redirect(307, `/loginbuyer/quantity/${req.params.id}`)
     }
     
