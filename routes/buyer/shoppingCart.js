@@ -10,7 +10,7 @@ const passportAuthenticate = passport.authenticate('jwt', {session: false})
 router.post('/electronic/cart/:id', (req, res) => {
     console.log(10, req.headers.authorization)
     if(!req.headers.authorization) {
-        res.redirect(303, `/guest/buyer/post/${req.params.id}`)
+        res.redirect(307, `/guest/buyer/post/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")

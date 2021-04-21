@@ -144,6 +144,8 @@ const guestIndexCart = (req, res) => {
 // Get Quantity of a specific item (used to check how many items have already been added)
 const guestCartItemQuantity = async(req, res) => {
     console.log(146, "TRYING TO GET ITEM QUANTITY")
+    console.log(147, "GUEST ADD ITEM REQ.SESSIONID", req.sessionID)
+    console.log(147, "GUEST ADD ITEM REQ.SESSION", req.session)
     try {
         if(req.session.cart) {
             const item = req.session.cart.filter((item) => item.ItemId === req.params.id)
