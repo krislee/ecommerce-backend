@@ -52,7 +52,7 @@ router.post('/cart-item/:id', (req, res) => {
     if(!req.body.Authorization) {
         res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
     } else {
-        const token = req.headers.authorization.split("Bearer ")
+        // const token = req.headers.authorization.split("Bearer ")
         console.log(55, "req.body.auth token: ", token[1])
         res.redirect(307, `/loginbuyer/quantity/${req.params.id}?token=${req.body.Authorization}`)
     }
