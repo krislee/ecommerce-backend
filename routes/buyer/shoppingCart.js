@@ -10,7 +10,7 @@ const passportAuthenticate = passport.authenticate('jwt', {session: false})
 router.post('/electronic/cart/:id', (req, res) => {
     console.log(10, req.headers.authorization)
     if(!req.headers.authorization) {
-        res.redirect(307, `/guest/buyer/post/${req.params.id}`)
+        res.redirect(303, `/guest/buyer/post/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -23,7 +23,7 @@ router.post('/sync/cart', passportAuthenticate, addItemsFromGuestToLoggedIn) // 
 
 router.put('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
-        res.redirect(307, `/guest/buyer/update/${req.params.id}`)
+        res.redirect(303, `/guest/buyer/update/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -33,7 +33,7 @@ router.put('/electronic/cart/:id', (req, res) => {
 
 router.delete('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
-        res.redirect(307, `/guest/buyer/delete/${req.params.id}`)
+        res.redirect(303, `/guest/buyer/delete/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
