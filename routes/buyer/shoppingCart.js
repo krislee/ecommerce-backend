@@ -50,7 +50,7 @@ router.get('/cart-item/:id', (req, res) => {
     // console.log(49, "AUTHORIZATION", req.headers)
     // console.log(50, "-----: ", req.body)
     // console.log(51, "req.body.auth: ", req.body.Authorization)
-    if(!req.headers.Authorization) {
+    if(!req.headers.authorization) {
         res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
     } else {
         res.redirect(307, `/loginbuyer/quantity/${req.params.id}`)
@@ -72,3 +72,4 @@ module.exports = router
 // 5f95a796ab49fe1565254ccb - samsung galaxy s10
 // 5f96cb4a23730104a225f9c2 - lenovo legion 5
 // 5f96cb4423730104a225f9c1 - sony
+//
