@@ -11,9 +11,9 @@ const PUB_KEY = fs.readFileSync(pathToKey, 'utf8')
 
 const options = {
     // jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('Bearer'),
-    // jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     // jwtFromRequest: ExtractJWT.fromUrlQueryParameter('token'),
-    jwtFromRequest: ExtractJWT.fromBodyField('Authorization'),
+    // jwtFromRequest: ExtractJWT.fromBodyField('Authorization'),
     secretOrKey: PUB_KEY,
     algorithms: ['RS256']
 }
