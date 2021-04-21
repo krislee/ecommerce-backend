@@ -9,16 +9,16 @@ const loggedInAddItem = async(req, res, next) => {
         if (req.user) {
 
             const item = await Electronic.findById(req.params.id)
-            console.log(12, item)
+            console.log(12,"ADD LOGGED IN CART ITEM-----: ", item)
             const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
-            console.log(15, cart)
+            console.log(15, "LOGGED IN CART-------: ",  cart)
             // if cart exists
             if (cart) {
                 // check if the cart contains the item by seeing if the item is in the Items array
                 const cartItem = cart.Items.find((i) => {
                     return i.ItemId === req.params.id
                 })
-                console.log(22, cartItem, "cartItem")
+                console.log(22, "FOUND LOGGED IN CART ITEM --------: ", cartItem)
                 // if the item exists then update quantity and total price in the cart
                 if(cartItem) {
                     // Since we are adding EXTRA items, update the Items.Quantity and Items.TotalPrice field in cart document by adding
@@ -27,6 +27,7 @@ const loggedInAddItem = async(req, res, next) => {
                     // Since we are adding EXTRA items, update the TotalCartPrice and TotalItems field in cart document by adding
                     cart.TotalCartPrice += (Number(req.body.Quantity) * item.Price)// get price from server and not from client side to ensure charge is not made up
                     cart.TotalItems += Number(req.body.Quantity)
+                    
                 } else { // if the item does not exist in the cart, then add the item to Items field of cart document
 
                     cart.Items.push({
@@ -44,7 +45,7 @@ const loggedInAddItem = async(req, res, next) => {
                 }
 
                 await cart.save()
-                console.log(46, cart)
+                console.log(48, "LOGGED IN CART AFTER ADDING -------: ", cart)
 
                 return res.status(200).json({cart: cart})
 
@@ -64,7 +65,7 @@ const loggedInAddItem = async(req, res, next) => {
                     TotalItems: Number(req.body.Quantity)
                 })
         
-                console.log(66, newCart)
+                console.log(66, "CREATE NEW LOGGED IN CART -----: ", newCart)
                 return res.status(200).json({cart: newCart})
             }
         }
@@ -81,8 +82,8 @@ const loggedInAddItem = async(req, res, next) => {
 const addItemsFromGuestToLoggedIn = async (req, res) => {
     try {
         const sessionCart = req.session.cart
-        console.log(82, "req sessionID: ", req.sessionID)
-        console.log(83, sessionCart, "sessionCart after logging in")
+        console.log(82, "LOGGED IN REQ SESSION ID -------: ", req.sessionID)
+        console.log(83, "SESSION CART after logging in -------: ", sessionCart)
         // console.log(req.user, "req.user after logging in")
 
         const cart = await Cart.findOne({LoggedInBuyer: req.user._id})
@@ -133,12 +134,12 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
 
                 await cart.save()
 
-                console.log(121, "adding items from guest to logged in cart: ", cart)
+                console.log(121, "adding items from guest to logged in cart ---------:", cart)
 
                 // then delete the cart from the session after adding all the items from cart
                 req.sessionStore.destroy(req.sessionID)
 
-                console.log(126, "after deleting session: ", req.session)
+                console.log(126, "after deleting session -------------: ", req.session)
             }
 
             return res.status(200).json({successful: "added items to OLD cart after SYNCING", cart: cart})
@@ -174,10 +175,10 @@ const addItemsFromGuestToLoggedIn = async (req, res) => {
                 // then delete the cart from the session after adding all the items from cart
                 req.sessionStore.destroy(req.sessionID)
 
-                console.log(162, "after deleting session: ", req.session)
+                console.log(162, "after deleting session -------------: ", req.session)
             }
 
-            console.log(165, "new cart for adding items from guest to logged in cart: ", newCart)
+            console.log(165, "new cart for adding items from guest to logged in cart -------------: ", newCart)
 
             return res.status(200).json({successful: "created a NEW cart and SYNC items", cart: newCart})
         }
@@ -289,7 +290,8 @@ const loggedInCartItemQuantity = async(req, res) => {
         console.log(289, "REQ QUERY ----: ", req.query)
         console.log(290, "REQ.PARAMS ID-----", req.params)
         if(req.user) {
-            const cart = await Cart.findOne({LoggedInBuyer: req.user.id}) // "Items.ItemId": req.params.id,
+            // const cart = await Cart.findOne({LoggedInBuyer: req.user.id}) // "Items.ItemId": req.params.id,
+            const cart = await Cart.findOne({"Items.ItemId": req.params.id}, {'Items.$': 1})
             console.log(291, "CART-------", cart)
             res.status(200).json({item: cart})
         }

@@ -12,7 +12,9 @@ router.post('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
         res.redirect(307, `/guest/buyer/post/${req.params.id}`)
     } else {
-        res.redirect(307, `/loginbuyer/${req.params.id}`)
+        let token = req.headers.authorization
+        token = token.split("Bearer ")
+        res.redirect(307, `/loginbuyer/${req.params.id}?token=${token}`)
     }
 });
 
@@ -23,7 +25,9 @@ router.put('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
         res.redirect(307, `/guest/buyer/update/${req.params.id}`)
     } else {
-        res.redirect(307, `/loginbuyer/update/${req.params.id}`)
+        let token = req.headers.authorization
+        token = token.split("Bearer ")
+        res.redirect(307, `/loginbuyer/update/${req.params.id}?token=${token}`)
     }
 })
 
@@ -31,7 +35,9 @@ router.delete('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
         res.redirect(307, `/guest/buyer/delete/${req.params.id}`)
     } else {
-        res.redirect(307, `/loginbuyer/delete/${req.params.id}`)
+        let token = req.headers.authorization
+        token = token.split("Bearer ")
+        res.redirect(307, `/loginbuyer/delete/${req.params.id}?token=${token}`)
     }
 })
 
@@ -39,7 +45,9 @@ router.get('/cart', (req, res) => {
     if(!req.headers.authorization) {
         res.redirect(`/guest/buyer/cart`)
     } else {
-        res.redirect(`/loginbuyer/cart`)
+        let token = req.headers.authorization
+        token = token.split("Bearer ")
+        res.redirect(`/loginbuyer/cart?token=${token}`)
     }
 })
 
@@ -47,16 +55,16 @@ router.get('/cartID', passportAuthenticate, getCartID)
 
 router.get('/cart-item/:id', (req, res) => {
     console.log(48, "AUTHORIZATION IN SHOPPING CART ROUTE", req.headers.authorization)
-    let token = req.headers.authorization
-    token = token.split("Bearer ")
-    console.log(token)
-    console.log(token[1])
     // console.log(49, "AUTHORIZATION", req.headers)
     // console.log(50, "-----: ", req.body)
     // console.log(51, "req.body.auth: ", req.body.Authorization)
     if(!req.headers.authorization) {
         res.redirect(307, `/guest/buyer/quantity/${req.params.id}`)
     } else {
+        let token = req.headers.authorization
+        token = token.split("Bearer ")
+        console.log(62, "SPLIT TOKEN----: ", token)
+        console.log(token[1])
         res.redirect(307, `/loginbuyer/quantity/${req.params.id}?token=${token[1]}`)
     }
     
