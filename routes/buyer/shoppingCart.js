@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-const {addItemsFromGuestToLoggedIn, getCartID, loggedInCartItemQuantity} = require('../../controller/buyer/loggedInCart')
-
+const {addItemsFromGuestToLoggedIn, getCartID} = require('../../controller/buyer/loggedInCart')
+const {guestAddItem, guestUpdateItemQuantity, guestDeleteItem, guestIndexCart, guestCartItemQuantity} = require('../../controller/buyer/guestCart')
 
 const passportAuthenticate = passport.authenticate('jwt', {session: false})
 
 router.post('/electronic/cart/:id', (req, res) => {
     console.log(10, req.headers.authorization)
     if(!req.headers.authorization) {
-        res.redirect(307, `/guest/buyer/post/${req.params.id}`)
+        // res.redirect(307, `/guest/buyer/post/${req.params.id}`)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -24,6 +24,7 @@ router.post('/sync/cart', passportAuthenticate, addItemsFromGuestToLoggedIn) // 
 router.put('/electronic/cart/:id', (req, res) => {
     if(!req.headers.authorization) {
         res.redirect(307, `/guest/buyer/update/${req.params.id}`)
+        guestAddItem(req, res)
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -44,6 +45,7 @@ router.delete('/electronic/cart/:id', (req, res) => {
 router.get('/cart', (req, res) => {
     if(!req.headers.authorization) {
         res.redirect(`/guest/buyer/cart`)
+
     } else {
         let token = req.headers.authorization
         token = token.split("Bearer ")
@@ -69,6 +71,8 @@ router.get('/cart-item/:id', (req, res) => {
     }
     
 })
+
+
 
 module.exports = router
 
