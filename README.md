@@ -87,9 +87,7 @@ Mongo Database is used to store sessions, electronic items' details, socket IDs,
 Currently, you can experience the full user functionalities of the deployed website on desktop.
 
 Please bear with us as we work on resolving the following issues for the website on mobile/tablet:
-- Unable to add items to cart 
-- Unable to checkout 
-- Unable to view order confirmation 
-- Modals under User Profile are off centered
+- Guests cannot make orders on Google Chrome app 
+- CSS and UI are skewed
 ## Client-side Code Source
 Click [here](https://github.com/krislee/ecommerce-frontend) to view the client-side code repository.
