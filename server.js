@@ -14,12 +14,14 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
 // SET UP WEBSOCKET
-const io = require('socket.io')(server, {
-  cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
-  }
-})
+const io = require('socket.io')(server, 
+//   {
+//   cors: {
+//       origin: "*",
+//       methods: ["GET", "POST"]
+//   }
+// }
+)
 
 io.on('connection', (socket) => {
   console.log(20, "CLIENT CONNECTED")
