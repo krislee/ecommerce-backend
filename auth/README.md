@@ -31,3 +31,9 @@ In the case of using ``passport``, if there is a mismatch, then it will return `
 By using the public key to decrypt the JWT, you will know if 
 1. the JWT was issued from the expected sender since the public key can only decrypt a private key that corresponds to the public key  
 2. the JWT has been tampered since the hashed, base64url-encoded header and payload returned from decrypting is compared to manual hashed, base64url-encoded header and payload
+
+STEP 2:
+JWT = header.payload.signature
+
+MANUAL HASH: sha256 algo on (header + payload) --> hashed (header+payload)
+PUBLIC KEY: DECRYPTS( header.payload.signature ) --> hashed (header+payload)

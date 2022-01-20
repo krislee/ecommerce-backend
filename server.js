@@ -122,7 +122,8 @@ const orderRouter = require('./routes/buyer/order')
 const corsOptions = {
   // origin: 'http://localhost:3000', 
   // origin: process.env.CLIENT_URL,
-  origin: "https://elecommerce.netlify.app",
+  // origin: "https://elecommerce.netlify.app",
+  origin: '*',
   credentials: true,
 };
 
