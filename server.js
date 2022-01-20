@@ -14,7 +14,12 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Listening to ${process.env.PORT}`)
 })
 // SET UP WEBSOCKET
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+  cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+  }
+})
 
 io.on('connection', (socket) => {
   console.log(20, "CLIENT CONNECTED")
@@ -122,8 +127,7 @@ const orderRouter = require('./routes/buyer/order')
 const corsOptions = {
   // origin: 'http://localhost:3000', 
   // origin: process.env.CLIENT_URL,
-  // origin: "https://elecommerce.netlify.app",
-  origin: '*',
+  origin: "https://elecommerce.netlify.app",
   credentials: true,
 };
 
